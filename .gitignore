@@ -1,0 +1,8 @@
+./~/
+matlab_scripts/
+fieldtrip-20160630/
+state.mat
+*_state.mat
+*.m~
+test.m
+.DS_Store
