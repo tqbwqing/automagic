@@ -51,6 +51,9 @@ for i = 1:length(project.block_list)
     block.update_addresses(project.getData_folder, project.getResult_folder);
     subject_name = block.subject.name;
 
+    display(['Processing file ', block.unique_name ,' ...', '(file ', ...
+        int2str(i), ' out of ', int2str(length(project.block_list)), ')']); 
+    
     % Create the subject folder if it doesn't exist yet
     if(~ exist([project.getResult_folder subject_name], 'dir'))
         mkdir([project.getResult_folder subject_name]);
@@ -116,7 +119,7 @@ end
 handle = guidata(h);
 handle.project_list(project.name) = project;
 guidata(handle.main_gui, handle);
-main_gui('load_selected_project', handle);
+main_gui();
 end
 
 
@@ -149,7 +152,7 @@ function cleanMeUp(project)
     handle = guidata(h);
     handle.project_list(project.name) = project;
     guidata(handle.main_gui, handle);
-    main_gui('load_selected_project', handle);
+    main_gui();
 end
 
 

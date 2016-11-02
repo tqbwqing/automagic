@@ -1072,7 +1072,7 @@ end
 handle = guidata(h);
 handle.project_list(handles.project.name) = handles.project;
 guidata(handle.main_gui, handle);
-main_gui('load_selected_project', handle);
+main_gui();
 
 % Hint: delete(hObject) closes the figure
 delete(hObject);
