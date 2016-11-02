@@ -5,8 +5,6 @@ function varargout = rating_gui(varargin)
 %      instance of the class Project is given as argument.
 %
 
-% Edit the above text to modify the response to help rating_gui
-
 % Last Modified by GUIDE v2.5 28-Oct-2016 14:42:23
 
 % Begin initialization code - DO NOT EDIT
@@ -224,7 +222,7 @@ block = project.block_map(unique_name);
 % There are five different lists corresponding to different ratings. The
 % first possible block from each list is first chosen, and finally the one
 % which precedes all others in the main list is chosen. For more info 
-% please read the docs.
+% on why these lists please read Project docs.
 function next = get_next_index(handles)
 % handles  structure with handles of the gui
 

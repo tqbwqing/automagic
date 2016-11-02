@@ -1,21 +1,33 @@
 classdef Subject
-    %SUBJECT Summary of this class goes here
-    %   Detailed explanation goes here
+    %SUBJECT is a class representing each subject in the data_folder. 
+    %   A Subject corresponds to a folder, which contains one or more
+    %   Blocks. A Bock represents a raw file and it's associated
+    %   preprocessed file, if any (See Block).
+    
     
     properties(SetAccess=private)
+        % Name of the folder of this subject.
         name
     end
+    
     properties(SetAccess=private, GetAccess=private)
+        % The address of the data_folder in which this subject is stored.
         data_folder
+       
+        % The address of the folder where the results are (to be) stored.
         result_folder
+        
         data_folder_win
         result_folder_win
     end
+    
     properties
+        % List of all blocks of this subject
         block_list
     end
     
     methods
+        %% Constructor
         function self = Subject(data_folder, result_folder)
             self = self.setResult_folder(result_folder);
             self = self. setData_folder(data_folder);

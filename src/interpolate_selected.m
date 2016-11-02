@@ -1,4 +1,8 @@
 function interpolate_selected(project)
+% This function is called by the main_gui. It finds all blocks that are
+% rated to be interpolated and interpolates them all. 
+% project - An instance of the class Project
+
 cleanupObj = onCleanup({@cleanMeUp, project});
 
 if(isempty(project))
@@ -12,6 +16,8 @@ elseif(ispc)
     slash = '\';
 end
 
+% eeg_interp is checked as an example of a file in matlab_scripts, it could
+% be any other file in that folder.
 if( ~exist('eeg_interp', 'file'))
     addpath(genpath(['..' slash 'matlab_scripts'])); % project code
 end
