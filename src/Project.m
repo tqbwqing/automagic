@@ -75,6 +75,10 @@ classdef Project < handle
         
         % List of indices of blocks that are not rated (or rated as Not Rated).
         not_rated_list
+        
+        % Maximum value for the X-axis in the plot. Needed for the visual
+        % aspects of the plot.
+        maxX
     end
     
     properties(SetAccess=private, GetAccess=private)
@@ -108,10 +112,6 @@ classdef Project < handle
         % Char determining the type of filtering during preprocessing. Could be
         % either 'US' or 'EU'.
         filter_mode
-        
-        % Maximum value for the X-axis in the plot. Needed for the visual
-        % aspects of the plot.
-        maxX
         
         % List of names of all preprocessed blocks so far.
         processed_list
