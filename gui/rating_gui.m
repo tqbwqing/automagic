@@ -250,31 +250,31 @@ else
     next_interpolate = [];
     next_notrated = [];
     if(good_bool)
-        possible_goods = find(project.good_list > current_index);
+        possible_goods = find(project.good_list > current_index, 1);
         if( ~ isempty(possible_goods))
             next_good = project.good_list(possible_goods(1));
         end
     end
     if(ok_bool)
-       possible_oks = find(project.ok_list > current_index);
+       possible_oks = find(project.ok_list > current_index, 1);
         if( ~ isempty(possible_oks))
             next_ok = project.ok_list(possible_oks(1));
         end
     end
     if(bad_bool)
-       possible_bads = find(project.bad_list > current_index);
+       possible_bads = find(project.bad_list > current_index, 1);
         if( ~ isempty(possible_bads))
             next_bad = project.bad_list(possible_bads(1));
         end
     end
     if(interpolate_bool)
-       possible_interpolates = find(project.interpolate_list > current_index);
+       possible_interpolates = find(project.interpolate_list > current_index, 1);
         if( ~ isempty(possible_interpolates))
             next_interpolate = project.interpolate_list(possible_interpolates(1));
         end
     end
     if(notrated_bool)
-       possible_notrateds = find(project.not_rated_list > current_index);
+       possible_notrateds = find(project.not_rated_list > current_index, 1);
         if( ~ isempty(possible_notrateds))
             next_notrated = project.not_rated_list(possible_notrateds(1));
         end
@@ -326,31 +326,31 @@ previous_bad = [];
 previous_interpolate = [];
 previous_notrated = [];
 if(good_bool)
-    possible_goods = find(project.good_list < current_index);
+    possible_goods = find(project.good_list < current_index, 1, 'last');
     if( ~ isempty(possible_goods))
         previous_good = project.good_list(possible_goods(end));
     end
 end
 if(ok_bool)
-   possible_oks = find(project.ok_list < current_index);
+   possible_oks = find(project.ok_list < current_index, 1, 'last');
     if( ~ isempty(possible_oks))
         previous_ok = project.ok_list(possible_oks(end));
     end
 end
 if(bad_bool)
-   possible_bads = find(project.bad_list < current_index);
+   possible_bads = find(project.bad_list < current_index, 1, 'last');
     if( ~ isempty(possible_bads))
         previous_bad = project.bad_list(possible_bads(end));
     end
 end
 if(interpolate_bool)
-   possible_interpolates = find(project.interpolate_list < current_index);
+   possible_interpolates = find(project.interpolate_list < current_index, 1, 'last');
     if( ~ isempty(possible_interpolates))
         previous_interpolate = project.interpolate_list(possible_interpolates(end));
     end
 end
 if(notrated_bool)
-   possible_notrateds = find(project.not_rated_list < current_index);
+   possible_notrateds = find(project.not_rated_list < current_index, 1, 'last');
     if( ~ isempty(possible_notrateds))
         previous_notrated = project.not_rated_list(possible_notrateds(end));
     end
@@ -1072,7 +1072,7 @@ end
 handle = guidata(h);
 handle.project_list(handles.project.name) = handles.project;
 guidata(handle.main_gui, handle);
-main_gui('load_selected_project', handle);
+main_gui();
 
 % Hint: delete(hObject) closes the figure
 delete(hObject);
