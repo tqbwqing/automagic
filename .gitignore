@@ -1,8 +1,6 @@
 ./~/
-matlab_scripts/
-fieldtrip-20160630/
+matlab_scripts/eeglab*
 state.mat
 *_state.mat
 *.m~
-test.m
 .DS_Store

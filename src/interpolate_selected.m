@@ -18,8 +18,14 @@ end
 
 % eeg_interp is checked as an example of a file in matlab_scripts, it could
 % be any other file in that folder.
-if( ~exist('eeg_interp', 'file'))
-    addpath(genpath(['..' slash 'matlab_scripts'])); % project code
+if(~exist('pop_fileio', 'file'))
+    matlab_paths = genpath(['..' slash 'matlab_scripts' slash]);
+    parts = strsplit(matlab_paths, ':');
+    IndexC = strfind(parts, 'compat');
+    Index = not(cellfun('isempty', IndexC));
+    parts(Index) = [];
+    matlab_paths = strjoin(parts, ':');
+    addpath(matlab_paths);
 end
 
 if( ~exist('main_gui','file'))

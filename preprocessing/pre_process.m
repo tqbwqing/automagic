@@ -11,7 +11,15 @@ function [result, fig] = pre_process(data, raw_file_address, filter_params)
 
 
 %% Add path if not added before
-addpath(genpath('../matlab_scripts'));
+if(~exist('pop_fileio', 'file'))
+    matlab_paths = genpath(['..' slash 'matlab_scripts' slash]);
+    parts = strsplit(matlab_paths, ':');
+    IndexC = strfind(parts, 'compat');
+    Index = not(cellfun('isempty', IndexC));
+    parts(Index) = [];
+    matlab_paths = strjoin(parts, ':');
+    addpath(matlab_paths);
+end
    
 %% Determine number of channels
 chan_excl256  = [ 31 67 73 82 91 92 102 111 120 133 145 165 174 187 199 208 ... 
