@@ -117,7 +117,6 @@ Should you spot bad channels (represented by horizontal lines which are darker t
  * Important:	You can select and interpolate bad channels as often as you want in each file.
 
 ## Project Structure
- * NOTE that for this code to be able to run, functions from *eeglab* and *fieldtrip* are needed to be on your path. If you want to make any modification on this code, you need to download those libraries.
 
 There are three main folders: 
 
@@ -127,10 +126,21 @@ There are three main folders:
 2. **gui**
  This folder contains four files created by *MATLAB GUIDE*. All call back operations related to the Gui are implemented here.
  1. *main_gui.m* is the main function of the project which must be started to run the application.
- 2. *rating\_gui* is the gui that can be started within the *main\_gui* and is used to rate subjects and files.
+ 2. *rating\_gui.m* is the gui that can be started within the *main\_gui.m* and is used to rate subjects and files.
 
 3. **src**
  And finally this folder contains all other files that are called by the Guis:
- 1. *Project*, *Subject* and *Block* are classes representing a project created in the gui and its corresponding subjects and the raw files of each subject, respectievly.
+ 1. *Project.m*, *Subject.m* and *Block.m* are classes representing a project created in the gui and its corresponding subjects and the raw files of each subject, respectievly.
  2. *pre\_process\_all.m* and *interpolate\_selected.m* are functions that are called from whithin the gui by the corresponding call backs of *Run* and *Interpolate All* respectively.
+4. **matlab_scripts** 
+    This folder (must) contain all external files from *eeg_lab* and other libraries.
+
+## How to run the code
+For this code to be able to run, functions from [*eeglab*](https://sccn.ucsd.edu/eeglab/),  [*Augmented Lagrange Multiplier (ALM) Method*](http://perception.csl.illinois.edu/matrix-rank/sample_code.html) and [*fieldtrip*](http://www.fieldtriptoolbox.org) are needed to be on your path:
+1. Download the [*eeglab*](https://sccn.ucsd.edu/eeglab/downloadtoolbox.php) library and put them in the *matlab_scripts* folder.
+2. Download the  *inexact ALM* ( containing the function *[A, E] = inexact_alm_rpca(D, λ)*) from [*(ALM) Method*](http://perception.csl.illinois.edu/matrix-rank/sample_code.html) and put it in the *matlab_scripts* as well. 
+3. Download the [*fieldtrip*](http://www.fieldtriptoolbox.org/download) which is an *eeglab* extension and put it in *matlab_scripts/eeglab13_6_5b/plugins/*.
+4. Now you are able to run the code by running the *gui/main_gui.m*
+
+Note that you can modify anything in the code if you want and change all files and folder structures including matlab paths. 
 
