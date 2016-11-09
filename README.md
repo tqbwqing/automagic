@@ -141,15 +141,15 @@ Should you spot bad channels (represented by horizontal lines which are darker t
 There are three main folders: 
 
 1. **preprocessing**
- This folder contains all relevant files of preprocessing step. The folder is standalone and can be used independent from the entire application. The main function to be called is *pre_process.m* which as argument needs the raw data loaded by *pop_fileio* function of *eeglab*, the address of that file and the filtering mode which can be either *'US'* or *'EU'*. (For more info look at docs)
+ This folder contains all relevant files of preprocessing step. The folder is standalone and can be used independent from the entire application. The main function to be called is *pre_process.m* which as argument needs the raw data loaded by *pop_fileio* function of *eeglab*, the address of that file and the filtering parameters (See documations, ie. perform_filter.m). For more information on how to run the code the without installer please see  [How to run the app from the code](#4-how-to-run-the-application-from-the-code).
 
 2. **gui**
- This folder contains four files created by *MATLAB GUIDE*. All call back operations related to the Gui are implemented here.
+ This folder contains files created by *MATLAB GUIDE*. All call-back operations related to the gui are implemented here.
  1. *main_gui.m* is the main function of the project which must be started to run the application.
  2. *rating\_gui.m* is the gui that can be started within the *main\_gui.m* and is used to rate subjects and files.
 
 3. **src**
- And finally this folder contains all other files that are called by the Guis:
+ This folder contains all other files that are called by the guis:
  1. *Project.m*, *Subject.m* and *Block.m* are classes representing a project created in the gui and its corresponding subjects and the raw files of each subject, respectievly.
  2. *pre\_process\_all.m* and *interpolate\_selected.m* are functions that are called from whithin the gui by the corresponding call backs of *Run* and *Interpolate All* respectively.
 4. **matlab_scripts** 
