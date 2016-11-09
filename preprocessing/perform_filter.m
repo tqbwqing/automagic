@@ -14,7 +14,7 @@ function filtered = perform_filter(data, varargin)
 
 p = inputParser;
 addParameter(p,'filter_mode', 'EU', @ischar);
-addParameter(p,'freq', 1/(data.srate/2), @isnumeric);
+addParameter(p,'freq', 0.1, @isnumeric);
 parse(p, varargin{:});
 
 
@@ -26,7 +26,7 @@ freq = p.Results.freq;
 
 display('Perform Filtering...');
 eeg = data.data;
-[bhp,ahp] = butter(3, freq,'high'); % Highpass
+[bhp,ahp] = butter(3, freq/(data.srate/2),'high'); % Highpass
 eeg = filter(bhp,ahp,eeg')';
 data.data = eeg;
 switch filter_mode

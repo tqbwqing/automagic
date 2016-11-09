@@ -76,8 +76,7 @@ handles.state_file.NAME = 'state.mat';
 handles.state_file.FOLDER = '~/methlab_pipeline/';
 handles.state_file.ADDRESS = strcat(handles.state_file.FOLDER,...
     handles.state_file.NAME);
-handles.filtering.FREQ = 'default is used';
-
+handles.filtering.FREQ = 0.5;
 % Add project paths
 % Checks 'pre_process_all' as an example of a file in /src. Could be any other file
 % in /src
@@ -219,7 +218,7 @@ if(strcmp(name, handles.new_project.LIST_NAME))
     set(handles.projectname, 'String', handles.new_project.NAME);
     set(handles.datafoldershow, 'String', handles.new_project.DATA_FOLDER);
     set(handles.projectfoldershow, 'String', handles.new_project.FOLDER);
-    set(handles.freqedit, 'String', '')
+    set(handles.freqedit, 'String', handles.filtering.FREQ)
     set(handles.subjectnumber, 'String', '')
     set(handles.filenumber, 'String', '')
     set(handles.preprocessednumber, 'String', '')
@@ -338,13 +337,7 @@ set(handles.preprocessednumber, 'String', ...
     [num2str(project.processed_subjects), ' subjects already done'])
 set(handles.fpreprocessednumber, 'String', ...
     [num2str(project.processed_files), ' files already done'])
-if( isfield(project.filter_params, 'freq'))
-    set(handles.freqedit, 'String', num2str(project.filter_params.freq));
-    set(handles.hightext, 'visible', 'off');
-else
-    set(handles.freqedit, 'String', handles.filtering.FREQ);
-    set(handles.hightext, 'visible', 'on')
-end
+set(handles.freqedit, 'String', num2str(project.filter_params.freq));
 % Set the file extension
 IndexC = strfind(handles.fileextension.String, project.file_extension);
 index = find(not(cellfun('isempty', IndexC)));
@@ -612,6 +605,8 @@ filter_params.filter_mode = upper(handles.filteringbuttongroup.SelectedObject.St
 freq = str2double(get(handles.freqedit, 'String'));
 if( ~isempty(freq) && ~isnan(freq) )
     filter_params.freq = freq;
+else
+    filter_params.freq = handles.filtering.FREQ;
 end
 
 % Change the cursor to a watch while updating...
@@ -634,9 +629,13 @@ switch choice
     case 'Over Write'
         if( exist(Project.make_state_address(project_folder), 'file'))
             load(Project.make_state_address(project_folder));
-            project = handles.project_list(self.name);
-            delete(project.getState_address);
-            remove(handles.project_list, self.name);
+            if( isKey(handles.project_list, self.name))
+                project = handles.project_list(self.name);
+                delete(project.getState_address);
+                remove(handles.project_list, self.name);
+            else
+                delete(Project.make_state_address(project_folder));
+            end
         end
         project = Project(name, data_folder, project_folder, ext, ds, filter_params);
 end
