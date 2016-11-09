@@ -1,4 +1,5 @@
 function [data, noise] = perform_pca(data)
+% perform_pca  perform pca on the data 
 
 display('Performing PCA  (this may take a while...)');
 eeg = double(data.data)'; 

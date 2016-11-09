@@ -1,4 +1,15 @@
-function [result, fig] = pre_process(data, raw_file_address, filter_mode)
+function [result, fig] = pre_process(data, raw_file_address, filter_params)
+% pre_process  preprocess the data 
+%   [result, fig] = pre_process(data, raw_file_address, filter_params)
+%   where data is the data loaded by popfileio of eeglab, raw_file_address
+%   is the address of the location where this file is located and
+%   filter_params is the structure contating filtering parameters. See
+%   perform_filter.m.
+
+%   [result, fig] = pre_process(data, raw_file_address) where default
+%   parameters for filtering are used. See perform_filter.m
+
+
 %% Add path if not added before
 addpath(genpath('../matlab_scripts'));
    
@@ -90,7 +101,11 @@ assert(data.nbchan == s(1)); clear s;
 
 %% Preprocess data
 % filtering on the whole dataset
-filtered_data = perform_filter(data, filter_mode);
+if( isstruct(filter_params))
+    filtered_data = perform_filter(data, filter_params);
+else
+    filtered_data = perform_filter(data);
+end
 
 % seperate EEG channels from EOG ones
 unique_chans = setdiff(channels, eog_channels);

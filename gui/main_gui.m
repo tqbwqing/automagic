@@ -28,7 +28,7 @@ function varargout = main_gui(varargin)
 
 % Edit the above text to modify the response to help main_gui
 
-% Last Modified by GUIDE v2.5 28-Oct-2016 09:59:51
+% Last Modified by GUIDE v2.5 09-Nov-2016 09:59:00
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -64,7 +64,7 @@ handles.output = hObject;
 % Position of the gui
 set(handles.main_gui, 'units', 'normalized', 'position', [0.05 0.3 0.7 0.6])
 
-handles.version = '1.0.1';
+handles.version = '1.1.0';
 
 % Set constant values
 handles.new_project.LIST_NAME = 'Create New Project...';
@@ -76,6 +76,7 @@ handles.state_file.NAME = 'state.mat';
 handles.state_file.FOLDER = '~/methlab_pipeline/';
 handles.state_file.ADDRESS = strcat(handles.state_file.FOLDER,...
     handles.state_file.NAME);
+handles.filtering.FREQ = 'default is used';
 
 % Add project paths
 % Checks 'pre_process_all' as an example of a file in /src. Could be any other file
@@ -218,6 +219,7 @@ if(strcmp(name, handles.new_project.LIST_NAME))
     set(handles.projectname, 'String', handles.new_project.NAME);
     set(handles.datafoldershow, 'String', handles.new_project.DATA_FOLDER);
     set(handles.projectfoldershow, 'String', handles.new_project.FOLDER);
+    set(handles.freqedit, 'String', '')
     set(handles.subjectnumber, 'String', '')
     set(handles.filenumber, 'String', '')
     set(handles.preprocessednumber, 'String', '')
@@ -305,6 +307,7 @@ if ~ exist(project.getState_address, 'file')
         set(handles.fpreprocessednumber, 'String', '')
         set(handles.ratednumber, 'String', '')
         set(handles.interpolatenumber, 'String', '')
+        set(handles.freqedit, 'String', '')
         % Disable modifications from gui
         switch_gui('off', 'on', handles);
         return;
@@ -335,7 +338,13 @@ set(handles.preprocessednumber, 'String', ...
     [num2str(project.processed_subjects), ' subjects already done'])
 set(handles.fpreprocessednumber, 'String', ...
     [num2str(project.processed_files), ' files already done'])
-
+if( isfield(project.filter_params, 'freq'))
+    set(handles.freqedit, 'String', num2str(project.filter_params.freq));
+    set(handles.hightext, 'visible', 'off');
+else
+    set(handles.freqedit, 'String', handles.filtering.FREQ);
+    set(handles.hightext, 'visible', 'on')
+end
 % Set the file extension
 IndexC = strfind(handles.fileextension.String, project.file_extension);
 index = find(not(cellfun('isempty', IndexC)));
@@ -375,6 +384,7 @@ set(handles.choosedata, 'enable', mode);
 set(handles.chooseproject, 'enable', mode);
 set(handles.filteringbuttongroup.Children(1), 'enable', mode);
 set(handles.filteringbuttongroup.Children(2), 'enable', mode);
+set(handles.freqedit, 'enable', mode);
 set(handles.createbutton, 'visible', mode)
 set(handles.deleteprojectbutton, 'visible', visibility)
 
@@ -597,9 +607,12 @@ idx = get(handles.dsrate, 'Value');
 dsrates = get(handles.dsrate, 'String');
 ds = str2double(dsrates{idx});
 
-% Get filtering mode
-filter_mode = handles.filteringbuttongroup.SelectedObject.String;
-
+% Get filtering params
+filter_params.filter_mode = upper(handles.filteringbuttongroup.SelectedObject.String(1:2));
+freq = str2double(get(handles.freqedit, 'String'));
+if( ~isempty(freq) && ~isnan(freq) )
+    filter_params.freq = freq;
+end
 
 % Change the cursor to a watch while updating...
 set(handles.main_gui, 'pointer', 'watch')
@@ -625,7 +638,7 @@ switch choice
             delete(project.getState_address);
             remove(handles.project_list, self.name);
         end
-        project = Project(name, data_folder, project_folder, ext, ds, filter_mode);
+        project = Project(name, data_folder, project_folder, ext, ds, filter_params);
 end
 name = project.name; % Overwrite the name in case the project is loaded.
 
@@ -707,7 +720,7 @@ name = get(handles.projectname, 'String');
 if( isKey(handles.project_list, name))
     project = handles.project_list(name);
     if (exist(project.getState_address, 'file'))
-        project.filter_mode = handles.filteringbuttongroup.SelectedObject.String;
+        project.filter_params.filter_mode = handles.filteringbuttongroup.SelectedObject.String;
     end
 end
 
@@ -824,3 +837,24 @@ function existingpopupmenu_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
+
+
+% --- Executes during object creation, after setting all properties.
+function freqedit_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to freqedit (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+function freqedit_Callback(hObject, eventdata, handles)
+% hObject    handle to projectfoldershow (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of projectfoldershow as text
+%        str2double(get(hObject,'String')) returns contents of projectfoldershow as a double

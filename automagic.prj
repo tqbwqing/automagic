@@ -1,5 +1,5 @@
 <deployment-project plugin="plugin.apptool" plugin-version="1.0">
-  <configuration build-checksum="269846290" file="/Users/amirreza/workspace/ppp/pipline/automagic.prj" location="/Users/amirreza/workspace/ppp/pipline" name="automagic" target="target.mlapps" target-name="Package App">
+  <configuration build-checksum="2522786396" file="/Users/amirreza/workspace/ppp/pipline/automagic.prj" location="/Users/amirreza/workspace/ppp/pipline" name="automagic" target="target.mlapps" target-name="Package App">
     <param.appname>automagic</param.appname>
     <param.authnamewatermark>amirreza</param.authnamewatermark>
     <param.email>a.bahreini@psychologie.uzh.ch</param.email>
@@ -13,7 +13,7 @@
     <param.summary />
     <param.description />
     <param.screenshot />
-    <param.version>1.0.1</param.version>
+    <param.version>1.1.0</param.version>
     <param.products.name />
     <param.products.id />
     <param.products.version />

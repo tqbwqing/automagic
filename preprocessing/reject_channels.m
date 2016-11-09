@@ -1,4 +1,6 @@
 function rejected = reject_channels(data)
+% reject_channels  reject bad channels based on define criterias
+
 display('Finding bad channels...');
 
 chans_idx = logical(1:data.nbchan);

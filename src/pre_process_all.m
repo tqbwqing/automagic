@@ -66,7 +66,7 @@ for i = 1:length(project.block_list)
     else
         % Load and preprocess
         [~ ,data] = evalc('pop_fileio(block.getSource_address)');
-        [EEG, fig] = pre_process(data, block.getSource_address, project.filter_mode);
+        [EEG, fig] = pre_process(data, block.getSource_address, project.filter_params);
         figure(fig);
         h = gcf;
 
