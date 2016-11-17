@@ -12,14 +12,14 @@ classdef Project < handle
     %
     %Project Methods:
     %   Project - To create a project following arguments must be given:
-    %   myProject = Project(name, d_folder, p_folder, ext, ds, filter_params)
+    %   myProject = Project(name, d_folder, p_folder, ext, ds, params)
     %   where name is a char specifying the desired project name, d_folder
     %   is the address of the folder where raw data is placed, p_folder is
     %   the address of the folder where you want the results to be saved,
     %   ext is the file_extension of raw files, ds is the downsampling rate
     %   that will be used to create smaller versions of raw data in order
-    %   to plot faster and filter_params is a struct that contains
-    %   parameters for filtering.
+    %   to plot faster and params is a struct that contains parameters for 
+    %   preprocessing.
     %   This constructor calls create_rating_structures in order to create
     %   and initialise corresponding data structures.
     %
@@ -109,9 +109,9 @@ classdef Project < handle
         % .dat or .fif
         file_extension
         
-        % Optional structure contating parameters for filtering. See
-        % preprocessing/perform_filter.m.
-        filter_params
+        % Parameters of the preprocessing. To learn more please see
+        % preprocessing/pre_process.m
+        params
         
         % List of names of all preprocessed blocks so far.
         processed_list
@@ -135,14 +135,14 @@ classdef Project < handle
     %% Constructor
     methods
         function self = Project(name, d_folder, p_folder, ext, ds, ...
-                filter_params)
+                params)
             self = self.setName(name);
             self = self.setData_folder(d_folder);
             self = self.setResult_folder(p_folder);
             self = self.setState_address(self.make_state_address(self.getResult_folder));
             self.file_extension = ext;
             self.ds_rate = ds;
-            self.filter_params = filter_params;
+            self.params = params;
             self = self.create_rating_structure();
             self.save_project();
         end

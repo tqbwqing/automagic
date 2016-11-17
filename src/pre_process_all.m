@@ -3,7 +3,8 @@ function pre_process_all(project)
 % the data_folder of the project. If some files have already preprocessed
 % results in the result_folder, a pop out message asks the user whether to 
 % overwrite them or just skip them.
-% project - An instance of the class Project
+%
+%   project - An instance of the class Project
 
 cleanupObj = onCleanup({@cleanMeUp, project});
 if(isempty(project))
@@ -69,7 +70,7 @@ for i = 1:length(project.block_list)
     else
         % Load and preprocess
         [~ ,data] = evalc('pop_fileio(block.getSource_address)');
-        [EEG, fig] = pre_process(data, block.getSource_address, project.filter_params);
+        [EEG, fig] = pre_process(data, block.getSource_address, project.params);
         figure(fig);
         h = gcf;
 
