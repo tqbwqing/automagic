@@ -56,7 +56,8 @@ if( nargin - 3 ~= 2 )
     error('wrong number of arguments. Project must be given as argument.')
 end
 
-set(handles.settingsfigure, 'units', 'normalized', 'position', [0.05 0.1 0.6 0.7])
+set(handles.settingsfigure, 'units', 'normalized', 'position', [0.05 0.2 0.6 0.8])
+set(handles.settingspanel, 'units', 'normalized', 'position', [0.05 0.1 0.8 0.9])
 children = handles.settingsfigure.Children;
 for child_idx = 1:length(children)
     child = children(child_idx);
