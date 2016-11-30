@@ -152,8 +152,8 @@ if ( project.current == - 1 || is_filtered(handles, project.current))
     reduced = [];
 else
     block = get_current_block(handles);
-    block.update_addresses(project.getData_folder, project.getResult_folder);
-    load(block.getReduced_address);
+    block.update_addresses(project.data_folder, project.result_folder);
+    load(block.reduced_address);
     handles.project.maxX = max(project.maxX, size(reduced.data, 2));% fot the plot
 end
 

@@ -157,8 +157,8 @@ for i = 1:handles.project_list.Count
             ~ strcmp(k(i), handles.load_selected_project.LIST_NAME) )
         name = k{i};
         old_project = v{i};
-        if( exist(old_project.getState_address, 'file') )
-            load(old_project.getState_address);
+        if( exist(old_project.state_address, 'file') )
+            load(old_project.state_address);
             handles.project_list(name) = self;
         end
     end
@@ -197,16 +197,16 @@ name = names{idx};
 % First update the project from the file (Synchronization with other users)
 % (This is redundant if the gui is just started.)
 project = handles.project_list(name);
-if isempty(project) || ~ exist(project.getState_address, 'file')
+if isempty(project) || ~ exist(project.state_address, 'file')
     return;
 else
-    load(project.getState_address);
+    load(project.state_address);
     handles.project_list(name) = self;
     project = self;
 end
 
 % Then update the rating structure of the project
-if( exist( project.getResult_folder, 'dir'))
+if( exist( project.result_folder, 'dir'))
     if(project.folders_are_changed())
         
         % Change the cursor to a watch while updating...
@@ -321,8 +321,8 @@ end
 project = handles.project_list(name);
 % Set the current_project to the selected project
 handles.current_project = Index;
-if ~ exist(project.getState_address, 'file')
-    if(  ~ exist(project.getResult_folder, 'dir') )
+if ~ exist(project.state_address, 'file')
+    if(  ~ exist(project.result_folder, 'dir') )
         % This can happen when data is on a server and connecton is lost
         waitfor(msgbox('The project folder is unreachable or deleted.',...
             'Error','error'));
@@ -359,8 +359,8 @@ switch_gui('off', 'on', handles);
 
 % Set properties of the project:
 set(handles.projectname, 'String', name);
-set(handles.datafoldershow, 'String', project.getData_folder);
-set(handles.projectfoldershow, 'String', project.getResult_folder);
+set(handles.datafoldershow, 'String', project.data_folder);
+set(handles.projectfoldershow, 'String', project.result_folder);
 set(handles.subjectnumber, 'String', [num2str(project.subject_count) ' subjects...'])
 set(handles.filenumber, 'String', [num2str(project.file_count) ' files...'])
 set(handles.preprocessednumber, 'String', ...
@@ -698,7 +698,7 @@ switch choice
             load(Project.make_state_address(project_folder));
             if( isKey(handles.project_list, self.name))
                 project = handles.project_list(self.name);
-                delete(project.getState_address);
+                delete(project.state_address);
                 remove(handles.project_list, self.name);
             else
                 delete(Project.make_state_address(project_folder));
@@ -762,7 +762,7 @@ switch choice
     case 'Delete'
         name = get(handles.projectname, 'String');
         project = handles.project_list(name);
-        delete(project.getState_address);
+        delete(project.state_address);
         
         remove(handles.project_list, name);
         handles.current_project = 1;
@@ -785,7 +785,7 @@ function filter_paramsbuttongroup_SelectionChangedFcn(hObject, eventdata, handle
 name = get(handles.projectname, 'String');
 if( isKey(handles.project_list, name))
     project = handles.project_list(name);
-    if (exist(project.getState_address, 'file'))
+    if (exist(project.state_address, 'file'))
         project.params.filter_params.filter_mode = handles.filteringbuttongroup.SelectedObject.String;
     end
 end

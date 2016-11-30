@@ -53,14 +53,14 @@ for i = 1:length(int_list)
     index = int_list(i);
     unique_name = project.block_list{index};
     block = project.block_map(unique_name);
-    block.update_addresses(project.getData_folder, project.getResult_folder);
+    block.update_addresses(project.data_folder, project.result_folder);
 
     display(['Processing file ', block.unique_name ,' ...', '(file ', ...
         int2str(i), ' out of ', int2str(length(int_list)), ')']); 
     assert(strcmp(block.rate, 'Interpolate') == 1);
     
     % Interpolate and save to results
-    preprocessed = matfile(block.getResult_address,'Writable',true);
+    preprocessed = matfile(block.result_address,'Writable',true);
     EEG = preprocessed.EEG;
     interpolate_chans = block.tobe_interpolated;
     if(isempty(interpolate_chans))
@@ -73,7 +73,7 @@ for i = 1:length(int_list)
     EEG = preprocessed.EEG;
     % Downsample the new file and save it
     reduced.data = (downsample(EEG.data', project.ds_rate))';
-    save(block.getReduced_address, 'reduced', '-v6');
+    save(block.reduced_address, 'reduced', '-v6');
     
     % Setting the new information
     block.setRatingInfoAndUpdate('Not Rated', [], [block.man_badchans interpolate_chans], true);

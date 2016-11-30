@@ -79,9 +79,7 @@ classdef Project < handle
         % Maximum value for the X-axis in the plot. Needed for the visual
         % aspects of the plot.
         maxX
-    end
-    
-    properties(SetAccess=private, GetAccess=private)
+        
         % Adress of the folder where raw data are stored.
         data_folder
         
@@ -91,11 +89,6 @@ classdef Project < handle
         % Address of the state file corresponding to this project. By
         % default it's in the result_folder and is name project_state.mat.
         state_address
-        
-        
-        data_folder_win
-        result_folder_win
-        state_address_win
     end
     
     properties(SetAccess=private)
@@ -139,7 +132,7 @@ classdef Project < handle
             self = self.setName(name);
             self = self.setData_folder(d_folder);
             self = self.setResult_folder(p_folder);
-            self = self.setState_address(self.make_state_address(self.getResult_folder));
+            self.state_address = self.make_state_address(self.result_folder);
             self.file_extension = ext;
             self.ds_rate = ds;
             self.params = params;
@@ -197,7 +190,7 @@ classdef Project < handle
             preprocessed_file_count = 0;
             for i = 1:length(subjects)
                 subject_name = subjects{i};
-                raw_files = dir([self.getData_folder subject_name slash '*' ext]);
+                raw_files = dir([self.data_folder subject_name slash '*' ext]);
                 temp = 0;
                 for j = 1:length(raw_files)
                     files_count = files_count + 1;
@@ -349,50 +342,26 @@ classdef Project < handle
             % Return True if any change has happended to data_folder or
             % result_folder since the last update. If it's true,
             % update_data_structures must be called.
-            data_changed = self.folder_is_changed(self.getData_folder, ...
+            data_changed = self.folder_is_changed(self.data_folder, ...
                 self.subject_count, self.file_count, self.file_extension);
-            result_changed = self.folder_is_changed(self.getResult_folder, []...
+            result_changed = self.folder_is_changed(self.result_folder, []...
                 , self.processed_files, '.mat');
             modified = data_changed || result_changed;
         end
         
         function save_project(self)
             % Save this class to the state file
-            save(self.getState_address, 'self');
+            save(self.state_address, 'self');
         end
         
         function list = list_subject_files(self)
            % List all folders in the data_folder
-           list = self.list_subjects(self.getData_folder);
+           list = self.list_subjects(self.data_folder);
         end
         
         function list = list_preprocessed_subjects(self)
             % List all folders in the result_folder
-            list = self.list_subjects(self.getResult_folder);
-        end
-        
-        function data_folder = getData_folder(self)
-            if(ismac)
-                data_folder = self.data_folder;
-            elseif(ispc)
-                data_folder = self.data_folder_win;
-            end
-        end
-        
-        function result_folder = getResult_folder(self)
-            if(ismac)
-                result_folder = self.result_folder;
-            elseif(ispc)
-                result_folder = self.result_folder_win;
-            end
-        end
-        
-        function address = getState_address(self)
-            if(ismac)
-                address = self.state_address;
-            elseif(ispc)
-                address = self.state_address_win;
-            end
+            list = self.list_subjects(self.result_folder);
         end
         
     end
@@ -465,10 +434,10 @@ classdef Project < handle
             preprocessed_subject_count = 0;
             for i = 1:length(subjects)
                 subject_name = subjects{i};
-                subject = Subject([self.getData_folder subject_name], ...
-                                    [self.getResult_folder subject_name]);
+                subject = Subject([self.data_folder subject_name], ...
+                                    [self.result_folder subject_name]);
 
-                raw_files = dir([self.getData_folder subject_name slash '*' ext]);
+                raw_files = dir([self.data_folder subject_name slash '*' ext]);
                 temp = 0; 
                 for j = 1:length(raw_files)
                     files_count = files_count + 1;
@@ -550,11 +519,7 @@ classdef Project < handle
                 return;
             end
             
-            if(ismac)
-                self.data_folder = self.add_slash(data_folder);
-            elseif(ispc)
-                self.data_folder_win = self.add_slash(data_folder);
-            end
+            self.data_folder = self.add_slash(data_folder);
         end
         
         function self = setResult_folder(self, result_folder)
@@ -563,23 +528,9 @@ classdef Project < handle
             if(~ exist(result_folder, 'dir'))
                 mkdir(result_folder);
             end
-
-            if(ismac)
-                self.result_folder = self.add_slash(result_folder);
-            elseif(ispc)
-                self.result_folder_win = self.add_slash(result_folder);
-            end
-        end
-        
-        function self = setState_address(self, address)
-            % Set the address of the state file (file where this class is stored)
             
-            if(ismac)
-                self.state_address = address;
-            elseif(ispc)
-                self.state_address_win = address;
-            end
-        end        
+            self.result_folder = self.add_slash(result_folder);
+        end  
     end
     
     %% Public static methods

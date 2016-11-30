@@ -48,7 +48,7 @@ if(~exist('main_gui', 'file'))
     addpath(genpath(['..' slash 'gui' slash]));
 end
 
-assert(exist(project.getResult_folder, 'dir') > 0 , ...
+assert(exist(project.result_folder, 'dir') > 0 , ...
     'The project folder does not exist or is not reachable.' );
 
 % Ask the user whether to overwrite the existing preprocessed files, if any
@@ -60,15 +60,15 @@ start_time = cputime;
 for i = 1:length(project.block_list)
     unique_name = project.block_list{i};
     block = project.block_map(unique_name);
-    block.update_addresses(project.getData_folder, project.getResult_folder);
+    block.update_addresses(project.data_folder, project.result_folder);
     subject_name = block.subject.name;
 
     display(['Processing file ', block.unique_name ,' ...', '(file ', ...
         int2str(i), ' out of ', int2str(length(project.block_list)), ')']); 
     
     % Create the subject folder if it doesn't exist yet
-    if(~ exist([project.getResult_folder subject_name], 'dir'))
-        mkdir([project.getResult_folder subject_name]);
+    if(~ exist([project.result_folder subject_name], 'dir'))
+        mkdir([project.result_folder subject_name]);
     end
 
     % Don't preprocess the file if user answered negatively to overwriting
@@ -77,18 +77,18 @@ for i = 1:length(project.block_list)
         continue;
     else
         % Load and preprocess
-        [~ ,data] = evalc('pop_fileio(block.getSource_address)');
-        [EEG, fig] = pre_process(data, block.getSource_address, project.params);
+        [~ ,data] = evalc('pop_fileio(block.source_address)');
+        [EEG, fig] = pre_process(data, block.source_address, project.params);
         figure(fig);
         h = gcf;
 
     end
     % Delete old results
-    if( exist(block.getReduced_address, 'file' ))
-        delete(block.getReduced_address);
+    if( exist(block.reduced_address, 'file' ))
+        delete(block.reduced_address);
     end
-    if( exist(block.getResult_address, 'file' ))
-    delete(block.getResult_address);
+    if( exist(block.result_address, 'file' ))
+    delete(block.result_address);
     end
     if( exist([block.image_address, '.tif'], 'file' ))
     delete([block.image_address, '.tif']);
@@ -106,8 +106,8 @@ for i = 1:length(project.block_list)
     is_interpolated = false;
     EEG = rmfield(EEG, 'auto_badchans');
     display('Saving results...');
-    save(block.getReduced_address, 'reduced', '-v6');
-    save(block.getResult_address, 'EEG', 'auto_badchans','man_badchans'...
+    save(block.reduced_address, 'reduced', '-v6');
+    save(block.result_address, 'EEG', 'auto_badchans','man_badchans'...
         , 'rate','tobe_interpolated', 'is_interpolated', '-v7.3');
 
     project.not_rated_list = ...

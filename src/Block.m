@@ -53,9 +53,6 @@ classdef Block < handle
     properties
         % Index of this block in the block list of the project.
         index 
-    end
-
-   properties(SetAccess=private, GetAccess=private)
         % The address of the corresponding raw file
         source_address
         
@@ -68,12 +65,8 @@ classdef Block < handle
         % plotted on the rating_gui. It's downsampled so that it's loaded
         % and plotted faster on the gui.
         reduced_address
-        
-        source_address_win
-        result_address_win
-        reduced_address_win
-   end
-    
+    end
+
     properties(SetAccess=private)
         % Instance of the Subject. The corresponding subject that contains
         % this block.
@@ -147,7 +140,7 @@ classdef Block < handle
             self.file_extension = ext;
             self.dsrate = dsrate;
             self.unique_name = self.extract_unique_name(subject, file_name);
-            self = self.setSource_address(self.extract_source_address(subject, file_name, ext));
+            self.source_address = self.extract_source_address(subject, file_name, ext);
             % Modifiables
             self = self.update_rating_info_from_file_if_any();
         end
@@ -195,13 +188,13 @@ classdef Block < handle
                 slash = '\';
             end
             pattern = '^[gobni]i?p_';
-            fileData = dir(strcat(self.subject.getResult_folder, slash));                                        
+            fileData = dir(strcat(self.subject.result_folder, slash));                                        
             fileNames = {fileData.name};  
             idx = regexp(fileNames, strcat(pattern, self.file_name, '.mat')); 
             inFiles = fileNames(~cellfun(@isempty,idx));
             assert(length(inFiles) <= 1);
             if(~ isempty(inFiles))
-                result_address = strcat(self.subject.getResult_folder, slash, inFiles{1});
+                result_address = strcat(self.subject.result_folder, slash, inFiles{1});
             else
                 result_address = '';
             end
@@ -215,9 +208,9 @@ classdef Block < handle
             % different on different systems, or simply if the project is loaded
             % from a windows to a iOS or vice versa. 
 
-            self.subject.setResult_folder(new_project_path);
-            self.subject.setData_folder(new_data_path);
-            self = self.setSource_address(self.extract_source_address(self.subject, self.file_name, self.file_extension));
+            self.subject.update_addresses(new_data_path, new_project_path);
+            self.source_address = ...
+                self.extract_source_address(self.subject, self.file_name, self.file_extension);
             self = self.update_prefix_and_result_address();
         end
         
@@ -237,7 +230,7 @@ classdef Block < handle
             % Save all rating information to the corresponding preprocessed 
             % file
             
-            preprocessed = matfile(self.getResult_address,'Writable',true);
+            preprocessed = matfile(self.result_address,'Writable',true);
             preprocessed.tobe_interpolated = self.tobe_interpolated;
             preprocessed.rate = self.rate;
             preprocessed.auto_badchans = self.auto_badchans;
@@ -245,51 +238,6 @@ classdef Block < handle
             
             % It keeps track of the history of all interpolations.
             preprocessed.man_badchans = self.man_badchans;
-        end
-        
-        
-        function self = setSource_address(self, address)
-            if(ismac)
-                self.source_address = address;
-            elseif(ispc)
-                self.source_address_win = address;
-            end
-        end
-        function self = setResult_address(self, address)
-            if(ismac)
-                self.result_address = address;
-            elseif(ispc)
-                self.result_address_win = address;
-            end
-        end
-        function self = setReduced_address(self, address)
-            if(ismac)
-                self.reduced_address = address;
-            elseif(ispc)
-                self.reduced_address_win = address;
-            end
-        end
-        function reduced_address = getReduced_address(self)
-            if(ismac)
-                reduced_address = self.reduced_address;
-            elseif(ispc)
-                reduced_address = self.reduced_address_win;
-            end
-        end
-        function source_address = getSource_address(self)
-            if(ismac)
-                source_address = self.source_address;
-            elseif(ispc)
-                source_address = self.source_address_win;
-            end
-        end
-        
-        function result_address = getResult_address(self)
-            if(ismac)
-                result_address = self.result_address;
-            elseif(ispc)
-                result_address = self.result_address_win;
-            end
         end
         
         function img_address = get.image_address(self)
@@ -302,7 +250,7 @@ classdef Block < handle
                 slash = '\';
             end
             
-           img_address = [self.subject.getResult_folder slash self.file_name];
+           img_address = [self.subject.result_folder slash self.file_name];
         end
         
         function bool = is_interpolate(self)
@@ -369,14 +317,14 @@ classdef Block < handle
             end
             
             self = self.update_prefix();
-            self = self.setResult_address(strcat(self.subject.getResult_folder, ...
-                slash, self.prefix, '_', self.file_name, '.mat'));
-            self = self.setReduced_address(self.extract_reduced_address(self.getResult_address, self.dsrate));
+            self.result_address = strcat(self.subject.result_folder, ...
+                slash, self.prefix, '_', self.file_name, '.mat');
+            self.reduced_address = self.extract_reduced_address(self.result_address, self.dsrate);
             
             % Rename the file if it doesn't correspond to the actual rating
-            if( ~ strcmp(self.getResult_address, self.potential_result_address) )
+            if( ~ strcmp(self.result_address, self.potential_result_address) )
                 if( ~ isempty(self.potential_result_address) )
-                    movefile(self.potential_result_address, self.getResult_address);
+                    movefile(self.potential_result_address, self.result_address);
                 end
             end
         end
@@ -393,7 +341,7 @@ classdef Block < handle
                 slash = '\';
             end
             
-            source_address = [subject.getData_folder slash file_name, ext];
+            source_address = [subject.data_folder slash file_name, ext];
         end
         
         function reduced_address = extract_reduced_address(result_address, dsrate)
