@@ -436,11 +436,8 @@ set(handles.lowpasscheckbox, 'enable', mode);
 set(handles.configbutton, 'enable', mode)
 set(handles.createbutton, 'visible', mode)
 set(handles.deleteprojectbutton, 'visible', visibility)
-
-if( strcmp(mode, 'off'))
-    set(handles.highfreqedit, 'enable', mode);
-    set(handles.lowfreqedit, 'enable', mode);
-end
+set(handles.highfreqedit, 'enable', mode);
+set(handles.lowfreqedit, 'enable', mode);
 
 % --- Save the gui state
 function save_state(handles)
@@ -592,7 +589,9 @@ projects = get(handles.existingpopupmenu, 'String');
 name = projects{idx};
 project = handles.project_list(name);
 
-rating_gui(project);
+if(isa(project, 'Project'))
+    rating_gui(project);
+end
 
 % --- Start interpolation on selected files
 function interpolatebutton_Callback(hObject, eventdata, handles)
