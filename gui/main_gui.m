@@ -461,7 +461,7 @@ function [subject_count, file_count] = get_subject_and_file_numbers( ...
 set(handles.main_gui, 'pointer', 'watch')
 drawnow;
 
-if(ismac)
+if(isunix)
     slash = '/';
 elseif(ispc)
     slash = '\';
@@ -525,7 +525,7 @@ function choosedata_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 folder = uigetdir();
 if(folder ~= 0)
-    if(ismac)
+    if(isunix)
         slash = '/';
     elseif(ispc)
         slash = '\';
@@ -563,7 +563,7 @@ function chooseproject_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 folder = uigetdir();
 if(folder ~= 0)
-    if(ismac)
+    if(isunix)
         folder = strcat(folder,'/');
     elseif(ispc)
         folder = strcat(folder,'\');

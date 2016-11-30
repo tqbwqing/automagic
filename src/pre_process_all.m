@@ -12,7 +12,7 @@ if(isempty(project))
 end
 
 % Add paths
-if(ismac)
+if(isunix)
     slash = '/';
 elseif(ispc)
     slash = '\';

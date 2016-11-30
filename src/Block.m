@@ -182,7 +182,7 @@ classdef Block < handle
             % corresponding preprocessed file with any prefix that respects the
             % standard pattern (See prefix).
     
-            if(ismac)
+            if(isunix)
                 slash = '/';
             elseif(ispc)
                 slash = '\';
@@ -244,7 +244,7 @@ classdef Block < handle
             % The name and address of the obtained plots during
             % preprocessing
             
-            if(ismac)
+            if(isunix)
                 slash = '/';
             elseif(ispc)
                 slash = '\';
@@ -310,7 +310,7 @@ classdef Block < handle
             % information. This must be called once rating info are set. 
             % Then the address and prefix are set based on rating info.
             
-            if(ismac)
+            if(isunix)
                 slash = '/';
             elseif(ispc)
                 slash = '\';
@@ -335,7 +335,7 @@ classdef Block < handle
         function source_address = extract_source_address(subject, file_name, ext)
             % Return the address of the raw file
             
-            if(ismac)
+            if(isunix)
                 slash = '/';
             elseif(ispc)
                 slash = '\';
@@ -415,7 +415,7 @@ classdef Block < handle
             % Given the result_address, take the prefix out of it and
             % return
             
-            if(ismac)
+            if(isunix)
                 slash = '/';
             elseif(ispc)
                 slash = '\';

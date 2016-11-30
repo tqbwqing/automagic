@@ -50,11 +50,19 @@ perform_reduce_channels = p.Results.perform_reduce_channels;
 %% Add path if not added before
 if(~exist('pop_fileio', 'file'))
     matlab_paths = genpath(['..' slash 'matlab_scripts' slash]);
-    parts = strsplit(matlab_paths, ':');
+    if(ispc)
+        parts = strsplit(matlab_paths, ';');
+    else
+        parts = strsplit(matlab_paths, ':');
+    end
     IndexC = strfind(parts, 'compat');
     Index = not(cellfun('isempty', IndexC));
     parts(Index) = [];
-    matlab_paths = strjoin(parts, ':');
+    if(ispc)
+        matlab_paths = strjoin(parts, ';');
+    else
+        matlab_paths = strjoin(parts, ':');
+    end
     addpath(matlab_paths);
 end
    

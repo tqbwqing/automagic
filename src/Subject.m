@@ -44,7 +44,7 @@ classdef Subject
     
     methods(Static, Access=private)
         function name = extract_name(address)
-            if(ismac)
+            if(isunix)
                 splits = strsplit(address, '/');
             elseif(ispc)
                 splits = strsplit(address, '\');

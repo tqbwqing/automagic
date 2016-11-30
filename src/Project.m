@@ -167,7 +167,7 @@ classdef Project < handle
             % two folders, they are not copied to the new data structures
             % and considered as deleted files in the project.
             
-            if(ismac)
+            if(isunix)
                 slash = '/';
             elseif(ispc)
                 slash = '\';
@@ -410,7 +410,7 @@ classdef Project < handle
             % the data_structure based on the preprocessed result.
             
             
-            if(ismac)
+            if(isunix)
                 slash = '/';
             elseif(ispc)
                 slash = '\';
@@ -513,7 +513,7 @@ classdef Project < handle
         function self = setData_folder(self, data_folder)
             % Set the address of the data_folder
             
-            if(~ exist(data_folder, 'dir') && ismac)
+            if(~ exist(data_folder, 'dir') && isunix)
                 waitfor(msgbox(strcat('This data folder does not exist: ', data_folder),...
                     'Error','error'));
                 return;
@@ -547,7 +547,7 @@ classdef Project < handle
         function folder = add_slash(folder)
             % Add "\" is not exists already ("\" for windows)
             
-            if(ismac)
+            if(isunix)
                 if( ~ isempty(folder) && isempty(regexp( folder ,'\/$','match')))
                     folder = strcat(folder,'/');
                 end
