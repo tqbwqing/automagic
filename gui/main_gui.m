@@ -62,7 +62,7 @@ function main_gui_OpeningFcn(hObject, eventdata, handles, varargin)
 handles.output = hObject;
 
 % Position of the gui
-set(handles.main_gui, 'units', 'normalized', 'position', [0.05 0.3 0.9 0.8])
+set(handles.main_gui, 'units', 'normalized', 'position', [0.05 0.3 0.7 0.7])
 children = handles.main_gui.Children;
 for child_idx = 1:length(children)
     child = children(child_idx);
