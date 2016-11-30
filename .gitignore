@@ -5,3 +5,5 @@ state.mat
 *_state.mat
 *.m~
 .DS_Store
+.dropbox
+Icon*
