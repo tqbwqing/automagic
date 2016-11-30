@@ -56,6 +56,17 @@ if( nargin - 3 ~= 2 )
     error('wrong number of arguments. Project must be given as argument.')
 end
 
+set(handles.settingsfigure, 'units', 'normalized')
+children = handles.settingsfigure.Children;
+for child_idx = 1:length(children)
+    child = children(child_idx);
+    set(child, 'units', 'normalized')
+    for grandchild_idx = 1:length(child.Children)
+       grandchild = child.Children(grandchild_idx);
+       set(grandchild, 'units', 'normalized')
+    end
+end
+
 params = varargin{1};
 default_params = varargin{2};
 assert(isa(params, 'struct'));

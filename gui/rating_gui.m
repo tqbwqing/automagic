@@ -44,7 +44,6 @@ assert(isa(project, 'Project'));
 handles.project = project;
 
 set(handles.rating_gui, 'units', 'normalized', 'position', [0.05 0.3 0.8 0.8])
-
 % set checkboxes to be all selected on startup
 set(handles.interpolatecheckbox,'Value', 1)
 set(handles.badcheckbox,'Value', 1)

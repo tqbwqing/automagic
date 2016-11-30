@@ -63,6 +63,15 @@ handles.output = hObject;
 
 % Position of the gui
 set(handles.main_gui, 'units', 'normalized', 'position', [0.05 0.3 0.9 0.8])
+children = handles.main_gui.Children;
+for child_idx = 1:length(children)
+    child = children(child_idx);
+    set(child, 'units', 'normalized')
+    for grandchild_idx = 1:length(child.Children)
+       grandchild = child.Children(grandchild_idx);
+       set(grandchild, 'units', 'normalized')
+    end
+end
 
 handles.version = '1.2.0';
 
