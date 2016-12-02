@@ -53,13 +53,21 @@ In this section of the manual, only the basic functionality of Automagic will be
 1. Navigate to the drop-down list labelled *Select Project*.
 2. Select *Create New Project???*
 3. Name your project.
+<<<<<<< HEAD
 4. Choose the file extension that corresponds to your data???s file format. *Automagic* currently supports the following file formats: raw image files (.raw or .RAW), fractal image files (.fif) and generic data files (.dat).
+=======
+4. Choose the file extension that corresponds to your data’s file format. *Automagic* currently supports the following file formats: raw image files (.raw or .RAW), fractal image files (.fif) and generic data files (.dat).
+>>>>>>> master
 5. Set the downsampling rate on the manual rating panel. The downsampling only affects the visual representation of your data. A higher downsampling rate will shorten loading times. In general, a downsampling rate of 2 is a good choice. 
  * Important:	You cannot alter paths, the filtering, or the downsampling rate after creating your project.
 6. Specify the path of your data folder. *Automagic* will scan all folders in your data folder for data files. Files and folders in the data folder will not be altered by *Automagic*.
  * Important: 	The data folder must contain a folder for each subject (subject folders). Your data folder should not contain any other kinds of folders since this will lead to a wrong number of subjects. 
  * Important:	A subject folder must contain data files. A subject folder should not contain any folders. Automagic can only load data saved in subject folders. Since subject folders are defined as folders in the data folder, no specific naming is required.
+<<<<<<< HEAD
 7. Specify the path of your project folder. If the specified folder does not yet exist, *Automagic* will create it for you. *Automagic* will save all processed data to your project folder. By default, *Automagic* opts for your data folder???s path and adds *_results* to your data folder???s name, e.g. *\PathDataFolder\MyDataFolder_results\*
+=======
+7. Specify the path of your project folder. If the specified folder does not yet exist, *Automagic* will create it for you. *Automagic* will save all processed data to your project folder. By default, *Automagic* opts for your data folder’s path and adds *_results* to your data folder’s name, e.g. *\PathDataFolder\MyDataFolder_results\*
+>>>>>>> master
 8. Choose your filtering parameters in the Filtering panel. 
  * Choose US if your data was recorded in adherence to US standards. Chose EU if your data was recorded in adherence to EU standards.
  * By default a High pass filtering is performed on data. You can change the freuqency or simply uncheck the High pass filtering. You can also choose to have a Low pass filtering. Bu default there is no Low pass filtering.
@@ -143,7 +151,11 @@ Should you spot bad channels (represented by horizontal lines which are darker t
 There are three main folders: 
 
 1. **preprocessing**
+<<<<<<< HEAD
  This folder contains all relevant files of preprocessing step. The folder is standalone and can be used independent from the entire application. The main function to be called is *pre_process.m* which as argument needs the raw data loaded by *pop_fileio* function of *eeglab*, the address of that file and the filtering parameters (See documations, ie. perform_filter.m). For more information on how to run the code the without installer please see  [How to run the app from the code](#4-how-to-run-the-application-from-the-code).
+=======
+ This folder contains all relevant files of preprocessing step. The folder is standalone and can be used independent from the entire application. The main function to be called is *pre_process.m* which as argument needs the raw data loaded by *pop_fileio* function of *eeglab*, the address of that file and the preprocessing parameters (See documations, ie. pre_process.m). For more information on how to run the code the without installer please see  [How to run the app from the code](#4-how-to-run-the-application-from-the-code).
+>>>>>>> master
 
 2. **gui**
  This folder contains files created by *MATLAB GUIDE*. All call-back operations related to the gui are implemented here.
@@ -163,7 +175,11 @@ There are three main folders:
 For this code to be able to run, functions from [*eeglab*](https://sccn.ucsd.edu/eeglab/),  [*Augmented Lagrange Multiplier (ALM) Method*](http://perception.csl.illinois.edu/matrix-rank/sample_code.html) and [*fieldtrip*](http://www.fieldtriptoolbox.org) are needed to be on your path:
 
 1. Download the [*eeglab*](https://sccn.ucsd.edu/eeglab/downloadtoolbox.php) library and put them in the *matlab_scripts* folder.
+<<<<<<< HEAD
 2. Download the  *inexact ALM* ( containing the function *[A, E] = inexact_alm_rpca(D, ??)*) from [*(ALM) Method*](http://perception.csl.illinois.edu/matrix-rank/sample_code.html) and put it in the *matlab_scripts* as well. 
+=======
+2. Download the  *inexact ALM* ( containing the function *[A, E] = inexact_alm_rpca(D, λ)*) from [*(ALM) Method*](http://perception.csl.illinois.edu/matrix-rank/sample_code.html) and put it in the *matlab_scripts* as well. 
+>>>>>>> master
 3. Download the [*fieldtrip*](http://www.fieldtriptoolbox.org/download) which is an *eeglab* extension and put it in *matlab_scripts/eeglab13_6_5b/plugins/*.
 4. Now you are able to run the code by running the *gui/main_gui.m*
 
