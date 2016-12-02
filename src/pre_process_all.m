@@ -105,10 +105,12 @@ for i = 1:length(project.block_list)
     man_badchans = [];
     is_interpolated = false;
     EEG = rmfield(EEG, 'auto_badchans');
+    params = project.params;
     display('Saving results...');
     save(block.reduced_address, 'reduced', '-v6');
     save(block.result_address, 'EEG', 'auto_badchans','man_badchans'...
-        , 'rate','tobe_interpolated', 'is_interpolated', '-v7.3');
+        , 'rate','tobe_interpolated', 'is_interpolated', ...
+        'params', '-v7.3');
 
     project.not_rated_list = ...
         [project.not_rated_list block.index];
