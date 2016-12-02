@@ -38,7 +38,7 @@ You need MATLAB installed and activated on your system to use *Automagic*. *Auto
 ### 2.2. Basic Workflow
 In this section of the manual, only the basic functionality of Automagic will be explained. This covers the basic workflow from selecting a project to rating the data. Please refer to chapters 3 to 6 for detailed information all functions within the main GUI.
 
-1. [Create a new project or load an existing project](creating-a-new-project).
+1. [Create a new project or load an existing project](#231-creating-a-new-project).
 2. [Preprocess the data](###2-4-the-pre-processing-panel).
 3. [Rate data and manually select bad channels if any](###2.5-the-manual-rating-panel).
 4. [Interpolate all manually selected channels] (###2.6-The Interpolation Panel).
@@ -49,7 +49,7 @@ In this section of the manual, only the basic functionality of Automagic will be
 
 ### 2.3. The Project Panel
 
-#### <a name="creating-a-new-project"></a> 2.3.1. Creating a New Project
+#### 2.3.1. Creating a New Project
 1. Navigate to the drop-down list labelled *Select Project*.
 2. Select *Create New Project…*
 3. Name your project.
