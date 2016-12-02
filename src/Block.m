@@ -225,7 +225,7 @@ classdef Block < handle
             % different on different systems, or simply if the project is loaded
             % from a windows to a iOS or vice versa. 
 
-            self.subject.update_addresses(new_data_path, new_project_path);
+            self.subject = self.subject.update_addresses(new_data_path, new_project_path);
             self.source_address = ...
                 self.extract_source_address(self.subject, self.file_name, self.file_extension);
             self = self.update_prefix_and_result_address();

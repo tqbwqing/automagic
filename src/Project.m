@@ -346,7 +346,8 @@ classdef Project < handle
             % data_folder - the new address of the data_folder
             self = self.setData_folder(data_folder);
             self = self.setResult_folder(project_folder);
-            self = self.setState_address(self.make_state_address(project_folder));
+            self.state_address = self.make_state_address(project_folder);
+            self.save_project();
         end
         
         function rated_count = get_rated_numbers(self)

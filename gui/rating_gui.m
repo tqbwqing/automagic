@@ -208,7 +208,7 @@ project = handles.project;
 
 if( project.current == -1)
     subject = Subject('','');
-    block = Block(subject, '', '', 0);
+    block = Block(subject, '', '', 0, []);
     block.index = -1;
     return;
 end
