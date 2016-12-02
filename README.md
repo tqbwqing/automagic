@@ -143,7 +143,7 @@ Should you spot bad channels (represented by horizontal lines which are darker t
 There are three main folders: 
 
 1. **preprocessing**
- This folder contains all relevant files of preprocessing step. The folder is standalone and can be used independent from the entire application. The main function to be called is *pre_process.m* which as argument needs the raw data loaded by *pop_fileio* function of *eeglab*, the address of that file and the filtering parameters (See documations, ie. perform_filter.m). For more information on how to run the code the without installer please see  [How to run the app from the code](#4-how-to-run-the-application-from-the-code).
+ This folder contains all relevant files of preprocessing step. The folder is standalone and can be used independent from the entire application. The main function to be called is *pre_process.m* which as argument needs the raw data loaded by *pop_fileio* function of *eeglab*, the address of that file and the preprocessing parameters (See documations, ie. pre_process.m). For more information on how to run the code the without installer please see  [How to run the app from the code](#4-how-to-run-the-application-from-the-code).
 
 2. **gui**
  This folder contains files created by *MATLAB GUIDE*. All call-back operations related to the gui are implemented here.
