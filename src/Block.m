@@ -89,7 +89,7 @@ classdef Block < handle
         % Parameters of the preprocessing. To learn more please see
         % preprocessing/pre_process.m
         params
-        
+
         % Prefix of the corresponding preprocessed file. Prefix has the
         % pattern '^[gobni]i?p': It could be any of the following:
         %   np - preprocessed file not rated

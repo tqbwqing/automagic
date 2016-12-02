@@ -11,9 +11,8 @@ You need MATLAB installed and activated on your system to use *Automagic*. *Auto
 ### 1.2. How to start
 
 There are three different ways of using the application.
+
 1. The easiest and recommended way is to simply install the application from the app installer file *automagic.mlappinstall*. Please see [GUI Manual](#2-gui-manual)
-
-
 2. You can also use the preprocessing files independent from the gui. See [Application structure](#3-application-structure) and [How to run the app from the code](#4-how-to-run-the-application-from-the-code)  
 3. Or if you wish to make any modifications to any part of the application, be it the gui or the preprocessing part, you can run the application from the code instead of the installer file.  See [Application structure](#3-application-structure) and [How to run the app from the code](#4-how-to-run-the-application-from-the-code)  
 
@@ -26,7 +25,7 @@ There are three different ways of using the application.
 You need MATLAB installed and activated on your system to use *Automagic*. *Automagic* was developed and tested in MATLAB R2015b and newer releases.
 
 #### 2.1.2. Installation
-1. Download the *Automagic EEG Toolbox* to a folder of your choosing. 
+1. Download the *Automagic EEG Toolbox* to a folder of your choice. 
 2. Within that folder, navigate to \Automagic_EEG_Toolbox\ppp
 3. Double click the file named *automagic* or *automagic.mlappinstall*. Wait until MATLAB displays a dialogue box.
 4. Please select Install. You will be notified as soon as the installation is complete.
@@ -52,17 +51,20 @@ In this section of the manual, only the basic functionality of Automagic will be
 
 #### 2.3.1. Creating a New Project
 1. Navigate to the drop-down list labelled *Select Project*.
-2. Select *Create New Project…*
+2. Select *Create New Project???*
 3. Name your project.
-4. Choose the file extension that corresponds to your data’s file format. *Automagic* currently supports the following file formats: raw image files (.raw), fractal image files (.fif) and generic data files (.dat).
-5. Specify the path of your data folder. *Automagic* will scan all folders in your data folder for data files. Files and folders in the data folder will not be altered by *Automagic*.
+4. Choose the file extension that corresponds to your data???s file format. *Automagic* currently supports the following file formats: raw image files (.raw or .RAW), fractal image files (.fif) and generic data files (.dat).
+5. Set the downsampling rate on the manual rating panel. The downsampling only affects the visual representation of your data. A higher downsampling rate will shorten loading times. In general, a downsampling rate of 2 is a good choice. 
+ * Important:	You cannot alter paths, the filtering, or the downsampling rate after creating your project.
+6. Specify the path of your data folder. *Automagic* will scan all folders in your data folder for data files. Files and folders in the data folder will not be altered by *Automagic*.
  * Important: 	The data folder must contain a folder for each subject (subject folders). Your data folder should not contain any other kinds of folders since this will lead to a wrong number of subjects. 
  * Important:	A subject folder must contain data files. A subject folder should not contain any folders. Automagic can only load data saved in subject folders. Since subject folders are defined as folders in the data folder, no specific naming is required.
-6. Specify the path of your project folder. If the specified folder does not yet exist, *Automagic* will create it for you. *Automagic* will save all processed data to your project folder. By default, *Automagic* opts for your data folder’s path and adds *_results* to your data folder’s name, e.g. *\PathDataFolder\MyDataFolder_results\*
-7. Please choose the required filtering on the pre-processing panel. Chose US if your data was recorded in adherence to US standards. Chose EU if your data was recorded in adherence to EU standards.
-8. Set the downsampling rate on the manual rating panel. The downsampling only affects the visual representation of your data. A higher downsampling rate will shorten loading times. In general, a downsampling rate of 2 is a good choice. 
- * Important:	You cannot alter paths, the filtering, or the downsampling rate after creating your project.
-9. Click on Create New in the lower right corner of the project panel to create your new project. If the specified data and project folders do not yet exist, *Automagic* will now create them for you.
+7. Specify the path of your project folder. If the specified folder does not yet exist, *Automagic* will create it for you. *Automagic* will save all processed data to your project folder. By default, *Automagic* opts for your data folder???s path and adds *_results* to your data folder???s name, e.g. *\PathDataFolder\MyDataFolder_results\*
+8. Choose your filtering parameters in the Filtering panel. 
+ * Choose US if your data was recorded in adherence to US standards. Chose EU if your data was recorded in adherence to EU standards.
+ * By default a High pass filtering is performed on data. You can change the freuqency or simply uncheck the High pass filtering. You can also choose to have a Low pass filtering. Bu default there is no Low pass filtering.
+9. By clicking on the Configuration button you can modify (set, unset or change parameters) all parts of the preprocessing. This is not necessary, and you can leave it so that the default values are used.
+10. Click on Create New in the lower right corner of the project panel to create your new project. If the specified data and project folders do not yet exist, *Automagic* will now create them for you.
 
 #### 2.3.2. Loading an Existing Project
 There are two options to load an existing project. The first option can only be used to open projects that have been created on your system or that have been loaded before:
@@ -73,8 +75,8 @@ There are two options to load an existing project. The first option can only be 
 The second option can be used to load any *Automagic* project:
 
 1. Navigate to the drop-down list labelled *Select Project*.
-2. Select *Load an existing project…*
-3. A browser window will open. Navigate to the existing project’s project folder.
+2. Select *Load an existing project???*
+3. A browser window will open. Navigate to the existing project???s project folder.
 4. Select and open the file named *project_state.mat*
 
 #### 2.3.3. Merging Projects
@@ -83,7 +85,7 @@ To merge any number of existing projects without losing the individual projects,
 1. Create a new data folder using Finder (Mac), Explorer (Windows) or your Linux equivalent.
 2. Create a new project folder using Finder (Mac), Explorer (Windows) or your Linux equivalent.
 3. For all the projects that you want to merge: Copy the contents from the data and project folders to the new data and project folders.
- * Important: 	Each of your existing projects’ project folders contains a file named project_state.mat. Do not copy these files to your new project folder.
+ * Important: 	Each of your existing projects??? project folders contains a file named project_state.mat. Do not copy these files to your new project folder.
 4. In *Automagic*: Create a new project using the newly created data and project folders.
 
 #### 2.3.4. Adding Data to an Existing Project
@@ -103,18 +105,18 @@ To merge any number of existing projects without losing the individual projects,
 #### 2.3.6. Deleting a Project
 1. Click on *Delete Project* in the lower right corner of the project panel. A dialog box will appear.
 2. Take responsibility by clicking on Delete.
- * Important: 	This will only delete the file named project_state.mat in the project folder and remove the project from the Automagic GUI. Please use Finder (Mac), Explorer (Windows) or your Linux equivalent to delete your project’s data and/or project folder.
+ * Important: 	This will only delete the file named project_state.mat in the project folder and remove the project from the Automagic GUI. Please use Finder (Mac), Explorer (Windows) or your Linux equivalent to delete your project???s data and/or project folder.
 
 ### 2.4. The Pre-Processing Panel
  * Important:	The filtering can only be set during project creation.
 Click on Run to start the pre-processing of your data. This is the first thing you should do after creating a new project or after adding data to an existing project. Pre-processing includes filtering, detection of bad channels, EOG regression, PCA, and automatic interpolation.
 
-Should the project folder already contain files (i.e. should some of the project’s data already have been pre-processed), you’ll be able to choose whether existing files will be overwritten or skipped after clicking on Run. 
+Should the project folder already contain files (i.e. should some of the project???s data already have been pre-processed), you???ll be able to choose whether existing files will be overwritten or skipped after clicking on Run. 
 * Important:	Please wait until all files have been pre-processed before doing anything else in this instance of MATLAB.
 
 ### 2.5. The Manual Rating Panel
  * Important:	 The downsampling rate can only be set during project creation.
-Click on *Start…* to open the rating GUI.
+Click on *Start???* to open the rating GUI.
  * Important: 	Only pre-processed files can be rated manually.
  
 ### 5.1. The Rating GUI
@@ -145,8 +147,10 @@ There are three main folders:
 
 2. **gui**
  This folder contains files created by *MATLAB GUIDE*. All call-back operations related to the gui are implemented here.
- 1. *main_gui.m* is the main function of the project which must be started to run the application.
+ 1. *main\_gui.m* is the main function of the project which must be started to run the application.
  2. *rating\_gui.m* is the gui that can be started within the *main\_gui.m* and is used to rate subjects and files.
+ 3. *settings.m* is the gui corresponsing to configuration button on the main gui. It allows to customize the preprocessing steps.
+ 4. *Automagic.mlappinstall* which is the app installer mentionned in [Installation](#2-1-2-Installation) section.
 
 3. **src**
  This folder contains all other files that are called by the guis:
@@ -157,8 +161,9 @@ There are three main folders:
 
 ## 4. How to run the application from the code
 For this code to be able to run, functions from [*eeglab*](https://sccn.ucsd.edu/eeglab/),  [*Augmented Lagrange Multiplier (ALM) Method*](http://perception.csl.illinois.edu/matrix-rank/sample_code.html) and [*fieldtrip*](http://www.fieldtriptoolbox.org) are needed to be on your path:
+
 1. Download the [*eeglab*](https://sccn.ucsd.edu/eeglab/downloadtoolbox.php) library and put them in the *matlab_scripts* folder.
-2. Download the  *inexact ALM* ( containing the function *[A, E] = inexact_alm_rpca(D, λ)*) from [*(ALM) Method*](http://perception.csl.illinois.edu/matrix-rank/sample_code.html) and put it in the *matlab_scripts* as well. 
+2. Download the  *inexact ALM* ( containing the function *[A, E] = inexact_alm_rpca(D, ??)*) from [*(ALM) Method*](http://perception.csl.illinois.edu/matrix-rank/sample_code.html) and put it in the *matlab_scripts* as well. 
 3. Download the [*fieldtrip*](http://www.fieldtriptoolbox.org/download) which is an *eeglab* extension and put it in *matlab_scripts/eeglab13_6_5b/plugins/*.
 4. Now you are able to run the code by running the *gui/main_gui.m*
 
