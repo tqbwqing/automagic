@@ -41,7 +41,7 @@ In this section of the manual, only the basic functionality of Automagic will be
 1. [Create a new project or load an existing project](#231-creating-a-new-project).
 2. [Preprocess the data](#24-the-pre-processing-panel).
 3. [Rate data and manually select bad channels if any](#25-the-manual-rating-panel).
-4. [Interpolate all manually selected channels] (#26-The Interpolation Panel).
+4. [Interpolate all manually selected channels] (#26-the-interpolation-panel).
 5. Repeat steps 3 and 4 until all data is rated.
  * NOTE: You can not close the main gui window during the preprocessing. If you wish to stop the preprocessing at any time, you can use *CTRL-C*. If by any reason the preprocessing is stopped before being completely finished, all preprocessed files to that moment will be saved, and you can resume the preprocessing only for the files which are not preprocessed yet. 
 
