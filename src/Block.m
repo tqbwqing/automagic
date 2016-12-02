@@ -79,13 +79,17 @@ classdef Block < handle
         % Name of the raw file of this block
         file_name
         
-        % File extension of the raw file. Could be .raw, .dat or .fif
+        % File extension of the raw file. Could be .raw, .RAW, .dat or .fif
         file_extension
         
         % Downsampling rate of the project. This is used to downsample and
         % obtain the reduced file.
         dsrate
         
+        % Parameters of the preprocessing. To learn more please see
+        % preprocessing/pre_process.m
+        params
+
         % Prefix of the corresponding preprocessed file. Prefix has the
         % pattern '^[gobni]i?p': It could be any of the following:
         %   np - preprocessed file not rated
@@ -133,12 +137,13 @@ classdef Block < handle
     
     %% Constructor
     methods   
-        function self = Block(subject, file_name, ext, dsrate)
+        function self = Block(subject, file_name, ext, dsrate, params)
             % Fixed ones are initialised in the constructor
             self.subject = subject;
             self.file_name = file_name;
             self.file_extension = ext;
             self.dsrate = dsrate;
+            self.params = params;
             self.unique_name = self.extract_unique_name(subject, file_name);
             self.source_address = self.extract_source_address(subject, file_name, ext);
             % Modifiables
@@ -153,6 +158,17 @@ classdef Block < handle
             % the case and that file has been already rated import the 
             % rating data to this block, initialise otherwise.
             
+            if( exist(self.potential_result_address(), 'file'))
+                preprocessed = matfile(self.potential_result_address());
+                if( ~ isequal(preprocessed.params, self.params))
+                    waitfor(msgbox(['Preprocessing parameters of the ',...
+                        self.file_name, ' does not correspond to the ',...
+                        'preprocessing parameters of this project. This ',...
+                        'file can not be merged.'],'Error','error'));
+                    self.rate = [];
+                    return;
+                end 
+            end
             % Find the preprocessed file if any (Empty char if there is no
             % file).
             extracted_prefix = self.extract_prefix(self.potential_result_address());
@@ -160,6 +176,7 @@ classdef Block < handle
             % If the prefix indicates that the block has been already rated
             if(self.has_information(extracted_prefix))
                 preprocessed = matfile(self.potential_result_address());
+                
                 self.rate = preprocessed.rate;
                 self.tobe_interpolated = preprocessed.tobe_interpolated;
                 self.is_interpolated = (length(extracted_prefix) == 3);
@@ -208,7 +225,7 @@ classdef Block < handle
             % different on different systems, or simply if the project is loaded
             % from a windows to a iOS or vice versa. 
 
-            self.subject.update_addresses(new_data_path, new_project_path);
+            self.subject = self.subject.update_addresses(new_data_path, new_project_path);
             self.source_address = ...
                 self.extract_source_address(self.subject, self.file_name, self.file_extension);
             self = self.update_prefix_and_result_address();

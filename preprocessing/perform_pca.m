@@ -27,13 +27,11 @@ lambda = p.Results.lambda;
 tol = p.Results.tol;
 maxIter = p.Results.maxIter;
 
-
-display('Performing PCA  (this may take a while...)');
 eeg = double(data.data)';
-
 % Run robust PCA
 noise = [];
 if( lambda ~= -1)
+    display('Performing PCA  (this may take a while...)');
     [~, A_hat, E_hat, ~] = evalc('inexact_alm_rpca(eeg, lambda, tol, maxIter)');
     sig  = A_hat'; % data
     data.data = sig;

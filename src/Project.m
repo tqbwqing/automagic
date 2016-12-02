@@ -99,7 +99,7 @@ classdef Project < handle
         ds_rate
         
         % File extension of the raw files in this project. Can be .raw,
-        % .dat or .fif
+        % .RAW, .dat or .fif
         file_extension
         
         % Parameters of the preprocessing. To learn more please see
@@ -190,6 +190,9 @@ classdef Project < handle
             preprocessed_file_count = 0;
             for i = 1:length(subjects)
                 subject_name = subjects{i};
+                subject = Subject([self.data_folder subject_name], ...
+                                    [self.result_folder subject_name]);
+                
                 raw_files = dir([self.data_folder subject_name slash '*' ext]);
                 temp = 0;
                 for j = 1:length(raw_files)
@@ -219,15 +222,33 @@ classdef Project < handle
                             else % The result is new
                                 % Update the rating info of the block
                                 block.update_rating_info_from_file_if_any();
+                                if( isempty(block.rate))
+                                    list{files_count} = [];
+                                    files_count = files_count - 1;
+                                    remove(map, block.unique_name);
+                                    continue;
+                                end
                             end
                         else
                             % In any case, no file exists, so resets the rating info
                             block.update_rating_info_from_file_if_any();
+                            if( isempty(block.rate))
+                                list{files_count} = [];
+                                files_count = files_count - 1;
+                                remove(map, block.unique_name);
+                                continue;
+                            end
                         end
                     else                                        % File is new
                         % Block creation extracts and updates automatically the rating 
                         % information from the existing files, if any.
-                        block = Block(subject, file_name, ext);
+                        block = Block(subject, file_name, ext, self.ds_rate, self.params);
+                        % If the block is not created due to unmatched
+                        % parameters just skip it.
+                        if( isempty(block.rate))
+                            files_count = files_count - 1;
+                            continue;
+                        end
                         map(block.unique_name) = block;
                         list{files_count} = block.unique_name;
                         block.index = files_count;
@@ -325,7 +346,8 @@ classdef Project < handle
             % data_folder - the new address of the data_folder
             self = self.setData_folder(data_folder);
             self = self.setResult_folder(project_folder);
-            self = self.setState_address(self.make_state_address(project_folder));
+            self.state_address = self.make_state_address(project_folder);
+            self.save_project();
         end
         
         function rated_count = get_rated_numbers(self)
@@ -448,7 +470,14 @@ classdef Project < handle
 
                     % Block creation extracts and updates automatically the rating 
                     % information from the existing files, if any.
-                    block = Block(subject, file_name, ext, self.ds_rate);
+                    block = Block(subject, file_name, ext, self.ds_rate, self.params);
+                    % If the block is not created due to unmatched
+                    % parameters just skip it.
+                    if( isempty(block.rate))
+                        files_count = files_count - 1;
+                        continue;
+                    end
+                    
                     map(block.unique_name) = block;
                     list{files_count} = block.unique_name;
                     block.index = files_count;
