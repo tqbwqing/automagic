@@ -99,7 +99,7 @@ classdef Project < handle
         ds_rate
         
         % File extension of the raw files in this project. Can be .raw,
-        % .dat or .fif
+        % .RAW, .dat or .fif
         file_extension
         
         % Parameters of the preprocessing. To learn more please see

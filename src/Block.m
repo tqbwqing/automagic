@@ -79,7 +79,7 @@ classdef Block < handle
         % Name of the raw file of this block
         file_name
         
-        % File extension of the raw file. Could be .raw, .dat or .fif
+        % File extension of the raw file. Could be .raw, .RAW, .dat or .fif
         file_extension
         
         % Downsampling rate of the project. This is used to downsample and
