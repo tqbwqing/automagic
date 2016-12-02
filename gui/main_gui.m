@@ -28,7 +28,7 @@ function varargout = main_gui(varargin)
 
 % Edit the above text to modify the response to help main_gui
 
-% Last Modified by GUIDE v2.5 28-Oct-2016 09:59:51
+% Last Modified by GUIDE v2.5 16-Nov-2016 15:54:35
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -62,9 +62,18 @@ function main_gui_OpeningFcn(hObject, eventdata, handles, varargin)
 handles.output = hObject;
 
 % Position of the gui
-set(handles.main_gui, 'units', 'normalized', 'position', [0.05 0.3 0.7 0.6])
+set(handles.main_gui, 'units', 'normalized', 'position', [0.05 0.3 0.8 0.8])
+children = handles.main_gui.Children;
+for child_idx = 1:length(children)
+    child = children(child_idx);
+    set(child, 'units', 'normalized')
+    for grandchild_idx = 1:length(child.Children)
+       grandchild = child.Children(grandchild_idx);
+       set(grandchild, 'units', 'normalized')
+    end
+end
 
-handles.version = '1.0.1';
+handles.version = '1.2.0';
 
 % Set constant values
 handles.new_project.LIST_NAME = 'Create New Project...';
@@ -76,6 +85,27 @@ handles.state_file.NAME = 'state.mat';
 handles.state_file.FOLDER = '~/methlab_pipeline/';
 handles.state_file.ADDRESS = strcat(handles.state_file.FOLDER,...
     handles.state_file.NAME);
+
+
+% Default Settings
+handles.NONE = 'None';
+handles.Default = 'Default';
+handles.default_params.filter_params.high_freq = 0.5;
+handles.default_params.filter_params.high_order = 3;
+handles.default_params.filter_params.low_freq = -1;
+handles.default_params.filter_params.low_order = 3;
+handles.default_params.perform_reduce_channels = 1;
+handles.default_params.channel_rejection_params.kurt_thresh = 3;
+handles.default_params.channel_rejection_params.prob_thresh = 4;
+handles.default_params.channel_rejection_params.spec_thresh = 4;
+handles.default_params.perform_eog_regression = 1;
+handles.default_params.pca_params.lambda = handles.Default;
+handles.default_params.pca_params.tol = 1e-7;
+handles.default_params.pca_params.maxIter = 1000;
+handles.default_params.interpolation_params.method = 'spherical';
+
+% Set settings to default
+handles.params = handles.default_params;
 
 % Add project paths
 % Checks 'pre_process_all' as an example of a file in /src. Could be any other file
@@ -136,8 +166,8 @@ for i = 1:handles.project_list.Count
             ~ strcmp(k(i), handles.load_selected_project.LIST_NAME) )
         name = k{i};
         old_project = v{i};
-        if( exist(old_project.getState_address, 'file') )
-            load(old_project.getState_address);
+        if( exist(old_project.state_address, 'file') )
+            load(old_project.state_address);
             handles.project_list(name) = self;
         end
     end
@@ -176,16 +206,16 @@ name = names{idx};
 % First update the project from the file (Synchronization with other users)
 % (This is redundant if the gui is just started.)
 project = handles.project_list(name);
-if isempty(project) || ~ exist(project.getState_address, 'file')
+if isempty(project) || ~ exist(project.state_address, 'file')
     return;
 else
-    load(project.getState_address);
+    load(project.state_address);
     handles.project_list(name) = self;
     project = self;
 end
 
 % Then update the rating structure of the project
-if( exist( project.getResult_folder, 'dir'))
+if( exist( project.result_folder, 'dir'))
     if(project.folders_are_changed())
         
         % Change the cursor to a watch while updating...
@@ -218,6 +248,15 @@ if(strcmp(name, handles.new_project.LIST_NAME))
     set(handles.projectname, 'String', handles.new_project.NAME);
     set(handles.datafoldershow, 'String', handles.new_project.DATA_FOLDER);
     set(handles.projectfoldershow, 'String', handles.new_project.FOLDER);
+    
+    set(handles.highpasscheckbox, 'Value', 1);
+    set(handles.highfreqedit, 'String', handles.default_params.filter_params.high_freq)
+    set(handles.highfreqedit, 'enable', 'on');
+    
+    set(handles.lowfreqedit, 'enable', 'off');
+    set(handles.lowpasscheckbox, 'Value', 0);
+    set(handles.lowfreqedit, 'String', handles.NONE)
+    
     set(handles.subjectnumber, 'String', '')
     set(handles.filenumber, 'String', '')
     set(handles.preprocessednumber, 'String', '')
@@ -225,6 +264,7 @@ if(strcmp(name, handles.new_project.LIST_NAME))
     set(handles.ratednumber, 'String', '')
     set(handles.interpolatenumber, 'String', '')
     handles.current_project = Index;
+    handles.params = handles.default_params;
     % Enable modifications
     switch_gui('on', 'off', handles);
     return;
@@ -290,8 +330,8 @@ end
 project = handles.project_list(name);
 % Set the current_project to the selected project
 handles.current_project = Index;
-if ~ exist(project.getState_address, 'file')
-    if(  ~ exist(project.getResult_folder, 'dir') )
+if ~ exist(project.state_address, 'file')
+    if(  ~ exist(project.result_folder, 'dir') )
         % This can happen when data is on a server and connecton is lost
         waitfor(msgbox('The project folder is unreachable or deleted.',...
             'Error','error'));
@@ -305,6 +345,7 @@ if ~ exist(project.getState_address, 'file')
         set(handles.fpreprocessednumber, 'String', '')
         set(handles.ratednumber, 'String', '')
         set(handles.interpolatenumber, 'String', '')
+        set(handles.highfreqedit, 'String', '')
         % Disable modifications from gui
         switch_gui('off', 'on', handles);
         return;
@@ -327,8 +368,8 @@ switch_gui('off', 'on', handles);
 
 % Set properties of the project:
 set(handles.projectname, 'String', name);
-set(handles.datafoldershow, 'String', project.getData_folder);
-set(handles.projectfoldershow, 'String', project.getResult_folder);
+set(handles.datafoldershow, 'String', project.data_folder);
+set(handles.projectfoldershow, 'String', project.result_folder);
 set(handles.subjectnumber, 'String', [num2str(project.subject_count) ' subjects...'])
 set(handles.filenumber, 'String', [num2str(project.file_count) ' files...'])
 set(handles.preprocessednumber, 'String', ...
@@ -336,6 +377,21 @@ set(handles.preprocessednumber, 'String', ...
 set(handles.fpreprocessednumber, 'String', ...
     [num2str(project.processed_files), ' files already done'])
 
+if(project.params.filter_params.high_freq ~= -1)
+    set(handles.highfreqedit, 'String', num2str(project.params.filter_params.high_freq));
+    set(handles.highpasscheckbox, 'Value', 1);
+else
+    set(handles.highfreqedit, 'String', handles.NONE);
+    set(handles.highpasscheckbox, 'Value', 0);
+end
+
+if(project.params.filter_params.low_freq ~= -1)
+    set(handles.lowfreqedit, 'String', num2str(project.params.filter_params.low_freq));
+    set(handles.lowpasscheckbox, 'Value', 1);
+else
+    set(handles.lowfreqedit, 'String', handles.NONE);
+    set(handles.lowpasscheckbox, 'Value', 0);
+end
 % Set the file extension
 IndexC = strfind(handles.fileextension.String, project.file_extension);
 index = find(not(cellfun('isempty', IndexC)));
@@ -375,8 +431,13 @@ set(handles.choosedata, 'enable', mode);
 set(handles.chooseproject, 'enable', mode);
 set(handles.filteringbuttongroup.Children(1), 'enable', mode);
 set(handles.filteringbuttongroup.Children(2), 'enable', mode);
+set(handles.highpasscheckbox, 'enable', mode);
+set(handles.lowpasscheckbox, 'enable', mode);
+set(handles.configbutton, 'enable', mode)
 set(handles.createbutton, 'visible', mode)
 set(handles.deleteprojectbutton, 'visible', visibility)
+set(handles.highfreqedit, 'enable', mode);
+set(handles.lowfreqedit, 'enable', mode);
 
 % --- Save the gui state
 function save_state(handles)
@@ -406,7 +467,7 @@ function [subject_count, file_count] = get_subject_and_file_numbers( ...
 set(handles.main_gui, 'pointer', 'watch')
 drawnow;
 
-if(ismac)
+if(isunix)
     slash = '/';
 elseif(ispc)
     slash = '\';
@@ -470,7 +531,7 @@ function choosedata_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 folder = uigetdir();
 if(folder ~= 0)
-    if(ismac)
+    if(isunix)
         slash = '/';
     elseif(ispc)
         slash = '\';
@@ -508,7 +569,7 @@ function chooseproject_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 folder = uigetdir();
 if(folder ~= 0)
-    if(ismac)
+    if(isunix)
         folder = strcat(folder,'/');
     elseif(ispc)
         folder = strcat(folder,'\');
@@ -528,7 +589,9 @@ projects = get(handles.existingpopupmenu, 'String');
 name = projects{idx};
 project = handles.project_list(name);
 
-rating_gui(project);
+if(isa(project, 'Project'))
+    rating_gui(project);
+end
 
 % --- Start interpolation on selected files
 function interpolatebutton_Callback(hObject, eventdata, handles)
@@ -597,10 +660,30 @@ idx = get(handles.dsrate, 'Value');
 dsrates = get(handles.dsrate, 'String');
 ds = str2double(dsrates{idx});
 
-% Get filtering mode
-filter_mode = handles.filteringbuttongroup.SelectedObject.String;
+% Get filter_params params
+filter_params = handles.params.filter_params;
+filter_params.filter_mode = upper(handles.filteringbuttongroup.SelectedObject.String(1:2));
+if ( get(handles.highpasscheckbox, 'Value') == 1)
+    high_freq = str2double(get(handles.highfreqedit, 'String'));
+    if( ~isempty(high_freq) && ~isnan(high_freq))
+        filter_params.high_freq = high_freq;
+    end
+else
+    filter_params.high_freq = -1;
+    filter_params.high_order = -1;
+end
+if( get(handles.lowpasscheckbox, 'Value') == 1)
+    low_freq = str2double(get(handles.lowfreqedit, 'String'));
+    if( ~isempty(low_freq) && ~isnan(low_freq) )
+        filter_params.low_freq = low_freq;
+    end
+else
+    filter_params.low_freq = -1;
+    filter_params.low_order = -1;
+end
 
-
+handles.params.filter_params = filter_params;
+params = handles.params;
 % Change the cursor to a watch while updating...
 set(handles.main_gui, 'pointer', 'watch')
 drawnow;
@@ -621,11 +704,15 @@ switch choice
     case 'Over Write'
         if( exist(Project.make_state_address(project_folder), 'file'))
             load(Project.make_state_address(project_folder));
-            project = handles.project_list(self.name);
-            delete(project.getState_address);
-            remove(handles.project_list, self.name);
+            if( isKey(handles.project_list, self.name))
+                project = handles.project_list(self.name);
+                delete(project.state_address);
+                remove(handles.project_list, self.name);
+            else
+                delete(Project.make_state_address(project_folder));
+            end
         end
-        project = Project(name, data_folder, project_folder, ext, ds, filter_mode);
+        project = Project(name, data_folder, project_folder, ext, ds, params);
 end
 name = project.name; % Overwrite the name in case the project is loaded.
 
@@ -683,7 +770,7 @@ switch choice
     case 'Delete'
         name = get(handles.projectname, 'String');
         project = handles.project_list(name);
-        delete(project.getState_address);
+        delete(project.state_address);
         
         remove(handles.project_list, name);
         handles.current_project = 1;
@@ -698,18 +785,70 @@ end
 % Update handles structure
 guidata(hObject, handles);
 
-% --- Get the filtering mode (US or EU) and save it to the project state
-function filteringbuttongroup_SelectionChangedFcn(hObject, eventdata, handles)
-% hObject    handle to the selected object in filteringbuttongroup
+% --- Get the filter_params mode (US or EU) and save it to the project state
+function filter_paramsbuttongroup_SelectionChangedFcn(hObject, eventdata, handles)
+% hObject    handle to the selected object in filter_paramsbuttongroup
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 name = get(handles.projectname, 'String');
 if( isKey(handles.project_list, name))
     project = handles.project_list(name);
-    if (exist(project.getState_address, 'file'))
-        project.filter_mode = handles.filteringbuttongroup.SelectedObject.String;
+    if (exist(project.state_address, 'file'))
+        project.params.filter_params.filter_mode = handles.filteringbuttongroup.SelectedObject.String;
     end
 end
+
+% --- Executes on button press in lowpasscheckbox.
+function lowpasscheckbox_Callback(hObject, eventdata, handles)
+% hObject    handle to lowpasscheckbox (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+if (get(hObject,'Value') == get(hObject,'Max'))
+	set(handles.lowfreqedit, 'enable', 'on');
+    set(handles.lowfreqedit, 'String', handles.default_params.filter_params.low_freq)
+else
+	set(handles.lowfreqedit, 'enable', 'off');
+    set(handles.lowfreqedit, 'String', handles.NONE)
+end
+
+
+
+% --- Executes on button press in highpasscheckbox.
+function highpasscheckbox_Callback(hObject, eventdata, handles)
+% hObject    handle to highpasscheckbox (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+if (get(hObject,'Value') == get(hObject,'Max'))
+	set(handles.highfreqedit, 'enable', 'on');
+    set(handles.highfreqedit, 'String', handles.default_params.filter_params.high_freq)
+else
+	set(handles.highfreqedit, 'enable', 'off');
+    set(handles.highfreqedit, 'String', handles.NONE)
+end
+
+
+% --- Executes on button press in configbutton.
+function configbutton_Callback(hObject, eventdata, handles)
+% hObject    handle to configbutton (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+h = settings(handles.params, handles.default_params);
+switch_gui('off', 'off', handles);
+set(handles.runpreprocessbutton, 'enable', 'off');
+set(handles.manualratingbutton, 'enable', 'off');
+set(handles.interpolatebutton, 'enable', 'off');
+set(handles.existingpopupmenu, 'enable', 'off');
+waitfor(h);
+h = findobj(allchild(0), 'flat', 'Tag', 'main_gui');
+handles = guidata(h);
+switch_gui('on', 'on', handles);
+set(handles.runpreprocessbutton, 'enable', 'on');
+set(handles.manualratingbutton, 'enable', 'on');
+set(handles.interpolatebutton, 'enable', 'on');
+set(handles.existingpopupmenu, 'enable', 'on');
 
 
 function projectname_Callback(hObject, eventdata, handles)
@@ -820,6 +959,50 @@ function existingpopupmenu_CreateFcn(hObject, eventdata, handles)
 % handles    empty - handles not created until after all CreateFcns called
 
 % Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes during object creation, after setting all properties.
+function highfreqedit_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to highfreqedit (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+function highfreqedit_Callback(hObject, eventdata, handles)
+% hObject    handle to projectfoldershow (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of projectfoldershow as text
+%        str2double(get(hObject,'String')) returns contents of projectfoldershow as a double
+
+
+
+function lowfreqedit_Callback(hObject, eventdata, handles)
+% hObject    handle to lowfreqedit (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of lowfreqedit as text
+%        str2double(get(hObject,'String')) returns contents of lowfreqedit as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function lowfreqedit_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to lowfreqedit (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
 %       See ISPC and COMPUTER.
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');

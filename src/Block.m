@@ -1,41 +1,133 @@
 classdef Block < handle
-    %BLOCK Summary of this class goes here
-    %   Detailed explanation goes here
+    %Block is a class representing each raw file and its corresponding
+    %preprocessed file in data_folder and result_folder respectively.
+    %   A Block contains the entire relevant information of each raw file
+    %   and its corresponding preprocessed file.
+    %   This information include a unique_name for each block, the name of
+    %   the raw_file, its extension, its corresponding Subject, the prefix
+    %   of the preprocessed file (for more info on the prefix look at the 
+    %   docs), sampling rate of the corresponding project, list of channels
+    %   that are chosen to be interpolated, rate of the preprocessed file
+    %   given during the rating process in rating_gui, list of channels are
+    %   interpolated during the preprocessing, list of channels that are
+    %   interpolated by manual inspection and a boolean stating whether
+    %   this block has been already interpolated or not.
+    %
+    %   Block is a subclass of handle, meaning it's a refrence to an
+    %   object. Use accordingly.
+    %
+    %Block Methods:
+    %   Block - To create a project following arguments must be given:
+    %   myBlock = Block(subject, file_name, ext, dsrate)
+    %   where subject is an instance of class Subject which specifies the
+    %   Subject to which this block belongs, file_name is the name of the
+    %   raw_file corresponding to this block and dsrate is the sampling
+    %   rate of the corresponding project with which a reduced file is
+    %   obtained.
+    %
+    %   update_rating_info_from_file_if_any - Check if any corresponding
+    %   preprocessed file exists, if it's the case import the rating data
+    %   to this block, initialise otherwise.
+    %
+    %   potential_result_address - Check in the result folder for a
+    %   corresponding preprocessed file with any prefix that respects the
+    %   standard pattern (See prefix).
+    %   
+    %   update_addresses - The method is to be called to update addresses
+    %   in case the project is loaded from another operating system and may
+    %   have a different path to the data_folder or result_folder. This can
+    %   happen either because the data is on a server and the path to it is
+    %   different on different systems, or simply if the project is loaded
+    %   from a windows to a iOS or vice versa. The best practice is to call
+    %   this method before accessing a block to make sure it's synchronised
+    %   with its project.
+    %
+    %   setRatingInfoAndUpdate - This method must be called to set and
+    %   update the new rating information of this block (For example when 
+    %   user changes the rating within the rating_gui).
+    %
+    %   saveRatingsToFile - Save all rating information to the
+    %   corresponding preprocessed file
     
     %% Properties
     properties
-        % Only so that the filtering shows everything in the same order as in the files
+        % Index of this block in the block list of the project.
         index 
+        % The address of the corresponding raw file
+        source_address
+        
+        % The address of the corresponding preprocessed file. It has the
+        % form prefix_unique_name.mat (ie. np_subject1_001).
+        result_address
+        
+        % The address of the corresponding reduced file. The reduced file is
+        % a downsampled file of the preprocessed file. Its use is only to be
+        % plotted on the rating_gui. It's downsampled so that it's loaded
+        % and plotted faster on the gui.
+        reduced_address
     end
 
-   properties(SetAccess=private, GetAccess=private)
-        source_address
-        result_address
-        reduced_address
-        
-        source_address_win
-        result_address_win
-        reduced_address_win
-   end
-    
     properties(SetAccess=private)
-        % Fixed
+        % Instance of the Subject. The corresponding subject that contains
+        % this block.
         subject
+        
+        % Unique_name of this block. It has the form
+        % subjectName_rawFileName (ie. subject1_001).
         unique_name
+        
+        % Name of the raw file of this block
         file_name
+        
+        % File extension of the raw file. Could be .raw, .dat or .fif
         file_extension
+        
+        % Downsampling rate of the project. This is used to downsample and
+        % obtain the reduced file.
         dsrate
+        
+        % Prefix of the corresponding preprocessed file. Prefix has the
+        % pattern '^[gobni]i?p': It could be any of the following:
+        %   np - preprocessed file not rated
+        %   gp - preprocessed file rated as Good
+        %   op - preprocessed file rated as OK
+        %   bp - preprocessed file rated as Bad
+        %   ip - preprocessed file rated as Interpolate
+        %   nip - preprocessed file not rated but interpoalted at least
+        %   once
+        %   gip - preprocessed file rated as Good and interpolated at least
+        %   once
+        %   oip - preprocessed file rated as OK and interpolated at least
+        %   once
+        %   bip - preprocessed file rated as Bad and interpolated at least
+        %   once
+        %   iip - preprocessed file rated as Interpolated and interpolated 
+        %   at least once
         prefix
         
-        % Rating info
+        % List of the channels chosen by the user in the gui to be 
+        % interpolated.
         tobe_interpolated
+        
+        % rate of this block: Good, Bad, OK, Interpolate, Not Rated
         rate
+        
+        % List of the channels that have been interpolated by the manual
+        % inspection in interpolate_selected. Note that this is not a set,
+        % If a channel is interpolated n times, there will be n instances 
+        % of this channel in the list.  
         man_badchans
+        
+        % List of the channels that have been interpolated during the
+        % prerpocessing step.
         auto_badchans
+        
+        % is true if the block has been already interpolated at least once.
         is_interpolated
     end
     
     properties(Dependent)
+        % The address of the plots obtained during the preprocessing
         image_address
     end
     
@@ -48,66 +140,24 @@ classdef Block < handle
             self.file_extension = ext;
             self.dsrate = dsrate;
             self.unique_name = self.extract_unique_name(subject, file_name);
-            self = self.setSource_address(self.extract_source_address(subject, file_name, ext));
+            self.source_address = self.extract_source_address(subject, file_name, ext);
             % Modifiables
             self = self.update_rating_info_from_file_if_any();
         end
     end
     
     %% Public Methods
-    methods
-        % Only in case it was loaded from another OS
-        function self = update_addresses(self, new_data_path, new_project_path)
-            self.subject.setResult_folder(new_project_path);
-            self.subject.setData_folder(new_data_path);
-            self = self.setSource_address(self.extract_source_address(self.subject, self.file_name, self.file_extension));
-            self = self.update_prefix_and_result_address();
-        end
-        function self = setSource_address(self, address)
-            if(ismac)
-                self.source_address = address;
-            elseif(ispc)
-                self.source_address_win = address;
-            end
-        end
-        function self = setResult_address(self, address)
-            if(ismac)
-                self.result_address = address;
-            elseif(ispc)
-                self.result_address_win = address;
-            end
-        end
-        function self = setReduced_address(self, address)
-            if(ismac)
-                self.reduced_address = address;
-            elseif(ispc)
-                self.reduced_address_win = address;
-            end
-        end
-        function reduced_address = getReduced_address(self)
-            if(ismac)
-                reduced_address = self.reduced_address;
-            elseif(ispc)
-                reduced_address = self.reduced_address_win;
-            end
-        end
-        function source_address = getSource_address(self)
-            if(ismac)
-                source_address = self.source_address;
-            elseif(ispc)
-                source_address = self.source_address_win;
-            end
-        end
-        
-        function result_address = getResult_address(self)
-            if(ismac)
-                result_address = self.result_address;
-            elseif(ispc)
-                result_address = self.result_address_win;
-            end
-        end
+    methods 
         function self = update_rating_info_from_file_if_any(self)
+            % Check if any corresponding preprocessed file exists, if it's 
+            % the case and that file has been already rated import the 
+            % rating data to this block, initialise otherwise.
+            
+            % Find the preprocessed file if any (Empty char if there is no
+            % file).
             extracted_prefix = self.extract_prefix(self.potential_result_address());
+            
+            % If the prefix indicates that the block has been already rated
             if(self.has_information(extracted_prefix))
                 preprocessed = matfile(self.potential_result_address());
                 self.rate = preprocessed.rate;
@@ -122,93 +172,129 @@ classdef Block < handle
                 self.man_badchans = [];
                 self.is_interpolated = false;
             end
+            
             % Build prefix and adress based on ratings
             self = self.update_prefix_and_result_address();
         end
         
-        % Looks in the result folder to find a match for the raw data.
         function result_address = potential_result_address(self)
-            if(ismac)
+            % Check in the result folder for a
+            % corresponding preprocessed file with any prefix that respects the
+            % standard pattern (See prefix).
+    
+            if(isunix)
                 slash = '/';
             elseif(ispc)
                 slash = '\';
             end
             pattern = '^[gobni]i?p_';
-            fileData = dir(strcat(self.subject.getResult_folder, slash));                                        
+            fileData = dir(strcat(self.subject.result_folder, slash));                                        
             fileNames = {fileData.name};  
             idx = regexp(fileNames, strcat(pattern, self.file_name, '.mat')); 
             inFiles = fileNames(~cellfun(@isempty,idx));
             assert(length(inFiles) <= 1);
             if(~ isempty(inFiles))
-                result_address = strcat(self.subject.getResult_folder, slash, inFiles{1});
+                result_address = strcat(self.subject.result_folder, slash, inFiles{1});
             else
                 result_address = '';
             end
         end
+       
+        function self = update_addresses(self, new_data_path, new_project_path)
+            % The method is to be called to update addresses
+            % in case the project is loaded from another operating system and may
+            % have a different path to the data_folder or result_folder. This can
+            % happen either because the data is on a server and the path to it is
+            % different on different systems, or simply if the project is loaded
+            % from a windows to a iOS or vice versa. 
+
+            self.subject.update_addresses(new_data_path, new_project_path);
+            self.source_address = ...
+                self.extract_source_address(self.subject, self.file_name, self.file_extension);
+            self = self.update_prefix_and_result_address();
+        end
+        
+        function self = setRatingInfoAndUpdate(self, rate, list, man_badchans, is_interpolated)
+            % Set the new rating information
+            
+            self.rate = rate;
+            self.tobe_interpolated = list;
+            self.man_badchans = man_badchans;
+            self.is_interpolated = is_interpolated;
+            
+            % Update the result address and rename if necessary
+            self = self.update_prefix_and_result_address();
+        end
+        
+        function saveRatingsToFile(self)
+            % Save all rating information to the corresponding preprocessed 
+            % file
+            
+            preprocessed = matfile(self.result_address,'Writable',true);
+            preprocessed.tobe_interpolated = self.tobe_interpolated;
+            preprocessed.rate = self.rate;
+            preprocessed.auto_badchans = self.auto_badchans;
+            preprocessed.is_interpolated = self.is_interpolated;
+            
+            % It keeps track of the history of all interpolations.
+            preprocessed.man_badchans = self.man_badchans;
+        end
+        
         function img_address = get.image_address(self)
-            if(ismac)
+            % The name and address of the obtained plots during
+            % preprocessing
+            
+            if(isunix)
                 slash = '/';
             elseif(ispc)
                 slash = '\';
             end
             
-           img_address = [self.subject.getResult_folder slash self.file_name];
-        end
-        
-        function self = setRatingInfoAndUpdate(self, rate, list, man_badchans, is_interpolated)
-            self.rate = rate;
-            self.tobe_interpolated = list;
-            self.man_badchans = man_badchans;
-            self.is_interpolated = is_interpolated;
-            % Update the result address and rename if if necessary
-            self = self.update_prefix_and_result_address();
-        end
-        
-        function saveRatingsToFile(self)
-            % Save them to corresponding result file
-            preprocessed = matfile(self.getResult_address,'Writable',true);
-            preprocessed.tobe_interpolated = self.tobe_interpolated;
-            preprocessed.rate = self.rate;
-            preprocessed.auto_badchans = self.auto_badchans;
-            preprocessed.is_interpolated = self.is_interpolated;
-            % It keeps track of the history of all interpolations.
-            preprocessed.man_badchans = self.man_badchans;
+           img_address = [self.subject.result_folder slash self.file_name];
         end
         
         function bool = is_interpolate(self)
+            % Return to true if this block is rated as Interpolate
             bool = strcmp(self.rate, 'Interpolate');
             bool = bool &&  (~ self.is_null);
         end
         
         function bool = is_good(self)
+            % Return to true if this block is rated as Good
             bool = strcmp(self.rate, 'Good');
             bool = bool &&  (~ self.is_null);
         end
         
         function bool = is_ok(self)
+            % Return to true if this block is rated as OK
             bool = strcmp(self.rate, 'OK');
             bool = bool &&  (~ self.is_null);
         end
         
         function bool = is_bad(self)
+            % Return to true if this block is rated as Bad
             bool = strcmp(self.rate, 'Bad');
             bool = bool &&  (~ self.is_null);
         end
         
         function bool = is_not_rated(self)
+            % Return to true if this block is rated as Not Rated
             bool = strcmp(self.rate, 'Not Rated');
             bool = bool &&  (~ self.is_null);
         end
         
         function bool = is_null(self)
+            % Return true if this block is a mock block
             bool = (self.index == -1);
         end
     end
     
     %% Private Methods
     methods(Access=private)
-        % This must be set after rating info are set. See below function.
+
         function self = update_prefix(self)
+            % Update the prefix based in the rating information. This must 
+            % be set after rating info are set. See the below function.
             p = 'p';
             if (self.is_interpolated)
                 i = 'i';
@@ -218,24 +304,27 @@ classdef Block < handle
             r = lower(self.rate(1));
             self.prefix = strcat(r, i, p);
         end
-        % This must be called once rating info are set. Then the address
-        % and prefix are set based on rating info.
+
         function self = update_prefix_and_result_address(self)
-            if(ismac)
+            % Update prefix and thus addresses based on the rating
+            % information. This must be called once rating info are set. 
+            % Then the address and prefix are set based on rating info.
+            
+            if(isunix)
                 slash = '/';
             elseif(ispc)
                 slash = '\';
             end
             
             self = self.update_prefix();
-            self = self.setResult_address(strcat(self.subject.getResult_folder, ...
-                slash, self.prefix, '_', self.file_name, '.mat'));
-            self = self.setReduced_address(self.extract_reduced_address(self.getResult_address, self.dsrate));
+            self.result_address = strcat(self.subject.result_folder, ...
+                slash, self.prefix, '_', self.file_name, '.mat');
+            self.reduced_address = self.extract_reduced_address(self.result_address, self.dsrate);
             
             % Rename the file if it doesn't correspond to the actual rating
-            if( ~ strcmp(self.getResult_address, self.potential_result_address) )
+            if( ~ strcmp(self.result_address, self.potential_result_address) )
                 if( ~ isempty(self.potential_result_address) )
-                    movefile(self.potential_result_address, self.getResult_address);
+                    movefile(self.potential_result_address, self.result_address);
                 end
             end
         end
@@ -244,30 +333,44 @@ classdef Block < handle
     %% Private utility static methods
     methods(Static, Access=private)
         function source_address = extract_source_address(subject, file_name, ext)
-            if(ismac)
+            % Return the address of the raw file
+            
+            if(isunix)
                 slash = '/';
             elseif(ispc)
                 slash = '\';
             end
             
-            source_address = [subject.getData_folder slash file_name, ext];
+            source_address = [subject.data_folder slash file_name, ext];
         end
         
         function reduced_address = extract_reduced_address(result_address, dsrate)
+            % Return the address of the reduced file
+            
             pattern = '[gobni]i?p_';
             reduced_address = regexprep(result_address,pattern,...
                 strcat('reduced', int2str(dsrate), '_'));
         end
         
         function unique_name = extract_unique_name(subject, file_name)
+            % Return the unique_name of this block. The unique_name is the
+            % concatenation of the subject's name and this raw file's name
+            
             unique_name = strcat(subject.name, '_', file_name);
         end
 
         function bool = has_information(prefix)
+            % Return true if the prefix indicates that this preprocessed
+            % file has been already rated.
+            
             bool = true;
+            
+            % If the length is 3, there must be an "i" in it, which
+            % indicates it's already been rated and interpolated.
             if(length(prefix) == 3)
                 return;
             end
+            
             switch Block.get_rate_from_prefix(prefix)
                 case 'Not Rated'
                     bool = false;
@@ -277,6 +380,9 @@ classdef Block < handle
         end
         
         function type = get_rate_from_prefix(prefix)
+            % Extract the rating information from the prefix. The first
+            % character of the prefix indicates the rating. 
+            
             if( strcmp(prefix, ''))
                 type = 'Not Rated';
                 return;
@@ -298,13 +404,18 @@ classdef Block < handle
         end
 
         function bool = is_valid_prefix(prefix)
+            % Return true if the prefix respects the standard pattern
+            
             pattern = '^[gobni]i?p$';
             reg = regexp(prefix, pattern, 'match');
             bool = ~ isempty(reg) || strcmp(prefix, '');
         end
         
         function prefix = extract_prefix(result_address)
-            if(ismac)
+            % Given the result_address, take the prefix out of it and
+            % return
+            
+            if(isunix)
                 slash = '/';
             elseif(ispc)
                 slash = '\';

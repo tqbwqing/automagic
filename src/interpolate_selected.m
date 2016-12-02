@@ -1,4 +1,8 @@
 function interpolate_selected(project)
+% This function is called by the main_gui. It finds all blocks that are
+% rated to be interpolated and interpolates them all. 
+% project - An instance of the class Project
+
 cleanupObj = onCleanup({@cleanMeUp, project});
 
 if(isempty(project))
@@ -6,14 +10,30 @@ if(isempty(project))
 end
 
 % Add paths
-if(ismac)
+if(isunix)
     slash = '/';
 elseif(ispc)
     slash = '\';
 end
 
-if( ~exist('eeg_interp', 'file'))
-    addpath(genpath(['..' slash 'matlab_scripts'])); % project code
+% eeg_interp is checked as an example of a file in matlab_scripts, it could
+% be any other file in that folder.
+if(~exist('pop_fileio', 'file'))
+    matlab_paths = genpath(['..' slash 'matlab_scripts' slash]);
+    if(ispc)
+        parts = strsplit(matlab_paths, ';');
+    else
+        parts = strsplit(matlab_paths, ':');
+    end
+    IndexC = strfind(parts, 'compat');
+    Index = not(cellfun('isempty', IndexC));
+    parts(Index) = [];
+    if(ispc)
+        matlab_paths = strjoin(parts, ';');
+    else
+        matlab_paths = strjoin(parts, ':');
+    end
+    addpath(matlab_paths);
 end
 
 if( ~exist('main_gui','file'))
@@ -33,14 +53,14 @@ for i = 1:length(int_list)
     index = int_list(i);
     unique_name = project.block_list{index};
     block = project.block_map(unique_name);
-    block.update_addresses(project.getData_folder, project.getResult_folder);
+    block.update_addresses(project.data_folder, project.result_folder);
 
     display(['Processing file ', block.unique_name ,' ...', '(file ', ...
         int2str(i), ' out of ', int2str(length(int_list)), ')']); 
     assert(strcmp(block.rate, 'Interpolate') == 1);
     
     % Interpolate and save to results
-    preprocessed = matfile(block.getResult_address,'Writable',true);
+    preprocessed = matfile(block.result_address,'Writable',true);
     EEG = preprocessed.EEG;
     interpolate_chans = block.tobe_interpolated;
     if(isempty(interpolate_chans))
@@ -53,7 +73,7 @@ for i = 1:length(int_list)
     EEG = preprocessed.EEG;
     % Downsample the new file and save it
     reduced.data = (downsample(EEG.data', project.ds_rate))';
-    save(block.getReduced_address, 'reduced', '-v6');
+    save(block.reduced_address, 'reduced', '-v6');
     
     % Setting the new information
     block.setRatingInfoAndUpdate('Not Rated', [], [block.man_badchans interpolate_chans], true);
@@ -76,7 +96,7 @@ end
 handle = guidata(h);
 handle.project_list(project.name) = project;
 guidata(handle.main_gui, handle);
-main_gui('load_selected_project', handle);
+main_gui();
     
 end
 
@@ -89,5 +109,5 @@ function cleanMeUp(project)
     handle = guidata(h);
     handle.project_list(project.name) = project;
     guidata(handle.main_gui, handle);
-    main_gui('load_selected_project', handle);
+    main_gui();
 end

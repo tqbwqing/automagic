@@ -1,8 +1,9 @@
 ./~/
-matlab_scripts/
-fieldtrip-20160630/
+matlab_scripts/eeglab*
+matlab_scripts/inexact*
 state.mat
 *_state.mat
 *.m~
-test.m
 .DS_Store
+.dropbox
+Icon*
