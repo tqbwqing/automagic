@@ -39,11 +39,11 @@ You need MATLAB installed and activated on your system to use *Automagic*. *Auto
 In this section of the manual, only the basic functionality of Automagic will be explained. This covers the basic workflow from selecting a project to rating the data. Please refer to chapters 3 to 6 for detailed information all functions within the main GUI.
 
 1. [Create a new project or load an existing project](#231-creating-a-new-project).
-2. [Preprocess the data](###2-4-the-pre-processing-panel).
-3. [Rate data and manually select bad channels if any](###2.5-the-manual-rating-panel).
-4. [Interpolate all manually selected channels] (###2.6-The Interpolation Panel).
+2. [Preprocess the data](#24-the-pre-processing-panel).
+3. [Rate data and manually select bad channels if any](#25-the-manual-rating-panel).
+4. [Interpolate all manually selected channels] (#26-The Interpolation Panel).
 5. Repeat steps 3 and 4 until all data is rated.
- * NOTE: All data is saved automatically.
+ * NOTE: You can not close the main gui window during the preprocessing. If you wish to stop the preprocessing at any time, you can use *CTRL-C*. If by any reason the preprocessing is stopped before being completely finished, all preprocessed files to that moment will be saved, and you can resume the preprocessing only for the files which are not preprocessed yet. 
 
 * Important:	Since synchronisation is rather basic, people should never work on the same project simultaneously.
 
