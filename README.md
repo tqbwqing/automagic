@@ -119,7 +119,7 @@ To merge any number of existing projects without losing the individual projects,
 
 After clicking on *Configurations...* button a new window is opened where you can customize preprocessing steps:
 
-1. If *Reduce number of channels* is checked, then before preprocessing number of channgels is reduced. Click here to see list of channels selected.
+1. If *Reduce number of channels* is checked, then before preprocessing number of channgels is reduced. [Click here](https://github.com/amirrezaw/automagic/blob/master/automagic_resources/reduced_channels.txt) to see list of channels selected.
 2. In the *Filtering* section you can choose the order of the filtering. The default value corresponds to the default value computed by *pop_eegfiltnew.m*.
 3. In the *Channel rejection criterias* you can select or deselect the three different criterias *Kurtosis*, *Probability* and *Spectrum* to reject channels (See *pop_rejchan.m*). The corresponding thresholds can also be customized.
 4. *EOG Regression* can be deselected.
