@@ -22,7 +22,7 @@ function varargout = settings(varargin)
 
 % Edit the above text to modify the response to help settings
 
-% Last Modified by GUIDE v2.5 16-Nov-2016 14:31:18
+% Last Modified by GUIDE v2.5 02-Dec-2016 18:35:06
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -76,8 +76,17 @@ handles.params = params;
 handles.default_params = default_params;
 
 set(handles.channelreductioncheckbox, 'Value', params.perform_reduce_channels);
-set(handles.highpasspopupmenu, 'Value', params.filter_params.high_order);
-set(handles.lowpasspopupmenu, 'Value', params.filter_params.low_order);
+if( isempty( params.filter_params.high_order) )
+    set(handles.highpassorderedit, 'String', params.Default);
+else
+    set(handles.highpassorderedit, 'String', params.filter_params.high_order);
+end
+
+if( isempty( params.filter_params.low_order) )
+    set(handles.lowpassorderedit, 'String', params.Default);
+else
+    set(handles.lowpassorderedit, 'String', params.filter_params.low_order);
+end
 
 if( params.channel_rejection_params.kurt_thresh ~= -1)
     set(handles.kurtcheckbox, 'Value', 1);
@@ -442,24 +451,21 @@ perform_reduce_channels = ...
 perform_eog_regression = ...
     get(handles.eogregressioncheckbox, 'Value');
 
-high_order = 3;
+high_order = [];
 if( get(main_gui_handle.highpasscheckbox, 'Value') )
-    idx = get(handles.highpasspopupmenu, 'Value');
-    orders = get(handles.highpasspopupmenu, 'String');
-    high_order = str2double(orders{idx});
+    high_order = str2double(get(handles.highpassorderedit, 'String'));
 end
-if( isempty(high_order) || isnan(high_order))
+if(isnan(high_order) )
     high_order = default_params.filter_params.high_order;
 end
 
-low_order = 3;
+
+low_order = [];
 if( get(main_gui_handle.lowpasscheckbox, 'Value') )
-    idx = get(handles.lowpasspopupmenu, 'Value');
-    orders = get(handles.lowpasspopupmenu, 'String');
-    low_order = str2double(orders{idx});
+    low_order = str2double(get(handles.lowpassorderedit, 'String'));
 end
-if( isempty(low_order) || isnan(low_order))
-    low_order = default_params.filter_params.low_order;
+if(isnan(low_order))
+    low_order = default_params.filter_params.high_order;
 end
 
 if( get(handles.kurtcheckbox, 'Value') )
@@ -496,7 +502,7 @@ if( get(handles.pcacheckbox, 'Value') )
     tol = str2double(get(handles.toledit, 'String'));
     maxIter = str2double(get(handles.maxIteredit, 'String'));
     if( isempty(lambda) )
-        lambda = 'Default';
+        lambda = handles.default_params.Default;
     end
 else
     lambda = -1;
@@ -543,9 +549,9 @@ default_params = handles.default_params;
 set(handles.channelreductioncheckbox, 'Value', ...
     default_params.perform_reduce_channels);
 
-set(handles.highpasspopupmenu, 'Value', ...
-    default_params.filter_params.high_order);
-set(handles.lowpasspopupmenu, 'Value', ...
+set(handles.highpassorderedit, 'String', ...
+    default_params.Default);
+set(handles.lowpassorderedit, 'String', ...
     default_params.filter_params.low_order);
 
 if( default_params.channel_rejection_params.kurt_thresh ~= -1)
@@ -608,18 +614,18 @@ main_gui_handle = guidata(h);
 default_params = handles.default_params;
 
 if( get(main_gui_handle.highpasscheckbox, 'Value') )
-    set(handles.highpasspopupmenu, 'enable', 'on');
+    set(handles.highpassorderedit, 'enable', 'on');
 else
-    set(handles.highpasspopupmenu, 'enable', 'off');
-    set(handles.highpasspopupmenu, 'Value', ...
+    set(handles.highpassorderedit, 'enable', 'off');
+    set(handles.highpassorderedit, 'String', ...
         default_params.filter_params.high_order);
 end
 
 if( get(main_gui_handle.lowpasscheckbox, 'Value') )
-    set(handles.lowpasspopupmenu, 'enable', 'on');
+    set(handles.lowpassorderedit, 'enable', 'on');
 else
-    set(handles.lowpasspopupmenu, 'enable', 'off');
-    set(handles.lowpasspopupmenu, 'Value', ...
+    set(handles.lowpassorderedit, 'enable', 'off');
+    set(handles.lowpassorderedit, 'String', ...
         default_params.filter_params.low_order);
 end
 
@@ -686,3 +692,49 @@ handle.params = handles.params;
 guidata(handle.main_gui, handle);
 
 delete(hObject);
+
+
+
+function highpassorderedit_Callback(hObject, eventdata, handles)
+% hObject    handle to highpassorderedit (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of highpassorderedit as text
+%        str2double(get(hObject,'String')) returns contents of highpassorderedit as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function highpassorderedit_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to highpassorderedit (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function lowpassorderedit_Callback(hObject, eventdata, handles)
+% hObject    handle to lowpassorderedit (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of lowpassorderedit as text
+%        str2double(get(hObject,'String')) returns contents of lowpassorderedit as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function lowpassorderedit_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to lowpassorderedit (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end

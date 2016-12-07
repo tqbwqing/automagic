@@ -89,17 +89,17 @@ handles.state_file.ADDRESS = strcat(handles.state_file.FOLDER,...
 
 % Default Settings
 handles.NONE = 'None';
-handles.Default = 'Default';
+handles.default_params.Default = 'Default';
 handles.default_params.filter_params.high_freq = 0.5;
-handles.default_params.filter_params.high_order = 3;
+handles.default_params.filter_params.high_order = [];
 handles.default_params.filter_params.low_freq = -1;
-handles.default_params.filter_params.low_order = 3;
+handles.default_params.filter_params.low_order = [];
 handles.default_params.perform_reduce_channels = 1;
 handles.default_params.channel_rejection_params.kurt_thresh = 3;
 handles.default_params.channel_rejection_params.prob_thresh = 4;
 handles.default_params.channel_rejection_params.spec_thresh = 4;
 handles.default_params.perform_eog_regression = 1;
-handles.default_params.pca_params.lambda = handles.Default;
+handles.default_params.pca_params.lambda = handles.default_params.Default;
 handles.default_params.pca_params.tol = 1e-7;
 handles.default_params.pca_params.maxIter = 1000;
 handles.default_params.interpolation_params.method = 'spherical';
