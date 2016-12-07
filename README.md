@@ -2,6 +2,7 @@
 
 ## What is Automagic ?
 
+![alt tag](https://github.com/amirrezaw/automagic/blob/master/automagic_resources/main_gui.png)
 
 ## 1. Setup
 
@@ -49,6 +50,8 @@ In this section of the manual, only the basic functionality of Automagic will be
 
 ### 2.3. The Project Panel
 
+![alt tag](https://github.com/amirrezaw/automagic/blob/master/automagic_resources/project_panel.png)
+
 #### 2.3.1. Creating a New Project
 1. Navigate to the drop-down list labelled *Select Project*.
 2. Select *Create New Project???*
@@ -60,6 +63,9 @@ In this section of the manual, only the basic functionality of Automagic will be
  * Important: 	The data folder must contain a folder for each subject (subject folders). Your data folder should not contain any other kinds of folders since this will lead to a wrong number of subjects. 
 7. Specify the path of your project folder. If the specified folder does not yet exist, *Automagic* will create it for you. *Automagic* will save all processed data to your project folder. By default, *Automagic* opts for your data folder’s path and adds *_results* to your data folder’s name, e.g. *\PathDataFolder\MyDataFolder_results\*
  * Important:	A subject folder must contain EEG files. Automagic can only load data saved in subject folders. Since subject folders are defined as folders in the data folder, no specific naming is required.
+ 
+ ![alt tag](https://github.com/amirrezaw/automagic/blob/master/automagic_resources/folder_structure.png)
+ 
 7. Specify the path of the folder where you wish to store the results of preprocessing. *Automagic* will save all processed data to your project folder. If the specified folder does not exist yet, *Automagic* will create it for you. By default, *Automagic* opts for your data folder’s path and adds *_results* to your data folder’s name, e.g. *\PathDataFolder\MyDataFolder_results\*
 8. Choose your filtering parameters in the Filtering panel. 
  * Notch Filter: Choose US if your data was recorded in adherence to US standards (60 Hz). Chose EU if your data was recorded in adherence to EU standards (50 Hz).
@@ -116,6 +122,10 @@ Should the project folder already contain files (i.e. should some of the project
 * Important:	Please wait until all files have been pre-processed before doing anything else in this instance of MATLAB.
 
 ### 2.5. The Manual Rating Panel
+
+![alt tag](https://github.com/amirrezaw/automagic/blob/master/automagic_resources/rating_gui.png)
+
+
  * Important:	 The downsampling rate can only be set during project creation.
 Click on *Start???* to open the rating GUI.
  * Important: 	Only pre-processed files can be rated manually.
