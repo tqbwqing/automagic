@@ -123,7 +123,7 @@ After clicking on *Configurations...* button a new window is opened where you ca
 2. In the *Filtering* section you can choose the order of the filtering. The default value corresponds to the default value computed by *pop_eegfiltnew.m*.
 3. In the *Channel rejection criterias* you can select or deselect the three different criterias *Kurtosis*, *Probability* and *Spectrum* to reject channels (See *pop_rejchan.m*). The corresponding thresholds can also be customized.
 4. *EOG Regression* can be deselected.
-5. *PCA* can be selected or deselected. The parameters correspond to paramters of *inexact_alm_rpca.m*. The default value *lambda* is ![alt tag](http://www.sciweavers.org/tex2img.php?eq=%5Csqrt%7Bm%7D&bc=White&fc=Black&im=jpg&fs=12&ff=arev&edit=0) where m is the number of channels.
+5. *PCA* can be selected or deselected. The parameters correspond to paramters of *inexact_alm_rpca.m*. The default value *lambda* is ![alt tag](https://github.com/amirrezaw/automagic/blob/master/automagic_resources/sqrt.jpg) where m is the number of channels.
 6. The mode of interpolation can be determined. The default value is *spherical*.
 
 
