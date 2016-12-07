@@ -70,7 +70,7 @@ In this section of the manual, only the basic functionality of Automagic will be
 8. Choose your filtering parameters in the Filtering panel. 
  * Notch Filter: Choose US if your data was recorded in adherence to US standards (60 Hz). Chose EU if your data was recorded in adherence to EU standards (50 Hz).
  * By default a High pass filtering is performed on data. You can change the freuqency or simply uncheck the High pass filtering. You can also choose to have a Low pass filtering. Bu default there is no Low pass filtering.
-9. By clicking on the *Configurations...* button you can modify additional optional parameters of the preprocessing. This is not necessary, and you can leave it so that the default values are used.
+9. [By clicking on the *Configurations...*](#237-customize-settings) button you can modify additional optional parameters of the preprocessing. This is not necessary, and you can leave it so that the default values are used.
 10. Click on *Create New* in the lower right corner of the project panel to create your new project. If the specified data and project folders do not yet exist, *Automagic* will now create them for you.
 
 #### 2.3.2. Loading an Existing Project
@@ -113,6 +113,19 @@ To merge any number of existing projects without losing the individual projects,
 1. Click on *Delete Project* in the lower right corner of the project panel. A dialog box will appear.
 2. Take responsibility by clicking on Delete.
  * Important: 	This will only delete the file named project_state.mat in the project folder and remove the project from the Automagic GUI. Please use Finder (Mac), Explorer (Windows) or your Linux equivalent to delete your project???s data and/or project folder.
+
+#### 2.3.7. Customize Settings
+![alt tag](https://github.com/amirrezaw/automagic/blob/master/automagic_resources/settings.png)
+
+After clicking on *Configurations...* button a new window is opened where you can customize preprocessing steps:
+
+1. If *Reduce number of channels* is checked, then before preprocessing number of channgels is reduced. Click here to see list of channels selected.
+2. In the *Filtering* section you can choose the order of the filtering. The default value corresponds to the default value computed by *pop_eegfiltnew.m*.
+3. In the *Channel rejection criterias* you can select or deselect the three different criterias *Kurtosis*, *Probability* and *Spectrum* to reject channels (See *pop_rejchan.m*). The corresponding thresholds can also be customized.
+4. *EOG Regression* can be deselected.
+5. *PCA* can be selected or deselected. The parameters correspond to paramters of *inexact_alm_rpca.m*. The default value *lambda* is ![alt tag](http://www.sciweavers.org/tex2img.php?eq=%5Csqrt%7Bm%7D&bc=White&fc=Black&im=jpg&fs=12&ff=arev&edit=0) where m is the number of channels.
+6. The mode of interpolation can be determined. The default value is *spherical*.
+
 
 ### 2.4. The Pre-Processing Panel
  * Important:	The filtering can only be set during project creation.
