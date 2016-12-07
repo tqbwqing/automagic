@@ -51,13 +51,14 @@ In this section of the manual, only the basic functionality of Automagic will be
 
 #### 2.3.1. Creating a New Project
 1. Navigate to the drop-down list labelled *Select Project*.
-2. Select *Create New Project…*
+2. Select *Create New Project???*
 3. Name your project.
 4. Choose the file extension that corresponds to your data’s file format. *Automagic* currently supports the following file formats: raw image files (.raw or .RAW), fractal image files (.fif) and generic data files (.dat).
 5. Set the downsampling rate on the manual rating panel. The downsampling only affects the visual representation of your data. A higher downsampling rate will shorten loading times. In general, a downsampling rate of 2 is a good choice. 
  * Important:	You cannot alter paths, the filtering, or the downsampling rate after creating your project.
 6. Specify the path of your data folder. *Automagic* will scan all folders in your data folder for data files. Files and folders in the data folder will not be altered by *Automagic*.
  * Important: 	The data folder must contain a folder for each subject (subject folders). Your data folder should not contain any other kinds of folders since this will lead to a wrong number of subjects. 
+7. Specify the path of your project folder. If the specified folder does not yet exist, *Automagic* will create it for you. *Automagic* will save all processed data to your project folder. By default, *Automagic* opts for your data folder’s path and adds *_results* to your data folder’s name, e.g. *\PathDataFolder\MyDataFolder_results\*
  * Important:	A subject folder must contain EEG files. Automagic can only load data saved in subject folders. Since subject folders are defined as folders in the data folder, no specific naming is required.
 7. Specify the path of the folder where you wish to store the results of preprocessing. *Automagic* will save all processed data to your project folder. If the specified folder does not exist yet, *Automagic* will create it for you. By default, *Automagic* opts for your data folder’s path and adds *_results* to your data folder’s name, e.g. *\PathDataFolder\MyDataFolder_results\*
 8. Choose your filtering parameters in the Filtering panel. 
@@ -75,8 +76,8 @@ There are two options to load an existing project. The first option can only be 
 The second option can be used to load any *Automagic* project:
 
 1. Navigate to the drop-down list labelled *Select Project*.
-2. Select *Load an existing project…*
-3. A browser window will open. Navigate to the existing project’s project folder.
+2. Select *Load an existing project???*
+3. A browser window will open. Navigate to the existing project???s project folder.
 4. Select and open the file named *project_state.mat*
 
 #### 2.3.3. Merging Projects
@@ -85,7 +86,7 @@ To merge any number of existing projects without losing the individual projects,
 1. Create a new data folder using Finder (Mac), Explorer (Windows) or your Linux equivalent.
 2. Create a new project folder using Finder (Mac), Explorer (Windows) or your Linux equivalent.
 3. For all the projects that you want to merge: Copy the contents from the data and project folders to the new data and project folders.
- * Important: 	Each of your existing projects’ project folders contains a file named project_state.mat. Do not copy these files to your new project folder.
+ * Important: 	Each of your existing projects??? project folders contains a file named project_state.mat. Do not copy these files to your new project folder.
 4. In *Automagic*: Create a new project using the newly created data and project folders.
 
 #### 2.3.4. Adding Data to an Existing Project
@@ -105,18 +106,18 @@ To merge any number of existing projects without losing the individual projects,
 #### 2.3.6. Deleting a Project
 1. Click on *Delete Project* in the lower right corner of the project panel. A dialog box will appear.
 2. Take responsibility by clicking on Delete.
- * Important: 	This will only delete the file named project_state.mat in the project folder and remove the project from the Automagic GUI. Please use Finder (Mac), Explorer (Windows) or your Linux equivalent to delete your project’s data and/or project folder.
+ * Important: 	This will only delete the file named project_state.mat in the project folder and remove the project from the Automagic GUI. Please use Finder (Mac), Explorer (Windows) or your Linux equivalent to delete your project???s data and/or project folder.
 
 ### 2.4. The Pre-Processing Panel
  * Important:	The filtering can only be set during project creation.
 Click on Run to start the pre-processing of your data. This is the first thing you should do after creating a new project or after adding data to an existing project. Pre-processing includes filtering, detection of bad channels, EOG regression, PCA, and automatic interpolation.
 
-Should the project folder already contain files (i.e. should some of the project’s data already have been pre-processed), you’ll be able to choose whether existing files will be overwritten or skipped after clicking on Run. 
+Should the project folder already contain files (i.e. should some of the project???s data already have been pre-processed), you???ll be able to choose whether existing files will be overwritten or skipped after clicking on Run. 
 * Important:	Please wait until all files have been pre-processed before doing anything else in this instance of MATLAB.
 
 ### 2.5. The Manual Rating Panel
  * Important:	 The downsampling rate can only be set during project creation.
-Click on *Start…* to open the rating GUI.
+Click on *Start???* to open the rating GUI.
  * Important: 	Only pre-processed files can be rated manually.
  
 A visualisation of the currently selected file is displayed. Time corresponds to the x-axis, EEG channels correspond to the y-axis. You can use the tools in the top left corner to e.g. magnify an area or select a specific point of the current visualisation. Use the filters right below the tools to focus on a subset of your files based on their rating. You can navigate between files of the current subset by clicking on *Previous* and *Next* or by selecting a file from the drop-down list in the top right corner.

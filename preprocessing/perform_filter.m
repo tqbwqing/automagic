@@ -24,16 +24,16 @@ function filtered = perform_filter(data, varargin)
 %   Default values: by default there is no low_pass filter:
 %                   params.filter_mode = 'EU'
 %                   params.high_freq = 0.5
-%                   params.high_order = 3
+%                   params.high_order = 0  (Default value of pop_eegfiltnew)
 %                   params.low_freq = -1 % low pass filtering skipped
-%                   params.low_order = 3
+%                   params.low_order = 0 (Default value of pop_eegfiltnew)
 
 p = inputParser;
 addParameter(p,'filter_mode', 'EU', @ischar);
 addParameter(p,'high_freq', 0.5, @isnumeric);
-addParameter(p,'high_order', 3, @isnumeric);
+addParameter(p,'high_order', []);
 addParameter(p,'low_freq', -1, @isnumeric);
-addParameter(p,'low_order', 3, @isnumeric);
+addParameter(p,'low_order', []);
 parse(p, varargin{:});
 
 
@@ -45,19 +45,16 @@ low_order = p.Results.low_order;
 
 
 display('Perform Filtering...');
-eeg = data.data;
 
 if( high_freq ~= -1 )
-    [bhp,ahp] = butter(high_order, high_freq/(data.srate/2),'high'); % Highpass
-    eeg = filter(bhp,ahp,eeg')';
+    [~, data] = evalc('pop_eegfiltnew(data, high_freq, 0, high_order)');
 end
+
 
 if( low_freq ~= -1 )
-    [bhp,ahp] = butter(low_order, low_freq/(data.srate/2),'low'); % Lowpass
-    eeg = filter(bhp,ahp,eeg')';
+    [~, data] = evalc('pop_eegfiltnew(data, 0, low_req, low_order)');
 end
 
-data.data = eeg;
 switch filter_mode
     case 'US'
         [~, filtered] = evalc('pop_eegfiltnew(data, 57, 63, [], 1)'); % Band-stop filter

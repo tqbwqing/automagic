@@ -39,6 +39,7 @@ addParameter(p,'pca_params', struct, @isstruct);
 addParameter(p,'interpolation_params', struct('method', 'spherical'), @isstruct);
 addParameter(p,'perform_eog_regression', 1, @isnumeric);
 addParameter(p,'perform_reduce_channels', 1, @isnumeric);
+addParameter(p,'Default', 1, @ischar);
 parse(p, varargin{:});
 filter_params = p.Results.filter_params;
 channel_rejection_params = p.Results.channel_rejection_params;
@@ -46,7 +47,7 @@ pca_params = p.Results.pca_params;
 interpolation_params = p.Results.interpolation_params;
 perform_eog_regression = p.Results.perform_eog_regression;
 perform_reduce_channels = p.Results.perform_reduce_channels;
-
+Default = p.Results.Default;
 %% Add path if not added before
 if(~exist('pop_fileio', 'file'))
     matlab_paths = genpath(['..' slash 'matlab_scripts' slash]);
@@ -182,7 +183,7 @@ else
 end
 
 % PCA
-if( ~ strcmp(pca_params.lambda, 'Default'))
+if( ~ strcmp(pca_params.lambda, Default))
     [EEG_cleared, noise] = perform_pca(EEG_regressed, pca_params);
 else
     [EEG_cleared, noise] = perform_pca(EEG_regressed);

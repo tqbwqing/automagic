@@ -15,7 +15,7 @@ function [data, noise] = perform_pca(data, varargin)
 %                   params.tol = 1e-7
 %                   params.maxIter = 1000
 
-[m, ~] = size(data.data);
+[~ , m] = size(data.data);
 
 p = inputParser;
 addParameter(p,'lambda', 1 / sqrt(m), @isnumeric);

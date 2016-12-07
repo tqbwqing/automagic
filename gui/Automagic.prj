@@ -1423,4 +1423,8 @@
       <matlab>true</matlab>
     </platform>
   </configuration>
+<<<<<<< HEAD
 </deployment-project>
+=======
+</deployment-project>
+>>>>>>> master
