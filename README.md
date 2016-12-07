@@ -192,3 +192,8 @@ For this code to be able to run, functions from [*eeglab*](https://sccn.ucsd.edu
 
 
 Note that you can modify anything in the code if you want and change all files and folder structures including matlab paths. 
+
+
+## Contact us
+You can find us [here](http://www.psychologie.uzh.ch/de/fachrichtungen/plafor.html).
+If you have any questions, feedbacks please email us at amirreza [dot] bahreini [at] uzh [dot] ch
