@@ -392,6 +392,15 @@ else
     set(handles.lowfreqedit, 'String', handles.NONE);
     set(handles.lowpasscheckbox, 'Value', 0);
 end
+
+US_button = handles.filteringbuttongroup.Children(1);
+EU_button = handles.filteringbuttongroup.Children(1);
+if( strcmp('EU', project.params.filter_params.filter_mode ))
+    set(EU_button, 'Value', 1);
+else
+    set(US_button, 'Value', 1);
+end
+
 % Set the file extension
 IndexC = strfind(handles.fileextension.String, project.file_extension);
 index = find(not(cellfun('isempty', IndexC)));
