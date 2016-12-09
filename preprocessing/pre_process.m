@@ -69,47 +69,55 @@ end
    
 %% Determine number of channels
 if( perform_reduce_channels )
-    chan128 = [1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 18 19 20 21 22 23 ...
-        24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 ...
-        45 46 47 50 51 52 53 54 55 57 58 59 60 61 62 64 65 66 67 69 70 ...
-        71 72 74 75 76 77 78 79 80 82 83 84 85 86 87 89 90 91 92 93 95 ...
-        96 97 98 100 101 102 103 104 105 106 108 109 110 111 112 114 115 ...
-        116 117 118 120 121 122 123 124 129];
+    chan128 = [2 3 4 5 6 7 9 10 11 12 13 15 16 18 19 20 22 23 24 26 27 ...
+        28 29 30 31 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 50 51 ...
+        52 53 54 55 57 58 59 60 61 62 64 65 66 67 69 70 71 72 74 75 76 ...
+        77 78 79 80 82 83 84 85 86 87 89 90 91 92 93 95 96 97 98 100 ...
+        101 102 103 104 105 106 108 109 110 111 112 114 115 116 117 ...
+        118 120 121 122 123 124 129];
     
-    chan_excl256  = [31 67 73 82 91 92 102 111 120 133 145 165 174 187 199 208 ... 
-    209 216 217 218 219 225 226 227 228 229 230 231 232 233 234 235 236 ...
-    237 238 239 240 241 242 243 244 245 246 247 248 249 250 251 252 253 ...
-    254 255 256];
+    chan256  = [2 3 4 5 6 7 8 9 11 12 13 14 15 16 17 19 20 21 22 ...
+        23 24 26 27 28 29 30 33 34 35 36 38 39 40 41 42 43 44 45 ...
+        47 48 49 50 51 52 53 55 56 57 58 59 60 61 62 63 64 65 66 ...
+        68 69 70 71 72 74 75 76 77 78 79 80 81 83 84 85 86 87 88 ...
+        89 90 93 94 95 96 97 98 99 100 101 103 104 105 106 107 108 ...
+        109 110 112 113 114 115 116 117 118 119 121 122 123 124 125 ...
+        126 127 128 129 130 131 132 134 135 136 137 138 139 140 141 ...
+        142 143 144 146 147 148 149 150 151 152 153 154 155 156 157 ...
+        158 159 160 161 162 163 164 166 167 168 169 170 171 172 173 ...
+        175 176 177 178 179 180 181 182 183 184 185 186 188 189 190 ...
+        191 192 193 194 195 196 197 198 200 201 202 203 204 205 206 ...
+        207 210 211 212 213 214 215 220 221 222 223 224 257];
 else
     chan128 = 1:129;
-    chan_excl256 = double.empty(1,0);
+    chan256 = 1:257;
 end
 
 switch data.nbchan
     case 128
-        channels = chan128;
         eog_channels = sort([1 32 8 14 17 21 25 125 126 127 128]);
+        channels = setdiff(chan128, eog_channels);
         data.data(end+1,:) = 0;
         data.nbchan = data.nbchan + 1;
         data = pop_chanedit(data,  ...
             'load',{ ['GSN-HydroCel-129.sfp'], 'filetype', 'sfp'});
     case (128 + 1)
-        channels = chan128;
         eog_channels = sort([1 32 8 14 17 21 25 125 126 127 128]);
+        channels = setdiff(chan128, eog_channels);
         data = pop_chanedit(data, ...
             'load',{ 'GSN-HydroCel-129.sfp', 'filetype', 'sfp'});
     case 256
-        channels = setxor(1:257, chan_excl256);
         eog_channels = sort([31 32 37 46 54 252 248 244 241 25 18 10 1 226 ...
             230 234 238]);
+        channels = setdiff(chan256, eog_channels);
         data.data(end+1,:) = 0;
         data.nbchan = data.nbchan + 1;
         data = pop_chanedit(data, ...
             'load',{ 'GSN-HydroCel-257_be.sfp', 'filetype', 'sfp'});
     case (256 + 1)
-        channels = setxor(1:257, chan_excl256);
         eog_channels = sort([31 32 37 46 54 252 248 244 241 25 18 10 1 226 ...
             230 234 238]);
+        channels = setdiff(chan256, eog_channels);
         data = pop_chanedit(data, ...
             'load',{ 'GSN-HydroCel-257_be.sfp', 'filetype', 'sfp'});
     case 395  %% .fif files
@@ -151,10 +159,12 @@ switch data.nbchan
         eegs = arrayfun(@(x) strncmp('EEG',x.labels, length('EEG')), data.chanlocs, 'UniformOutput', false);
         eog1 = arrayfun(@(x) strncmp('EEG061',x.labels, length('EEG061')), data.chanlocs, 'UniformOutput', false);
         eog2 = arrayfun(@(x) strncmp('EEG062',x.labels, length('EEG062')), data.chanlocs, 'UniformOutput', false); 
+        
         channels = find((cellfun(@(x) x == 1, eegs)));
         channel1 = find((cellfun(@(x) x == 1, eog1)));
         channel2 = find((cellfun(@(x) x == 1, eog2)));
         eog_channels = [channel1 channel2];
+        channels = setdiff(channels, eog_channels); 
     otherwise
         error('This number of channel is not supported.')
 
@@ -167,19 +177,17 @@ assert(data.nbchan == s(1)); clear s;
 filtered_data = perform_filter(data, filter_params);
 
 % seperate EEG channels from EOG ones
-unique_chans = setdiff(channels, eog_channels);
-[~, EEG] = evalc('pop_select( filtered_data , ''channel'', channels)');
 [~, EOG] = evalc('pop_select( filtered_data , ''channel'', eog_channels)');
-[~, EEG_unique] = evalc('pop_select( filtered_data , ''channel'', unique_chans)');
+[~, EEG] = evalc('pop_select( filtered_data , ''channel'', channels)');
 
 % Detect artifact channels
 rejected_chans = reject_channels(EEG, channel_rejection_params);
 
 % Remove effect of EOG
 if( perform_eog_regression )
-    EEG_regressed = EOG_regression(EEG_unique, EOG);
+    EEG_regressed = EOG_regression(EEG, EOG);
 else
-    EEG_regressed = EEG_unique;
+    EEG_regressed = EEG;
 end
 
 % PCA
@@ -188,17 +196,13 @@ if( ~ strcmp(pca_params.lambda, Default))
 else
     [EEG_cleared, noise] = perform_pca(EEG_regressed);
 end
-% Replace common channels of eeg and eog by zeros and put together with
-% unique eeg channels
-eeg_cleaned = zeros(size(filtered_data.data));
-eeg_cleaned(unique_chans,:) = EEG_cleared.data;
-EEG_cleaned = EEG;
-EEG_cleaned.data = eeg_cleaned(channels,:);
 
 % interpolate zero and artifact channels:
 display('Interpolating...');
 if ~isempty(rejected_chans)
-    [~, interpolated] = evalc('eeg_interp(EEG_cleaned ,rejected_chans , interpolation_params.method)');
+    [~, interpolated] = evalc('eeg_interp(EEG_cleared ,rejected_chans , interpolation_params.method)');
+else
+    interpolated = EEG_cleared;
 end
 interpolated.auto_badchans = rejected_chans;
 % detrending
@@ -210,33 +214,44 @@ result.data = res;
 fig = figure;
 set(gcf, 'Color', [1,1,1])
 hold on
-subplot(4,1,1)
-imagesc(filtered_data.data);
+% eog figure
+subplot(9,1,1)
+imagesc(EOG.data);
 colormap jet
 caxis([-100 100])
-XTicks = 0:length(filtered_data.data)/5:length(filtered_data.data) ;
-XTicketLabels = round(0:length(filtered_data.data)/filtered_data.srate/5:length(filtered_data.data)/filtered_data.srate);
+XTicks = 0:length(EOG.data)/5:length(EOG.data) ;
+XTicketLabels = round(0:length(EOG.data)/EOG.srate/5:length(EOG.data)/EOG.srate);
 set(gca,'XTick', XTicks)
 set(gca,'XTickLabel', XTicketLabels)
-title('Filtered data')
-subplot(4,1,2)
+title('Filtered EOG data')
+%eeg figure
+subplot(9,1,2:3)
+imagesc(EEG.data);
+colormap jet
+caxis([-100 100])
+XTicks = 0:length(EEG.data)/5:length(EEG.data) ;
+XTicketLabels = round(0:length(EEG.data)/EEG.srate/5:length(EEG.data)/EEG.srate);
+set(gca,'XTick', XTicks)
+set(gca,'XTickLabel', XTicketLabels)
+title('Filtered EEG data')
 % figure;
+subplot(9,1,4:5)
 imagesc(EEG_regressed.data);
 colormap jet
 caxis([-100 100])
 set(gca,'XTick',XTicks)
 set(gca,'XTickLabel',XTicketLabels)
 title('EOG regressed out')
-subplot(4,1,3)
 %figure;
+subplot(9,1,6:7)
 imagesc(EEG_cleared.data);
 colormap jet
 caxis([-100 100])
 set(gca,'XTick',XTicks)
 set(gca,'XTickLabel',XTicketLabels)
 title('PCA corrected clean data')
-subplot(4,1,4)
 %figure;
+subplot(9,1,8:9)
 imagesc(noise);
 colormap jet
 caxis([-100 100])

@@ -59,5 +59,5 @@ if( spec_thresh ~= -1 )
         evalc('pop_rejchan(data, ''elec'', chans, ''threshold'', spec_thresh, ''measure'' , ''spec'', ''norm'' , ''on'')');
 end
 
-rejected = unique([indelec_kurt indelec_prob indelec_spec]); 
+rejected = unique([indelec_kurt indelec_prob indelec_spec flatchans]); 
 end
