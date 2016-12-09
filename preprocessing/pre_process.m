@@ -219,8 +219,8 @@ subplot(9,1,1)
 imagesc(EOG.data);
 colormap jet
 caxis([-100 100])
-XTicks = 0:length(EOG.data)/5:length(EOG.data) ;
-XTicketLabels = round(0:length(EOG.data)/EOG.srate/5:length(EOG.data)/EOG.srate);
+XTicks = [] ;
+XTicketLabels = [];
 set(gca,'XTick', XTicks)
 set(gca,'XTickLabel', XTicketLabels)
 title('Filtered EOG data')
@@ -229,8 +229,6 @@ subplot(9,1,2:3)
 imagesc(EEG.data);
 colormap jet
 caxis([-100 100])
-XTicks = 0:length(EEG.data)/5:length(EEG.data) ;
-XTicketLabels = round(0:length(EEG.data)/EEG.srate/5:length(EEG.data)/EEG.srate);
 set(gca,'XTick', XTicks)
 set(gca,'XTickLabel', XTicketLabels)
 title('Filtered EEG data')
@@ -255,6 +253,8 @@ subplot(9,1,8:9)
 imagesc(noise);
 colormap jet
 caxis([-100 100])
+XTicks = 0:length(EEG.data)/5:length(EEG.data) ;
+XTicketLabels = round(0:length(EEG.data)/EEG.srate/5:length(EEG.data)/EEG.srate);
 set(gca,'XTick',XTicks)
 set(gca,'XTickLabel',XTicketLabels)
 title('PCA noise')

@@ -95,7 +95,8 @@ for i = 1:length(project.block_list)
     end
     block.setRatingInfoAndUpdate( 'Not Rated', [], [], false);
     % save results
-    saveas(h, block.image_address, 'tif');
+    set(fig,'PaperUnits','inches','PaperPosition',[0 0 10 8])
+    print(fig, block.image_address, '-djpeg', '-r100');
     close(fig);
 
     reduced.data = downsample(EEG.data',project.ds_rate)';
