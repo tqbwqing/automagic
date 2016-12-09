@@ -79,6 +79,11 @@ for i = 1:length(project.block_list)
         % Load and preprocess
         [~ ,data] = evalc('pop_fileio(block.source_address)');
         [EEG, fig] = pre_process(data, block.source_address, project.params);
+        
+        if( isempty(EEG) )
+            write_to_log(project, block.source_address);
+           continue; 
+        end
         figure(fig);
         h = gcf;
 
@@ -168,6 +173,17 @@ function cleanMeUp(project)
     handle.project_list(project.name) = project;
     guidata(handle.main_gui, handle);
     main_gui();
+end
+
+function write_to_log(project, source_address)
+log_file_address = [project.result_folder 'preprocessing.log'];
+if( exist(log_file_address, 'file'))
+    fileID = fopen(log_file_address,'a');
+else
+    fileID = fopen(log_file_address,'w');
+end
+fprintf(fileID, ['The data file ' source_address ' could not be preprocessed due to a lot of noise.']);
+fclose(fileID);
 end
 
 

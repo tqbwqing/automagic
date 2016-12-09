@@ -182,7 +182,12 @@ filtered_data = perform_filter(data, filter_params);
 
 % Detect artifact channels
 rejected_chans = reject_channels(EEG, channel_rejection_params);
-
+eeg_size = size(EEG.data);
+if( length(rejected_chans) > eeg_size(1) / 2)
+    result = [];
+    fig = [];
+   return; 
+end
 % Remove effect of EOG
 if( perform_eog_regression )
     EEG_regressed = EOG_regression(EEG, EOG);
