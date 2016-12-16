@@ -143,6 +143,236 @@ classdef Project < handle
     
     %% Public Methods
     methods
+        function self = preprocess_all(self)
+               
+            % Add paths
+            if(isunix)
+                slash = '/';
+            elseif(ispc)
+                slash = '\';
+            end
+
+            % pre_process is checked as an example of a file in preprocessing, it could
+            % be any other file in that folder.
+            if( ~exist('pre_process', 'file'))
+                addpath(['..' slash 'preprocessing']);
+            end
+
+            % pop_fileio is checked as an example of a file in matlab_scripts, it could
+            % be any other file in that folder.
+            if(~exist('pop_fileio', 'file'))
+                matlab_paths = genpath(['..' slash 'matlab_scripts' slash]);
+                if(ispc)
+                    parts = strsplit(matlab_paths, ';');
+                else
+                    parts = strsplit(matlab_paths, ':');
+                end
+                IndexC = strfind(parts, 'compat');
+                Index = not(cellfun('isempty', IndexC));
+                parts(Index) = [];
+                IndexC = strfind(parts, 'neuroscope');
+                Index = not(cellfun('isempty', IndexC));
+                parts(Index) = [];
+                if(ispc)
+                    matlab_paths = strjoin(parts, ';');
+                else
+                    matlab_paths = strjoin(parts, ':');
+                end
+                addpath(matlab_paths);
+            end
+
+            if(~exist('main_gui', 'file'))
+                addpath(genpath(['..' slash 'gui' slash]));
+            end
+
+            assert(exist(self.result_folder, 'dir') > 0 , ...
+                'The project folder does not exist or is not reachable.' );
+
+            % Ask the user whether to overwrite the existing preprocessed files, if any
+            skip = self.check_existings();
+
+            display('*******Start preprocessing all dataset**************');
+            start_time = cputime;
+            % Iterate on all subjects
+            for i = 1:length(self.block_list)
+                unique_name = self.block_list{i};
+                block = self.block_map(unique_name);
+                block.update_addresses(self.data_folder, self.result_folder);
+                subject_name = block.subject.name;
+
+                display(['Processing file ', block.unique_name ,' ...', '(file ', ...
+                    int2str(i), ' out of ', int2str(length(self.block_list)), ')']); 
+
+                % Create the subject folder if it doesn't exist yet
+                if(~ exist([self.result_folder subject_name], 'dir'))
+                    mkdir([self.result_folder subject_name]);
+                end
+
+                % Don't preprocess the file if user answered negatively to overwriting
+                if skip && exist(block.potential_result_address, 'file')
+                    display('Results already exits. Skipping prerocessing for this subject... ');
+                    continue;
+                else
+                    % Load and preprocess
+                    [~ ,data] = evalc('pop_fileio(block.source_address)');
+                    [EEG, fig] = pre_process(data, block.source_address, self.params);
+
+                    if( isempty(EEG) )
+                        self.write_to_log(block.source_address);
+                       continue; 
+                    end
+                    figure(fig);
+                    h = gcf;
+                end
+                
+                % Delete old results
+                if( exist(block.reduced_address, 'file' ))
+                    delete(block.reduced_address);
+                end
+                if( exist(block.result_address, 'file' ))
+                    delete(block.result_address);
+                end
+                if( exist([block.image_address, '.tif'], 'file' ))
+                    delete([block.image_address, '.tif']);
+                end
+                block.setRatingInfoAndUpdate( 'Not Rated', [], [], false);
+                
+                % save results
+                set(fig,'PaperUnits','inches','PaperPosition',[0 0 10 8])
+                print(fig, block.image_address, '-djpeg', '-r100');
+                close(fig);
+
+                reduced.data = downsample(EEG.data',self.ds_rate)';
+                rate = 'Not Rated';
+                tobe_interpolated = [];
+                auto_badchans =  EEG.auto_badchans;
+                man_badchans = [];
+                is_interpolated = false;
+                EEG = rmfield(EEG, 'auto_badchans');
+                params = self.params;
+                
+                display('Saving results...');
+                save(block.reduced_address, 'reduced', '-v6');
+                save(block.result_address, 'EEG', 'auto_badchans','man_badchans'...
+                    , 'rate','tobe_interpolated', 'is_interpolated', ...
+                    'params', '-v7.3');
+
+                self.not_rated_list = ...
+                    [self.not_rated_list block.index];
+                self.not_rated_list = sort(unique(self.not_rated_list));
+                if( self.current == -1)
+                   self.current = 1; 
+                end
+                self.save_project();
+            end
+            end_time = cputime - start_time;
+            disp(['*********Pre-processing finished. Total elapsed time: ', num2str(end_time),'***************'])
+
+            % Update the main gui's data after rating processing
+            h = findobj(allchild(0), 'flat', 'Tag', 'main_gui');
+            if( isempty(h))
+                h = main_gui;
+            end
+            handle = guidata(h);
+            handle.project_list(self.name) = self;
+            guidata(handle.main_gui, handle);
+            main_gui();
+        end
+        
+        function self = interpolate_selected(self)
+            
+            % Add paths
+            if(isunix)
+                slash = '/';
+            elseif(ispc)
+                slash = '\';
+            end
+
+            % eeg_interp is checked as an example of a file in matlab_scripts, it could
+            % be any other file in that folder.
+            if(~exist('pop_fileio', 'file'))
+                matlab_paths = genpath(['..' slash 'matlab_scripts' slash]);
+                if(ispc)
+                    parts = strsplit(matlab_paths, ';');
+                else
+                    parts = strsplit(matlab_paths, ':');
+                end
+                IndexC = strfind(parts, 'compat');
+                Index = not(cellfun('isempty', IndexC));
+                parts(Index) = [];
+                IndexC = strfind(parts, 'neuroscope');
+                Index = not(cellfun('isempty', IndexC));
+                parts(Index) = [];
+                if(ispc)
+                    matlab_paths = strjoin(parts, ';');
+                else
+                    matlab_paths = strjoin(parts, ':');
+                end
+                addpath(matlab_paths);
+            end
+
+            if( ~exist('main_gui','file'))
+                addpath(['..' slash 'gui'])
+            end
+
+            if(isempty(self.interpolate_list))
+                waitfor(msgbox('No subjects to interpolate. Please first rate.',...
+                    'Error','error'));
+                return;
+            end
+
+            display('*******Start Interpolation**************');
+            start_time = cputime;
+            int_list = self.interpolate_list;
+            for i = 1:length(int_list)
+                index = int_list(i);
+                unique_name = self.block_list{index};
+                block = self.block_map(unique_name);
+                block.update_addresses(self.data_folder, self.result_folder);
+
+                display(['Processing file ', block.unique_name ,' ...', '(file ', ...
+                    int2str(i), ' out of ', int2str(length(int_list)), ')']); 
+                assert(strcmp(block.rate, 'Interpolate') == 1);
+
+                % Interpolate and save to results
+                preprocessed = matfile(block.result_address,'Writable',true);
+                EEG = preprocessed.EEG;
+                interpolate_chans = block.tobe_interpolated;
+                if(isempty(interpolate_chans))
+                    waitfor(msgbox(['The subject is rated to be interpolated but no',...
+                        'channels has been chosen.'], 'Error','error'));
+                    continue;
+                end
+                preprocessed.EEG = eeg_interp(EEG ,...
+                    interpolate_chans ,'spherical');
+                EEG = preprocessed.EEG;
+                % Downsample the new file and save it
+                reduced.data = (downsample(EEG.data', self.ds_rate))';
+                save(block.reduced_address, 'reduced', '-v6');
+
+                % Setting the new information
+                block.setRatingInfoAndUpdate('Not Rated', [], [block.man_badchans interpolate_chans], true);
+                self.interpolate_list(self.interpolate_list == block.index) = [];
+                self.not_rated_list = ...
+                        [self.not_rated_list block.index];
+                self.not_rated_list = sort(self.not_rated_list);
+                block.saveRatingsToFile();
+                self.save_project();
+            end
+            end_time = cputime - start_time;
+            disp(['Interpolation finished. Total elapsed time: ', num2str(end_time)])
+
+            % Update the main gui's data after rating processing
+            h = findobj(allchild(0), 'flat', 'Tag', 'main_gui');
+            if( isempty(h))
+                h = main_gui;
+            end
+            handle = guidata(h);
+            handle.project_list(self.name) = self;
+            guidata(handle.main_gui, handle);
+            main_gui();
+        end
+        
         function self = update_rating_structures(self)
             % Updates the data structures of this project. Look
             % create_rating_structure for more info.
@@ -559,7 +789,37 @@ classdef Project < handle
             end
             
             self.result_folder = self.add_slash(result_folder);
-        end  
+        end
+        
+        function skip = check_existings(self)
+            % If there is already at least one preprocessed file in the
+            % result_folder, ask the user whether to overwrite them or skip them
+
+            skip = 1;
+            if( self.processed_files > 0)
+                choice = questdlg(['Some files are already processed. Would ',... 
+                                   'you like to overwrite them or skip them ?'], ...
+                                   'Pre-existing files in the project folder.',...
+                                   'Over Write', 'Skip','Over Write');
+                switch choice
+                    case 'Over Write'
+                        skip = 0;
+                    case 'Skip'
+                        skip = 1;
+                end
+            end
+        end
+        
+        function write_to_log(self, source_address)
+            log_file_address = [self.result_folder 'preprocessing.log'];
+            if( exist(log_file_address, 'file'))
+                fileID = fopen(log_file_address,'a');
+            else
+                fileID = fopen(log_file_address,'w');
+            end
+            fprintf(fileID, ['The data file ' source_address ' could not be preprocessed due to a lot of noise.']);
+            fclose(fileID);
+        end
     end
     
     %% Public static methods

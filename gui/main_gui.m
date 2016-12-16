@@ -612,7 +612,7 @@ projects = get(handles.existingpopupmenu, 'String');
 name = projects{idx};
 project = handles.project_list(name);
 
-interpolate_selected(project);
+project.interpolate_selected();
 
 
 % --- Run preprocessing on all subjects
@@ -625,7 +625,7 @@ projects = get(handles.existingpopupmenu, 'String');
 name = projects{idx};
 project = handles.project_list(name);
 
-pre_process_all(project);
+project.preprocess_all();
 
 
 % --- Load the selected project by gui
