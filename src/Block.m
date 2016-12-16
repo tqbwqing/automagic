@@ -5,10 +5,11 @@ classdef Block < handle
     %   and its corresponding preprocessed file.
     %   This information include a unique_name for each block, the name of
     %   the raw_file, its extension, its corresponding Subject, the prefix
-    %   of the preprocessed file (for more info on the prefix look at the 
-    %   docs), sampling rate of the corresponding project, list of channels
+    %   of the preprocessed file, parameters of preprocessing (for more 
+    %   info on the prefix and the parameters of the preprocessing see docs) 
+    %   , sampling rate of the corresponding project, list of channels
     %   that are chosen to be interpolated, rate of the preprocessed file
-    %   given during the rating process in rating_gui, list of channels are
+    %   given during the rating process in rating_gui, list of channels
     %   interpolated during the preprocessing, list of channels that are
     %   interpolated by manual inspection and a boolean stating whether
     %   this block has been already interpolated or not.
@@ -18,12 +19,13 @@ classdef Block < handle
     %
     %Block Methods:
     %   Block - To create a project following arguments must be given:
-    %   myBlock = Block(subject, file_name, ext, dsrate)
+    %   myBlock = Block(subject, file_name, ext, dsrate, params)
     %   where subject is an instance of class Subject which specifies the
-    %   Subject to which this block belongs, file_name is the name of the
-    %   raw_file corresponding to this block and dsrate is the sampling
+    %   Subject to which this block belongs to, file_name is the name of 
+    %   the raw_file corresponding to this block, dsrate is the sampling
     %   rate of the corresponding project with which a reduced file is
-    %   obtained.
+    %   obtained and params the parameters of the preprocessing used on
+    %   this block.
     %
     %   update_rating_info_from_file_if_any - Check if any corresponding
     %   preprocessed file exists, if it's the case import the rating data
@@ -38,7 +40,7 @@ classdef Block < handle
     %   have a different path to the data_folder or result_folder. This can
     %   happen either because the data is on a server and the path to it is
     %   different on different systems, or simply if the project is loaded
-    %   from a windows to a iOS or vice versa. The best practice is to call
+    %   from a windows to an iOS or vice versa. The best practice is to call
     %   this method before accessing a block to make sure it's synchronised
     %   with its project.
     %
@@ -51,23 +53,26 @@ classdef Block < handle
     
     %% Properties
     properties
+        
         % Index of this block in the block list of the project.
         index 
+        
         % The address of the corresponding raw file
         source_address
         
         % The address of the corresponding preprocessed file. It has the
-        % form prefix_unique_name.mat (ie. np_subject1_001).
+        % form /root/project/subject/prefix_unique_name.mat (ie. np_subject1_001).
         result_address
         
         % The address of the corresponding reduced file. The reduced file is
         % a downsampled file of the preprocessed file. Its use is only to be
-        % plotted on the rating_gui. It's downsampled so that it's loaded
-        % and plotted faster on the gui.
+        % plotted on the rating_gui. It is downsampled to speed up the
+        % plotting in rating_gui
         reduced_address
     end
 
     properties(SetAccess=private)
+        
         % Instance of the Subject. The corresponding subject that contains
         % this block.
         subject
@@ -131,6 +136,7 @@ classdef Block < handle
     end
     
     properties(Dependent)
+        
         % The address of the plots obtained during the preprocessing
         image_address
     end
@@ -138,6 +144,7 @@ classdef Block < handle
     %% Constructor
     methods   
         function self = Block(subject, file_name, ext, dsrate, params)
+  
             % Fixed ones are initialised in the constructor
             self.subject = subject;
             self.file_name = file_name;

@@ -23,6 +23,16 @@ classdef Project < handle
     %   This constructor calls create_rating_structures in order to create
     %   and initialise corresponding data structures.
     %
+    %   preprocess_all - It is called from the main_gui to start
+    %   preprocessing. It iterates on all the raw files in data_folder,
+    %   preprocess them all and put the results in result_folder. 
+    %   If some files have been already preprocessed, in the beginning the
+    %   user is asked to whether overwrite the previous results or just
+    %   skip them and continue with the rest of unpreprocessed files.
+    %
+    %   interpolate_selected - Called from the main_gui to interpolate all
+    %   the selected channels during the manual rating in rating_gui.
+    %   
     %   update_rating_structures - Whenever changes has been made to the
     %   data_folder or result_folder, this method must be called to update
     %   the data structures accordingly. The process may take long time
@@ -55,6 +65,7 @@ classdef Project < handle
 
         
     properties
+        
         % The index of the current block that must be shown in rating_gui.
         current
         
@@ -92,6 +103,7 @@ classdef Project < handle
     end
     
     properties(SetAccess=private)
+        
         % Name of this project.
         name
         
@@ -144,7 +156,8 @@ classdef Project < handle
     %% Public Methods
     methods
         function self = preprocess_all(self)
-               
+            % preprocesses all the files in the data_folder of this project
+            
             % Add paths
             if(isunix)
                 slash = '/';
@@ -280,6 +293,8 @@ classdef Project < handle
         end
         
         function self = interpolate_selected(self)
+            % Interpolates all the channels selected to be interpolated
+            % during the manual rating in rating_gui.
             
             % Add paths
             if(isunix)

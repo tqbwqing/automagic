@@ -24,16 +24,16 @@ function filtered = perform_filter(data, varargin)
 %   Default values: by default there is no low_pass filter:
 %                   params.filter_mode = 'EU'
 %                   params.high_freq = 0.5
-%                   params.high_order = 0  (Default value of pop_eegfiltnew)
+%                   params.high_order = []  (Default value of pop_eegfiltnew)
 %                   params.low_freq = -1 % low pass filtering skipped
-%                   params.low_order = 0 (Default value of pop_eegfiltnew)
+%                   params.low_order = [] (Default value of pop_eegfiltnew)
 
 p = inputParser;
 addParameter(p,'filter_mode', 'EU', @ischar);
 addParameter(p,'high_freq', 0.5, @isnumeric);
-addParameter(p,'high_order', []);
+addParameter(p,'high_order', [], @isnumeric);
 addParameter(p,'low_freq', -1, @isnumeric);
-addParameter(p,'low_order', []);
+addParameter(p,'low_order', [], @isnumeric);
 parse(p, varargin{:});
 
 

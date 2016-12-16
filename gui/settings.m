@@ -77,13 +77,13 @@ handles.default_params = default_params;
 
 set(handles.channelreductioncheckbox, 'Value', params.perform_reduce_channels);
 if( isempty( params.filter_params.high_order) )
-    set(handles.highpassorderedit, 'String', params.Default);
+    set(handles.highpassorderedit, 'String', default_params.Default);
 else
     set(handles.highpassorderedit, 'String', params.filter_params.high_order);
 end
 
 if( isempty( params.filter_params.low_order) )
-    set(handles.lowpassorderedit, 'String', params.Default);
+    set(handles.lowpassorderedit, 'String', default_params.Default);
 else
     set(handles.lowpassorderedit, 'String', params.filter_params.low_order);
 end
@@ -118,7 +118,7 @@ set(handles.eogregressioncheckbox, 'Value', params.perform_eog_regression);
 if( isempty(params.pca_params.lambda) || params.pca_params.lambda ~= -1)
     set(handles.pcacheckbox, 'Value', 1);
     if( isempty( params.pca_params.lambda ))
-       set(handles.lambdaedit, 'String', params.Default);
+       set(handles.lambdaedit, 'String', default_params.Default);
     else
         set(handles.lambdaedit, 'String', params.pca_params.lambda); 
     end
@@ -126,7 +126,7 @@ if( isempty(params.pca_params.lambda) || params.pca_params.lambda ~= -1)
     set(handles.maxIteredit, 'String', params.pca_params.maxIter);
 else
     set(handles.pcacheckbox, 'Value', 0);
-    set(handles.lambdaedit, 'String', params.Default);
+    set(handles.lambdaedit, 'String', default_params.Default);
     set(handles.toledit, 'String', default_params.pca_params.tol);
     set(handles.maxIteredit, 'String', default_params.pca_params.maxIter);
 end
@@ -586,7 +586,7 @@ set(handles.eogregressioncheckbox, 'Value', ...
 if( isempty(params.pca_params.lambda) || default_params.pca_params.lambda ~= -1)
     set(handles.pcacheckbox, 'Value', 1);
     set(handles.lambdaedit, 'String', ...
-        params.Default);
+        default_params.Default);
     set(handles.toledit, 'String', ...
         default_params.pca_params.tol);
     set(handles.maxIteredit, 'String', ...
@@ -613,7 +613,6 @@ function handles = switch_components(handles)
 h = findobj(allchild(0), 'flat', 'Tag', 'main_gui');
 main_gui_handle = guidata(h);
 default_params = handles.default_params;
-params = handles.params;
 
 if( get(main_gui_handle.highpasscheckbox, 'Value') )
     set(handles.highpassorderedit, 'enable', 'on');
@@ -664,7 +663,7 @@ else
     set(handles.toledit, 'enable', 'off');
     set(handles.maxIteredit, 'enable', 'off');
     set(handles.lambdaedit, 'String', ...
-        num2str(params.Default));
+        num2str(default_params.Default));
     set(handles.toledit, 'String', ...
         num2str(default_params.pca_params.tol));
     set(handles.maxIteredit, 'String', ...

@@ -7,12 +7,14 @@ function rejected = reject_channels(data, varargin)
 %   'interpolation_params'. First three are to specify thresholds for three
 %   different measures to compute probability, kurtosis and spectrum for 
 %   each channel. 'interpolation_params' is the parameter to determine the 
-%   mode of the interpolation for flatchannels. Note that the interpolation
-%   of the flatchannels is already performed here, otherwise there will be 
-%   some issues with flatchannels in the pop_rejchan.m. When params is 
-%   ommited default values are used. When a field of params is ommited, 
-%   default value for that %field is used. If any of the fields is -1, 
-%   that measure is not computed for channel rejection.
+%   mode of the interpolation for flatchannels. Note that an interpolation
+%   of the flatchannels is already performed here so that next steps of 
+%   pop_rejchans perform with no error, but the interpolated result is not 
+%   returned. These flaatchannels are returned alongside other bad channels 
+%   to be interpolated at the end of the preprocessing all together. 
+%   When params is ommited default values are used. When a field of params 
+%   is ommited, default value for that field is used. If any of the fields 
+%   is -1, that measure is not computed for channel rejection.
 %   Default values: params.kurt_thresh = 3
 %                   params.prob_thresh = 4
 %                   params.spec_thresh = 4

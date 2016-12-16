@@ -1,5 +1,5 @@
 <deployment-project plugin="plugin.apptool" plugin-version="1.0">
-  <configuration build-checksum="3731392448" file="/Users/amirreza/workspace/ppp/pipline/gui/Automagic.prj" location="/Users/amirreza/workspace/ppp/pipline/gui" name="Automagic" target="target.mlapps" target-name="Package App">
+  <configuration build-checksum="3642541143" file="/Users/amirreza/workspace/ppp/pipline/gui/Automagic.prj" location="/Users/amirreza/workspace/ppp/pipline/gui" name="Automagic" target="target.mlapps" target-name="Package App">
     <param.appname>Automagic</param.appname>
     <param.authnamewatermark>amirreza</param.authnamewatermark>
     <param.email>amirreza.bahreini@uzh.ch</param.email>
@@ -1068,8 +1068,6 @@
       <file>/Users/amirreza/workspace/ppp/pipline/src/Block.m</file>
       <file>/Users/amirreza/workspace/ppp/pipline/src/Project.m</file>
       <file>/Users/amirreza/workspace/ppp/pipline/src/Subject.m</file>
-      <file>/Users/amirreza/workspace/ppp/pipline/src/interpolate_selected.m</file>
-      <file>/Users/amirreza/workspace/ppp/pipline/src/pre_process_all.m</file>
     </fileset.depfun>
     <fileset.resources>
       <file>/Users/amirreza/workspace/ppp/pipline/matlab_scripts/GSN-HydroCel-129.sfp</file>

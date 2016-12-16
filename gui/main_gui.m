@@ -4,7 +4,7 @@ function varargout = main_gui(varargin)
 %      order to start the application. All other functions and guis are 
 %      called from within the MAIN_GUI.
 %      
-%      No arguments is needed to start the application.
+%      No argument is needed to start the application.
 %
 %      MAIN_GUI, by itself, creates a new MAIN_GUI or raises the existing
 %      singleton*.
@@ -106,11 +106,11 @@ handles.default_params.interpolation_params.method = 'spherical';
 
 % Set settings to default
 handles.params = handles.default_params;
-
+handles.params = rmfield(handles.params,'Default');
 % Add project paths
-% Checks 'pre_process_all' as an example of a file in /src. Could be any other file
+% Checks 'project.m' as an example of a file in /src. Could be any other file
 % in /src
-if( ~exist('pre_process_all', 'file')) 
+if( ~exist('project.m', 'file')) 
     addpath('../src/');
 end
 
@@ -265,6 +265,7 @@ if(strcmp(name, handles.new_project.LIST_NAME))
     set(handles.interpolatenumber, 'String', '')
     handles.current_project = Index;
     handles.params = handles.default_params;
+    handles.params = rmfield(handles.params,'Default');
     % Enable modifications
     switch_gui('on', 'off', handles);
     return;
