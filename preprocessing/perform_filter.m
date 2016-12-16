@@ -52,7 +52,7 @@ end
 
 
 if( low_freq ~= -1 )
-    [~, data] = evalc('pop_eegfiltnew(data, 0, low_req, low_order)');
+    [~, data] = evalc('pop_eegfiltnew(data, 0, low_freq, low_order)');
 end
 
 switch filter_mode
