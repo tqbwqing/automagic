@@ -44,7 +44,7 @@ In this section of the manual, only the basic functionality of Automagic will be
 3. [Rate data and manually select bad channels if any](#25-the-manual-rating-panel).
 4. [Interpolate all manually selected channels] (#26-the-interpolation-panel).
 5. Repeat steps 3 and 4 until all data is rated.
- * NOTE: You can not close the main gui window during the preprocessing. If you wish to stop the preprocessing at any time, you can use *CTRL-C*. If by any reason the preprocessing is stopped before being completely finished, all preprocessed files to that moment will be saved, and you can resume the preprocessing only for the files which are not preprocessed yet. 
+ * NOTE: You can not close the main gui window during the preprocessing. If you wish to stop the preprocessing at any time, you can use *CTRL-C*. In this case, or if by any other reason the preprocessing is stopped before being completely finished, all preprocessed files to that moment will be saved, and you can resume the preprocessing only for the files which are not preprocessed yet. 
 
 * Important:	Since synchronisation is rather basic, people should never work on the same project simultaneously.
 
@@ -54,7 +54,7 @@ In this section of the manual, only the basic functionality of Automagic will be
 
 #### 2.3.1. Creating a New Project
 1. Navigate to the drop-down list labelled *Select Project*.
-2. Select *Create New Project???*
+2. Select *Create New Project...*
 3. Name your project.
 4. Choose the file extension that corresponds to your data’s file format. *Automagic* currently supports the following file formats: raw image files (.raw or .RAW), fractal image files (.fif) and generic data files (.dat).
 5. Set the downsampling rate on the manual rating panel. The downsampling only affects the visual representation of your data. A higher downsampling rate will shorten loading times. In general, a downsampling rate of 2 is a good choice. 
@@ -82,8 +82,8 @@ There are two options to load an existing project. The first option can only be 
 The second option can be used to load any *Automagic* project:
 
 1. Navigate to the drop-down list labelled *Select Project*.
-2. Select *Load an existing project???*
-3. A browser window will open. Navigate to the existing project???s project folder.
+2. Select *Load an existing project...*
+3. A browser window will open. Navigate to the existing project...s project folder.
 4. Select and open the file named *project_state.mat*
 
 #### 2.3.3. Merging Projects
@@ -92,7 +92,7 @@ To merge any number of existing projects without losing the individual projects,
 1. Create a new data folder using Finder (Mac), Explorer (Windows) or your Linux equivalent.
 2. Create a new project folder using Finder (Mac), Explorer (Windows) or your Linux equivalent.
 3. For all the projects that you want to merge: Copy the contents from the data and project folders to the new data and project folders.
- * Important: 	Each of your existing projects??? project folders contains a file named project_state.mat. Do not copy these files to your new project folder.
+ * Important: 	Each of your existing project folders contains a file named project_state.mat. Do not copy these files to your new project folder.
 4. In *Automagic*: Create a new project using the newly created data and project folders.
 
 #### 2.3.4. Adding Data to an Existing Project
@@ -112,7 +112,7 @@ To merge any number of existing projects without losing the individual projects,
 #### 2.3.6. Deleting a Project
 1. Click on *Delete Project* in the lower right corner of the project panel. A dialog box will appear.
 2. Take responsibility by clicking on Delete.
- * Important: 	This will only delete the file named project_state.mat in the project folder and remove the project from the Automagic GUI. Please use Finder (Mac), Explorer (Windows) or your Linux equivalent to delete your project???s data and/or project folder.
+ * Important: 	This will only delete the file named project_state.mat in the project folder and remove the project from the Automagic GUI. Please use Finder (Mac), Explorer (Windows) or your Linux equivalent to delete your project data and/or project folder.
 
 #### 2.3.7. Customize Settings
 ![alt tag](https://github.com/amirrezaw/automagic/blob/master/automagic_resources/settings.png)
@@ -131,7 +131,7 @@ After clicking on *Configurations...* button a new window is opened where you ca
  * Important:	The filtering can only be set during project creation.
 Click on Run to start the pre-processing of your data. This is the first thing you should do after creating a new project or after adding data to an existing project. Pre-processing includes filtering, detection of bad channels, EOG regression, PCA, and automatic interpolation.
 
-Should the project folder already contain files (i.e. should some of the project???s data already have been pre-processed), you???ll be able to choose whether existing files will be overwritten or skipped after clicking on Run. 
+Should the project folder already contain files (i.e. should some of the projects data already have been pre-processed), you will be able to choose whether existing files will be overwritten or skipped after clicking on Run. 
 * Important:	Please wait until all files have been pre-processed before doing anything else in this instance of MATLAB.
 
 ### 2.5. The Manual Rating Panel
@@ -140,7 +140,7 @@ Should the project folder already contain files (i.e. should some of the project
 
 
  * Important:	 The downsampling rate can only be set during project creation.
-Click on *Start???* to open the rating GUI.
+Click on *Start...* to open the rating GUI.
  * Important: 	Only pre-processed files can be rated manually.
  
 A visualisation of the currently selected file is displayed. Time corresponds to the x-axis, EEG channels correspond to the y-axis. You can use the tools in the top left corner to e.g. magnify an area or select a specific point of the current visualisation. Use the filters right below the tools to focus on a subset of your files based on their rating. You can navigate between files of the current subset by clicking on *Previous* and *Next* or by selecting a file from the drop-down list in the top right corner.
@@ -178,7 +178,6 @@ There are three main folders:
 3. **src**
  This folder contains all other files that are called by the guis:
  1. *Project.m*, *Subject.m* and *Block.m* are classes representing a project created in the gui and its corresponding subjects and the raw files of each subject, respectievly.
- 2. *pre\_process\_all.m* and *interpolate\_selected.m* are functions that are called from whithin the gui by the corresponding call backs of *Run* and *Interpolate All* respectively.
 4. **matlab_scripts** 
     This folder (must) contain all external files from *eeg_lab* and other libraries.
 
