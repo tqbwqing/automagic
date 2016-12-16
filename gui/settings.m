@@ -115,14 +115,18 @@ end
 
 set(handles.eogregressioncheckbox, 'Value', params.perform_eog_regression);
 
-if( params.pca_params.lambda ~= -1)
+if( isempty(params.pca_params.lambda) || params.pca_params.lambda ~= -1)
     set(handles.pcacheckbox, 'Value', 1);
-    set(handles.lambdaedit, 'String', params.pca_params.lambda);
+    if( isempty( params.pca_params.lambda ))
+       set(handles.lambdaedit, 'String', params.Default);
+    else
+        set(handles.lambdaedit, 'String', params.pca_params.lambda); 
+    end
     set(handles.toledit, 'String', params.pca_params.tol);
     set(handles.maxIteredit, 'String', params.pca_params.maxIter);
 else
     set(handles.pcacheckbox, 'Value', 0);
-    set(handles.lambdaedit, 'String', default_params.pca_params.lambda);
+    set(handles.lambdaedit, 'String', params.Default);
     set(handles.toledit, 'String', default_params.pca_params.tol);
     set(handles.maxIteredit, 'String', default_params.pca_params.maxIter);
 end
@@ -501,17 +505,13 @@ if( get(handles.pcacheckbox, 'Value') )
     lambda = str2double(get(handles.lambdaedit, 'String'));
     tol = str2double(get(handles.toledit, 'String'));
     maxIter = str2double(get(handles.maxIteredit, 'String'));
-    if( isempty(lambda) )
-        lambda = handles.default_params.Default;
+    if(isnan(lambda) )
+        lambda = default_params.pca_params.lambda;
     end
 else
     lambda = -1;
     tol = -1;
     maxIter = -1;
-end
-
-if( isempty(lambda) || isnan(lambda))
-    lambda = default_params.pca_params.lambda;
 end
 
 if(isempty(tol) || isnan(tol))
@@ -545,6 +545,7 @@ function defaultpushbutton_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 default_params = handles.default_params;
+params = handles.params;
 
 set(handles.channelreductioncheckbox, 'Value', ...
     default_params.perform_reduce_channels);
@@ -582,10 +583,10 @@ end
 
 set(handles.eogregressioncheckbox, 'Value', ...
     default_params.perform_eog_regression);
-if( default_params.pca_params.lambda ~= -1)
+if( isempty(params.pca_params.lambda) || default_params.pca_params.lambda ~= -1)
     set(handles.pcacheckbox, 'Value', 1);
     set(handles.lambdaedit, 'String', ...
-        default_params.pca_params.lambda);
+        params.Default);
     set(handles.toledit, 'String', ...
         default_params.pca_params.tol);
     set(handles.maxIteredit, 'String', ...
@@ -612,6 +613,7 @@ function handles = switch_components(handles)
 h = findobj(allchild(0), 'flat', 'Tag', 'main_gui');
 main_gui_handle = guidata(h);
 default_params = handles.default_params;
+params = handles.params;
 
 if( get(main_gui_handle.highpasscheckbox, 'Value') )
     set(handles.highpassorderedit, 'enable', 'on');
@@ -662,7 +664,7 @@ else
     set(handles.toledit, 'enable', 'off');
     set(handles.maxIteredit, 'enable', 'off');
     set(handles.lambdaedit, 'String', ...
-        num2str(default_params.pca_params.lambda));
+        num2str(params.Default));
     set(handles.toledit, 'String', ...
         num2str(default_params.pca_params.tol));
     set(handles.maxIteredit, 'String', ...

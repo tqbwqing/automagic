@@ -27,6 +27,10 @@ lambda = p.Results.lambda;
 tol = p.Results.tol;
 maxIter = p.Results.maxIter;
 
+if( isempty( lambda) )
+    lambda = 1 / sqrt(m);
+end
+
 eeg = double(data.data)';
 % Run robust PCA
 noise = [];

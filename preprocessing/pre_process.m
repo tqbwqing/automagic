@@ -191,6 +191,7 @@ if( length(rejected_chans) > eeg_size(1) / 2)
     fig = [];
    return; 
 end
+
 % Remove effect of EOG
 if( perform_eog_regression )
     EEG_regressed = EOG_regression(EEG, EOG);
@@ -199,11 +200,7 @@ else
 end
 
 % PCA
-if( ~ strcmp(pca_params.lambda, Default))
-    [EEG_cleared, noise] = perform_pca(EEG_regressed, pca_params);
-else
-    [EEG_cleared, noise] = perform_pca(EEG_regressed);
-end
+[EEG_cleared, noise] = perform_pca(EEG_regressed, pca_params);
 
 % interpolate zero and artifact channels:
 display('Interpolating...');
