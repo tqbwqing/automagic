@@ -110,7 +110,7 @@ handles.params = rmfield(handles.params,'Default');
 % Add project paths
 % Checks 'project.m' as an example of a file in /src. Could be any other file
 % in /src
-if( ~exist('project.m', 'file')) 
+if( ~exist('Subject.m', 'file')) 
     addpath('../src/');
 end
 
