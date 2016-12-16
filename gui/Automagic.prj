@@ -1,5 +1,5 @@
 <deployment-project plugin="plugin.apptool" plugin-version="1.0">
-  <configuration build-checksum="300413030" file="/Users/amirreza/workspace/ppp/pipline/gui/Automagic.prj" location="/Users/amirreza/workspace/ppp/pipline/gui" name="Automagic" target="target.mlapps" target-name="Package App">
+  <configuration build-checksum="2626489152" file="/Users/amirreza/workspace/ppp/pipline/gui/Automagic.prj" location="/Users/amirreza/workspace/ppp/pipline/gui" name="Automagic" target="target.mlapps" target-name="Package App">
     <param.appname>Automagic</param.appname>
     <param.authnamewatermark>amirreza</param.authnamewatermark>
     <param.email>amirreza.bahreini@uzh.ch</param.email>
@@ -17,10 +17,7 @@
     <param.products.name />
     <param.products.id />
     <param.products.version />
-    <param.platforms>
-      <item>win32</item>
-      <item>maci64</item>
-    </param.platforms>
+    <param.platforms />
     <param.output>/Users/amirreza/workspace/ppp/pipline/gui</param.output>
     <param.guid>59cfe350-124d-4d9c-9097-ab6b59b3afae</param.guid>
     <unset>
@@ -30,6 +27,7 @@
       <param.products.name />
       <param.products.id />
       <param.products.version />
+      <param.platforms />
       <param.output />
     </unset>
     <fileset.main>
@@ -359,7 +357,6 @@
       <file>/Users/amirreza/workspace/ppp/pipline/matlab_scripts/eeglab13_6_5b/plugins/fieldtrip-20161108/external/neuroscope/private/isdvector.m</file>
       <file>/Users/amirreza/workspace/ppp/pipline/matlab_scripts/eeglab13_6_5b/plugins/fieldtrip-20161108/external/neuroscope/private/isiscalar.m</file>
       <file>/Users/amirreza/workspace/ppp/pipline/matlab_scripts/eeglab13_6_5b/plugins/fieldtrip-20161108/external/neuroscope/private/isivector.m</file>
-      <file>/Users/amirreza/workspace/ppp/pipline/matlab_scripts/eeglab13_6_5b/plugins/fieldtrip-20161108/external/neuroscope/private/isstring.m</file>
       <file>/Users/amirreza/workspace/ppp/pipline/matlab_scripts/eeglab13_6_5b/plugins/fieldtrip-20161108/external/neuroshare/ns_CloseFile.m</file>
       <file>/Users/amirreza/workspace/ppp/pipline/matlab_scripts/eeglab13_6_5b/plugins/fieldtrip-20161108/external/neuroshare/ns_GetAnalogData.m</file>
       <file>/Users/amirreza/workspace/ppp/pipline/matlab_scripts/eeglab13_6_5b/plugins/fieldtrip-20161108/external/neuroshare/ns_GetAnalogInfo.m</file>

@@ -59,6 +59,9 @@ if(~exist('pop_fileio', 'file'))
     IndexC = strfind(parts, 'compat');
     Index = not(cellfun('isempty', IndexC));
     parts(Index) = [];
+    IndexC = strfind(parts, 'neuroscope');
+    Index = not(cellfun('isempty', IndexC));
+    parts(Index) = [];
     if(ispc)
         matlab_paths = strjoin(parts, ';');
     else
