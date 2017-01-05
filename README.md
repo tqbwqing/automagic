@@ -1,5 +1,7 @@
 # Automagic
 
+![alt tag](https://github.com/amirrezaw/automagic/blob/master/automagic_resources/automagic.jpg)
+
 ## What is Automagic ?
 
 ![alt tag](https://github.com/amirrezaw/automagic/blob/master/automagic_resources/main_gui.png)
