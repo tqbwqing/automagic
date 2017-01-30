@@ -36,6 +36,7 @@ p = inputParser;
 addParameter(p,'filter_params', struct, @isstruct);
 addParameter(p,'channel_rejection_params', struct, @isstruct);
 addParameter(p,'pca_params', struct, @isstruct);
+addParameter(p,'ica_params', struct, @isstruct);
 addParameter(p,'interpolation_params', struct('method', 'spherical'), @isstruct);
 addParameter(p,'perform_eog_regression', 1, @isnumeric);
 addParameter(p,'perform_reduce_channels', 1, @isnumeric);
@@ -43,9 +44,12 @@ parse(p, varargin{:});
 filter_params = p.Results.filter_params;
 channel_rejection_params = p.Results.channel_rejection_params;
 pca_params = p.Results.pca_params;
+ica_params = p.Results.ica_params;
 interpolation_params = p.Results.interpolation_params;
 perform_eog_regression = p.Results.perform_eog_regression;
 perform_reduce_channels = p.Results.perform_reduce_channels;
+assert( ( ~ isempty(pca_params.lambda) && pca_params.lambda == -1) ...
+         || ica_params.bool == 0);
 %% Add path if not added before
 if(~exist('pop_fileio', 'file'))
     matlab_paths = genpath(['..' slash 'matlab_scripts' slash]);
@@ -170,6 +174,27 @@ switch data.nbchan
         error('This number of channel is not supported.')
 
 end
+
+%% Make ICA map of channels
+switch data.nbchan
+    case 129
+        % Make the map for ICA
+        keySet = {'E17', 'E22', 'E9', 'E11', 'E24', 'E124', 'E33', 'E122', ...
+            'E129', 'E36', 'E104', 'E45', 'E108', 'E52', 'E92', 'E57', 'E100', ...
+            'E58', 'EE96', 'E70', 'E75', 'E83', 'E62'};
+        valueSet =   {'NAS', 'Fp1', 'Fp2', 'Fz', 'F3', 'F4', 'F7', 'F8', 'Cz', ...
+            'C3', 'C4', 'T7', 'T8', 'P3', 'P4', 'LM', 'RM', 'P7', 'P8', 'O1', ...
+            'Oz', 'O2', 'Pz'};
+        ica_params.chanloc_map = containers.Map(keySet,valueSet);
+    case 257
+        keySet = {'E31', 'E37', 'E18', 'E21', 'E36', 'E224', 'E47', ...
+            'E2', 'E257', 'E59', 'E183', 'E69', 'E202', 'E87', 'E153', ...
+            'E94', 'E190', 'E96', 'E170', 'E116', 'E126', 'E150', 'E101'};
+        valueSet =   {'NAS', 'Fp1', 'Fp2', 'Fz', 'F3', 'F4', 'F7', 'F8', 'Cz', ...
+            'C3', 'C4', 'T7', 'T8', 'P3', 'P4', 'LM', 'RM', 'P7', 'P8', 'O1', ...
+            'Oz', 'O2', 'Pz'};
+        ica_params.chanloc_map = containers.Map(keySet,valueSet);
+end
 s = size(data.data);
 assert(data.nbchan == s(1)); clear s;
 
@@ -197,8 +222,12 @@ else
     EEG_regressed = EEG;
 end
 
-% PCA
-[EEG_cleared, noise] = perform_pca(EEG_regressed, pca_params);
+% PCA or ICA
+if (ica_params.bool ) % If ICA is checked
+    EEG_cleared = perform_ica(EEG_regressed, ica_params);
+else % If PCA is not checked either, the EEG_cleared will remain unchanged
+    [EEG_cleared, noise] = perform_pca(EEG_regressed, pca_params);
+end
 
 % interpolate zero and artifact channels:
 display('Interpolating...');
@@ -252,12 +281,14 @@ set(gca,'XTick',XTicks)
 set(gca,'XTickLabel',XTicketLabels)
 title('PCA corrected clean data')
 %figure;
-subplot(9,1,8:9)
-imagesc(noise);
-colormap jet
-caxis([-100 100])
-XTicks = 0:length(EEG.data)/5:length(EEG.data) ;
-XTicketLabels = round(0:length(EEG.data)/EEG.srate/5:length(EEG.data)/EEG.srate);
-set(gca,'XTick',XTicks)
-set(gca,'XTickLabel',XTicketLabels)
-title('PCA noise')
+if( pca_params.lambda ~= -1)
+    subplot(9,1,8:9)
+    imagesc(noise);
+    colormap jet
+    caxis([-100 100])
+    XTicks = 0:length(EEG.data)/5:length(EEG.data) ;
+    XTicketLabels = round(0:length(EEG.data)/EEG.srate/5:length(EEG.data)/EEG.srate);
+    set(gca,'XTick',XTicks)
+    set(gca,'XTickLabel',XTicketLabels)
+    title('PCA noise')
+end

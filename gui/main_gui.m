@@ -102,11 +102,16 @@ handles.default_params.perform_eog_regression = 1;
 handles.default_params.pca_params.lambda = [];
 handles.default_params.pca_params.tol = 1e-7;
 handles.default_params.pca_params.maxIter = 1000;
+handles.default_params.ica_params.bool = 0;
 handles.default_params.interpolation_params.method = 'spherical';
 
 % Set settings to default
 handles.params = handles.default_params;
 handles.params = rmfield(handles.params,'Default');
+% Either pca or ica, not both together.
+assert( ( ~ isempty(handles.params.pca_params.lambda) && ...
+    handles.params.pca_params.lambda == -1) || handles.params.ica_params.bool == 0);
+
 % Add project paths
 % Checks 'project.m' as an example of a file in /src. Could be any other file
 % in /src

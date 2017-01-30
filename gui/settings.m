@@ -22,7 +22,7 @@ function varargout = settings(varargin)
 
 % Edit the above text to modify the response to help settings
 
-% Last Modified by GUIDE v2.5 02-Dec-2016 18:35:06
+% Last Modified by GUIDE v2.5 27-Jan-2017 17:11:15
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -74,6 +74,11 @@ assert(isa(params, 'struct'));
 assert(isa(default_params, 'struct'));
 handles.params = params;
 handles.default_params = default_params;
+
+% Either pca or ica, not both together.
+assert( ( ~ isempty(handles.params.pca_params.lambda) && ...
+    handles.params.pca_params.lambda == -1) || handles.params.ica_params.bool == 0);
+
 
 set(handles.channelreductioncheckbox, 'Value', params.perform_reduce_channels);
 if( isempty( params.filter_params.high_order) )
@@ -131,6 +136,9 @@ else
     set(handles.maxIteredit, 'String', default_params.pca_params.maxIter);
 end
 
+set(handles.icacheckbox, 'Value', params.ica_params.bool);
+
+
 IndexC = strcmp(handles.interpolationpopupmenu.String, params.interpolation_params.method);
 Index = find(IndexC == 1);
 set(handles.interpolationpopupmenu,...
@@ -149,27 +157,6 @@ guidata(hObject, handles);
 % UIWAIT makes settings wait for user response (see UIRESUME)
 % uiwait(handles.settingsfigure);
 
-
-% --- Outputs from this function are returned to the command line.
-function varargout = settings_OutputFcn(hObject, eventdata, handles) 
-% varargout  cell array for returning output args (see VARARGOUT);
-% hObject    handle to figure
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Get default command line output from handles structure
-varargout{1} = handles.output;
-
-
-% --- Executes on button press in channelreductioncheckbox.
-function channelreductioncheckbox_Callback(hObject, eventdata, handles)
-% hObject    handle to channelreductioncheckbox (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hint: get(hObject,'Value') returns toggle state of channelreductioncheckbox
-
-
 % --- Executes on button press in kurtcheckbox.
 function kurtcheckbox_Callback(hObject, eventdata, handles)
 % hObject    handle to kurtcheckbox (see GCBO)
@@ -179,52 +166,6 @@ handles = switch_components(handles);
 % Update handles structure
 guidata(hObject, handles);
 % Hint: get(hObject,'Value') returns toggle state of kurtcheckbox
-
-
-% --- Executes on selection change in highpasspopupmenu.
-function highpasspopupmenu_Callback(hObject, eventdata, handles)
-% hObject    handle to highpasspopupmenu (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: contents = cellstr(get(hObject,'String')) returns highpasspopupmenu contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from highpasspopupmenu
-
-
-% --- Executes during object creation, after setting all properties.
-function highpasspopupmenu_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to highpasspopupmenu (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: popupmenu controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-% --- Executes on selection change in lowpasspopupmenu.
-function lowpasspopupmenu_Callback(hObject, eventdata, handles)
-% hObject    handle to lowpasspopupmenu (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: contents = cellstr(get(hObject,'String')) returns lowpasspopupmenu contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from lowpasspopupmenu
-
-
-% --- Executes during object creation, after setting all properties.
-function lowpasspopupmenu_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to lowpasspopupmenu (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: popupmenu controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
 
 
 % --- Executes on button press in probcheckbox.
@@ -248,188 +189,32 @@ handles = switch_components(handles);
 guidata(hObject, handles);
 % Hint: get(hObject,'Value') returns toggle state of speccheckbox
 
-
-
-function kurtthreshedit_Callback(hObject, eventdata, handles)
-% hObject    handle to kurtthreshedit (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of kurtthreshedit as text
-%        str2double(get(hObject,'String')) returns contents of kurtthreshedit as a double
-
-
-% --- Executes during object creation, after setting all properties.
-function kurtthreshedit_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to kurtthreshedit (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-
-function probthreshedit_Callback(hObject, eventdata, handles)
-% hObject    handle to probthreshedit (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of probthreshedit as text
-%        str2double(get(hObject,'String')) returns contents of probthreshedit as a double
-
-
-% --- Executes during object creation, after setting all properties.
-function probthreshedit_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to probthreshedit (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-
-function specthreshedit_Callback(hObject, eventdata, handles)
-% hObject    handle to specthreshedit (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of specthreshedit as text
-%        str2double(get(hObject,'String')) returns contents of specthreshedit as a double
-
-
-% --- Executes during object creation, after setting all properties.
-function specthreshedit_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to specthreshedit (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-% --- Executes on button press in eogregressioncheckbox.
-function eogregressioncheckbox_Callback(hObject, eventdata, handles)
-% hObject    handle to eogregressioncheckbox (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hint: get(hObject,'Value') returns toggle state of eogregressioncheckbox
-
-
 % --- Executes on button press in pcacheckbox.
 function pcacheckbox_Callback(hObject, eventdata, handles)
 % hObject    handle to pcacheckbox (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
+if(get(handles.pcacheckbox, 'Value') && get(handles.icacheckbox, 'Value'))
+    set(handles.icacheckbox, 'Value', 0);
+end
+
 handles = switch_components(handles);
 % Update handles structure
 guidata(hObject, handles);
 % Hint: get(hObject,'Value') returns toggle state of pcacheckbox
 
-
-
-function lambdaedit_Callback(hObject, eventdata, handles)
-% hObject    handle to lambdaedit (see GCBO)
+% --- Executes on button press in icacheckbox.
+function icacheckbox_Callback(hObject, eventdata, handles)
+% hObject    handle to icacheckbox (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hints: get(hObject,'String') returns contents of lambdaedit as text
-%        str2double(get(hObject,'String')) returns contents of lambdaedit as a double
-
-
-% --- Executes during object creation, after setting all properties.
-function lambdaedit_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to lambdaedit (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
+if(get(handles.pcacheckbox, 'Value') && get(handles.icacheckbox, 'Value'))
+    set(handles.pcacheckbox, 'Value', 0);
 end
 
-
-
-function toledit_Callback(hObject, eventdata, handles)
-% hObject    handle to toledit (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of toledit as text
-%        str2double(get(hObject,'String')) returns contents of toledit as a double
-
-
-% --- Executes during object creation, after setting all properties.
-function toledit_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to toledit (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-
-function maxIteredit_Callback(hObject, eventdata, handles)
-% hObject    handle to maxIteredit (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: get(hObject,'String') returns contents of maxIteredit as text
-%        str2double(get(hObject,'String')) returns contents of maxIteredit as a double
-
-
-% --- Executes during object creation, after setting all properties.
-function maxIteredit_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to maxIteredit (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
-
-% --- Executes on selection change in interpolationpopupmenu.
-function interpolationpopupmenu_Callback(hObject, eventdata, handles)
-% hObject    handle to interpolationpopupmenu (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: contents = cellstr(get(hObject,'String')) returns interpolationpopupmenu contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from interpolationpopupmenu
-
-
-% --- Executes during object creation, after setting all properties.
-function interpolationpopupmenu_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to interpolationpopupmenu (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: popupmenu controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
+handles = switch_components(handles);
 
 % --- Executes on button press in okpushbutton.
 function okpushbutton_Callback(hObject, eventdata, handles)
@@ -454,6 +239,8 @@ perform_reduce_channels = ...
 
 perform_eog_regression = ...
     get(handles.eogregressioncheckbox, 'Value');
+
+ica_bool = get(handles.icacheckbox, 'Value');
 
 high_order = [];
 if( get(main_gui_handle.highpasscheckbox, 'Value') )
@@ -537,6 +324,7 @@ handles.params.channel_rejection_params.prob_thresh = prob_val;
 handles.params.pca_params.lambda = lambda;
 handles.params.pca_params.tol = tol;
 handles.params.pca_params.maxIter = maxIter;
+handles.params.ica_params.bool = ica_bool;
 handles.params.interpolation_params.method = method;
 
 % --- Executes on button press in defaultpushbutton.
@@ -554,6 +342,8 @@ set(handles.highpassorderedit, 'String', ...
     default_params.Default);
 set(handles.lowpassorderedit, 'String', ...
     default_params.filter_params.low_order);
+
+set(handles.icacheckbox, 'Value', default_params.ica_params.bool);
 
 if( default_params.channel_rejection_params.kurt_thresh ~= -1)
     set(handles.kurtcheckbox, 'Value', 1);
@@ -739,3 +529,239 @@ function lowpassorderedit_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
+
+% Hint: get(hObject,'Value') returns toggle state of icacheckbox
+
+
+function lambdaedit_Callback(hObject, eventdata, handles)
+% hObject    handle to lambdaedit (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of lambdaedit as text
+%        str2double(get(hObject,'String')) returns contents of lambdaedit as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function lambdaedit_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to lambdaedit (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function toledit_Callback(hObject, eventdata, handles)
+% hObject    handle to toledit (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of toledit as text
+%        str2double(get(hObject,'String')) returns contents of toledit as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function toledit_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to toledit (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function maxIteredit_Callback(hObject, eventdata, handles)
+% hObject    handle to maxIteredit (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of maxIteredit as text
+%        str2double(get(hObject,'String')) returns contents of maxIteredit as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function maxIteredit_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to maxIteredit (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on selection change in interpolationpopupmenu.
+function interpolationpopupmenu_Callback(hObject, eventdata, handles)
+% hObject    handle to interpolationpopupmenu (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns interpolationpopupmenu contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from interpolationpopupmenu
+
+
+% --- Executes during object creation, after setting all properties.
+function interpolationpopupmenu_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to interpolationpopupmenu (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Outputs from this function are returned to the command line.
+function varargout = settings_OutputFcn(hObject, eventdata, handles) 
+% varargout  cell array for returning output args (see VARARGOUT);
+% hObject    handle to figure
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Get default command line output from handles structure
+varargout{1} = handles.output;
+
+
+% --- Executes on button press in channelreductioncheckbox.
+function channelreductioncheckbox_Callback(hObject, eventdata, handles)
+% hObject    handle to channelreductioncheckbox (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of channelreductioncheckbox
+
+% --- Executes on selection change in highpasspopupmenu.
+function highpasspopupmenu_Callback(hObject, eventdata, handles)
+% hObject    handle to highpasspopupmenu (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns highpasspopupmenu contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from highpasspopupmenu
+
+
+% --- Executes during object creation, after setting all properties.
+function highpasspopupmenu_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to highpasspopupmenu (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on selection change in lowpasspopupmenu.
+function lowpasspopupmenu_Callback(hObject, eventdata, handles)
+% hObject    handle to lowpasspopupmenu (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns lowpasspopupmenu contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from lowpasspopupmenu
+
+
+% --- Executes during object creation, after setting all properties.
+function lowpasspopupmenu_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to lowpasspopupmenu (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function kurtthreshedit_Callback(hObject, eventdata, handles)
+% hObject    handle to kurtthreshedit (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of kurtthreshedit as text
+%        str2double(get(hObject,'String')) returns contents of kurtthreshedit as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function kurtthreshedit_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to kurtthreshedit (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function probthreshedit_Callback(hObject, eventdata, handles)
+% hObject    handle to probthreshedit (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of probthreshedit as text
+%        str2double(get(hObject,'String')) returns contents of probthreshedit as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function probthreshedit_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to probthreshedit (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function specthreshedit_Callback(hObject, eventdata, handles)
+% hObject    handle to specthreshedit (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of specthreshedit as text
+%        str2double(get(hObject,'String')) returns contents of specthreshedit as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function specthreshedit_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to specthreshedit (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in eogregressioncheckbox.
+function eogregressioncheckbox_Callback(hObject, eventdata, handles)
+% hObject    handle to eogregressioncheckbox (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of eogregressioncheckbox
