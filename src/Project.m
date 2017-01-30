@@ -111,7 +111,7 @@ classdef Project < handle
         ds_rate
         
         % File extension of the raw files in this project. Can be .raw,
-        % .RAW, .dat or .fif
+        % .RAW, .dat , .fif or even .mat if it's saved as a matlab file
         file_extension
         
         % Parameters of the preprocessing. To learn more please see
@@ -227,7 +227,12 @@ classdef Project < handle
                     continue;
                 else
                     % Load and preprocess
-                    [~ ,data] = evalc('pop_fileio(block.source_address)');
+                    if( strcmp(block.file_extension, '.mat'))
+                        data = load(block.source_address);
+                        data = data.data;
+                    else
+                        [~ ,data] = evalc('pop_fileio(block.source_address)');
+                    end
                     [EEG, fig] = pre_process(data, block.source_address, self.params);
 
                     if( isempty(EEG) )
