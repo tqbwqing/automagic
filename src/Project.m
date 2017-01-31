@@ -229,7 +229,6 @@ classdef Project < handle
                     % Load and preprocess
                     if( strcmp(block.file_extension, '.mat'))
                         data = load(block.source_address);
-                        data = data.data;
                     else
                         [~ ,data] = evalc('pop_fileio(block.source_address)');
                     end
