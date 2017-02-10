@@ -26,7 +26,7 @@ end
 
 display('Performing ICA  (this may take a while...)');
 options = [0 1 0 0 1];
-[~, EEG_Mara, ~] = processMARA_with_no_popup(data, data, 1, options);
+[~, ~, EEG_Mara, ~] = evalc('processMARA_with_no_popup(data, data, 1, options)');
     
 data = EEG_Mara;
 

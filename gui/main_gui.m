@@ -553,12 +553,14 @@ if(folder ~= 0)
     end
     folder = strcat(folder,slash);
     set(handles.datafoldershow, 'String', folder)
+    project_name = get(handles.projectname, 'String');
     
     split = strsplit(folder, slash);
     parent_folder = split(1:end - 2);
     data_folder = split{end - 1};
     parent_folder = strjoin(parent_folder, slash);
-    project_folder = strcat(parent_folder, slash ,data_folder ,'_results', slash);
+    project_folder = strcat(parent_folder, slash ,data_folder , '_', ...
+        project_name, '_results', slash);
     set(handles.projectfoldershow, 'String', project_folder)
     
     idx = get(handles.fileextension, 'Value');
