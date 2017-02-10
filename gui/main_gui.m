@@ -28,7 +28,7 @@ function varargout = main_gui(varargin)
 
 % Edit the above text to modify the response to help main_gui
 
-% Last Modified by GUIDE v2.5 16-Nov-2016 15:54:35
+% Last Modified by GUIDE v2.5 10-Feb-2017 14:18:22
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -104,6 +104,10 @@ handles.default_params.pca_params.tol = 1e-7;
 handles.default_params.pca_params.maxIter = 1000;
 handles.default_params.ica_params.bool = 0;
 handles.default_params.interpolation_params.method = 'spherical';
+handles.default_params.eeg_system.name = 'EGI';
+handles.default_params.eeg_system.file_loc_type = '';
+handles.default_params.eeg_system.loc_file = '';
+handles.default_params.eeg_system.eog_chans = '';
 
 % Set settings to default
 handles.params = handles.default_params;
@@ -268,6 +272,11 @@ if(strcmp(name, handles.new_project.LIST_NAME))
     set(handles.fpreprocessednumber, 'String', '')
     set(handles.ratednumber, 'String', '')
     set(handles.interpolatenumber, 'String', '')
+    
+    set(handles.extedit, 'String', '')
+    
+    handles = setEEGSystem('EGI', handles);
+    
     handles.current_project = Index;
     handles.params = handles.default_params;
     handles.params = rmfield(handles.params,'Default');
@@ -352,6 +361,8 @@ if ~ exist(project.state_address, 'file')
         set(handles.ratednumber, 'String', '')
         set(handles.interpolatenumber, 'String', '')
         set(handles.highfreqedit, 'String', '')
+        set(handles.chanlocedit, 'String', '');
+        set(handles.eogchansedit, 'String', '');
         % Disable modifications from gui
         switch_gui('off', 'on', handles);
         return;
@@ -369,8 +380,6 @@ if ~ exist(project.state_address, 'file')
         return;
     end
 end
-% Disable modifications from gui
-switch_gui('off', 'on', handles);
 
 % Set properties of the project:
 set(handles.projectname, 'String', name);
@@ -408,9 +417,10 @@ else
 end
 
 % Set the file extension
-IndexC = strfind(handles.fileextension.String, project.file_extension);
-index = find(not(cellfun('isempty', IndexC)));
-set(handles.fileextension, 'Value', index);
+set(handles.extedit, 'String', project.file_extension);
+
+% Set EEG system
+handles = setEEGSystem(project.params.eeg_system.name , handles);
 
 % Set the downsampling rate
 IndexC = strfind(handles.dsrate.String, int2str(handles.dsrate.Value));
@@ -428,19 +438,22 @@ interpolate_count = project.to_be_interpolated_count();
 set(handles.interpolatenumber, 'String', ...
     [num2str(interpolate_count), ' subjects to interpolate'])
 
+% Disable modifications from gui
+switch_gui('off', 'on', handles);
+
 save_state(handles);
 
 % --- Enable or Disable the modifiable gui elements
 function switch_gui(mode, visibility ,handles)
 % handles    main handles of the gui
 % mode       string that can be either 'off' (to disable) or 'on' (to enable)
-% visibility the visibility of the delete button. It can be wither 'on' or
+% visibility the visibility of the delete button. It can be either 'on' or
 % 'off'. This is seperated as for different cases different functionality
 % is needed.
 set(handles.projectname, 'enable', mode);
 set(handles.datafoldershow, 'enable', mode);
 set(handles.projectfoldershow, 'enable', mode);
-set(handles.fileextension, 'enable', mode);
+set(handles.extedit, 'enable', mode);
 set(handles.dsrate, 'enable', mode);
 set(handles.choosedata, 'enable', mode);
 set(handles.chooseproject, 'enable', mode);
@@ -453,6 +466,31 @@ set(handles.createbutton, 'visible', mode)
 set(handles.deleteprojectbutton, 'visible', visibility)
 set(handles.highfreqedit, 'enable', mode);
 set(handles.lowfreqedit, 'enable', mode);
+setEEGSystemVisibility(mode, handles);
+
+% --- Enable or Disable the EEG system related gui components. These are
+% all closely together related. Basically the channel location, eog channel 
+% list and file type edit boxes can not be activated if the EGI radio is 
+% chosen. 
+% This function is supposed to be called from the switch_gui function.
+function setEEGSystemVisibility(mode, handles)
+% handles    main handles of the gui
+% mode       string that can be either 'off' (to disable) or 'on' (to enable)
+
+set(handles.egiradio, 'enable', mode);
+set(handles.othersysradio, 'enable', mode);
+        
+if( strcmp(mode, 'off'))
+    set(handles.chanlocedit, 'enable', mode);
+    set(handles.eogchansedit, 'enable', mode);
+    set(handles.loctypeedit, 'enable', mode);
+elseif(strcmp(mode, 'on'))
+    if( ~ get(handles.egiradio, 'Value'))
+        set(handles.chanlocedit, 'enable', mode);
+        set(handles.eogchansedit, 'enable', mode);
+        set(handles.loctypeedit, 'enable', mode);
+    end
+end
 
 % --- Save the gui state
 function save_state(handles)
@@ -509,34 +547,6 @@ subjects = {subs(isub).name}';
 subjects(ismember(subjects,{'.','..'})) = [];
 
 
-% --- Get the file extension from the gui and calculate number of files and
-% subjects in the datafolder with this extension and set the gui
-function fileextension_Callback(hObject, eventdata, handles)
-% hObject    handle to fileextension (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hints: contents = cellstr(get(hObject,'String')) returns fileextension contents as cell array
-%        contents{get(hObject,'Value')} returns selected item from fileextension
-if( strcmp(get(handles.datafoldershow, 'String'), handles.new_project.DATA_FOLDER))
-    return
-end
-
-folder = get(handles.datafoldershow, 'String');
-idx = get(handles.fileextension, 'Value');
-exts = get(handles.fileextension, 'String');
-ext = exts{idx};
-[subject_count, file_count] = ...
-    get_subject_and_file_numbers(handles, folder, ext);
-
-set(handles.subjectnumber, 'String', ...
-    [num2str(subject_count) ' subjects...'])
-set(handles.filenumber, 'String', [num2str(file_count) ' files...'])
-
-% Update handles structure
-guidata(hObject, handles);
-
-
 % --- Get the adress of the data folder from the gui, suggest a default
 % project folder and set both to on the gui. Set the number of existing
 % subjects and files as well
@@ -563,9 +573,7 @@ if(folder ~= 0)
         project_name, '_results', slash);
     set(handles.projectfoldershow, 'String', project_folder)
     
-    idx = get(handles.fileextension, 'Value');
-    exts = get(handles.fileextension, 'String');
-    ext = exts{idx};
+    ext = get(handles.extedit, 'String');
     [subject_count, file_count] = ...
         get_subject_and_file_numbers(handles, folder, ext);
     
@@ -668,9 +676,28 @@ if( strcmp(data_folder, handles.new_project.DATA_FOLDER) || ...
 end
 
 % Get the file extension
-idx = get(handles.fileextension, 'Value');
-exts = get(handles.fileextension, 'String');
-ext = exts{idx};
+ext = get(handles.extedit, 'String');
+if( isempty(ext) || ~ strcmp(ext(1), '.') || length(strsplit('.raw', '.')) > 2 )
+    waitfor(msgbox('A correct file extension must be given.',...
+        'Error','error'));
+    return;
+end
+
+% Get the EEG system
+if ~ get(handles.egiradio, 'Value')
+   eeg_system.name = 'Others';
+   eeg_system.loc_file = get(handles.chanlocedit, 'String');
+   eeg_system.eog_chans = str2num(get(handles.eogchansedit, 'String'));
+   eeg_system.file_loc_type = get(handles.loctypeedit, 'String');
+   
+   if( isempty(eeg_system.eog_chans))
+        waitfor(msgbox(['A list of channel indices seperated by space or',...
+            ' comma must be given to determine EOG channels'],...
+            'Error','error'));
+        return;
+   end
+   handles.params.eeg_system = eeg_system;
+end
 
 % Get the downsampling rate
 idx = get(handles.dsrate, 'Value');
@@ -889,18 +916,6 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
     set(hObject,'BackgroundColor','white');
 end
 
-% --- Executes during object creation, after setting all properties.
-function fileextension_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to fileextension (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: popupmenu controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
-
 
 % --- Executes on selection change in dsrate.
 function dsrate_Callback(hObject, eventdata, handles)
@@ -1016,6 +1031,166 @@ function lowfreqedit_Callback(hObject, eventdata, handles)
 % --- Executes during object creation, after setting all properties.
 function lowfreqedit_CreateFcn(hObject, eventdata, handles)
 % hObject    handle to lowfreqedit (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+% --- Get the file extension from the gui and calculate number of files and
+% subjects in the datafolder with this extension and set the gui
+function extedit_Callback(hObject, eventdata, handles)
+% hObject    handle to extedit (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+if( strcmp(get(handles.datafoldershow, 'String'), ... 
+        handles.new_project.DATA_FOLDER) || ...
+        isempty(get(handles.extedit, 'String')))
+    return
+end
+
+folder = get(handles.datafoldershow, 'String');
+ext = get(handles.extedit, 'String');
+[subject_count, file_count] = ...
+    get_subject_and_file_numbers(handles, folder, ext);
+
+set(handles.subjectnumber, 'String', ...
+    [num2str(subject_count) ' subjects...'])
+set(handles.filenumber, 'String', [num2str(file_count) ' files...'])
+
+% Hints: get(hObject,'String') returns contents of extedit as text
+%        str2double(get(hObject,'String')) returns contents of extedit as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function extedit_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to extedit (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+% --- Set the EEG System to either 'EGI' or 'Others'. In any of the cases
+% the corresponding radio button is set to 1, and the corresponding radio
+% button of the other one is set to 0 as only one of them can be chosen. In
+% the case of EGI the edit boxes for location file, file type and EOG
+% channels must be deactivated whereas for the case of 'Others' they must be
+% activated so that the user gives them as input.
+function handles = setEEGSystem(system, handles)
+% system    char that can be either 'EGI' or 'Others'
+% handles   main handles of the gui
+
+switch system
+    case 'EGI'
+        set(handles.egiradio, 'Value', 1);
+        set(handles.othersysradio, 'Value', 0);
+        set(handles.chanlocedit, 'String', '');
+        set(handles.eogchansedit, 'String', '');
+        set(handles.loctypeedit, 'String', '');
+        set(handles.chanlocedit, 'enable', 'off');
+        set(handles.eogchansedit, 'enable', 'off');
+        set(handles.loctypeedit, 'enable', 'off');
+        handles.params.perform_reduce_channels = 1;
+    case 'Others'
+        set(handles.othersysradio, 'Value', 1);
+        set(handles.egiradio, 'Value', 0);
+        set(handles.chanlocedit, 'enable', 'on');
+        set(handles.eogchansedit, 'enable', 'on');
+        set(handles.loctypeedit, 'enable', 'on');
+        handles.params.perform_reduce_channels = 0;
+end
+
+% --- Executes on button press in egiradio.
+function egiradio_Callback(hObject, eventdata, handles)
+% hObject    handle to egiradio (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+handles = setEEGSystem('EGI', handles);
+% Update handles structure
+guidata(hObject, handles);
+% Hint: get(hObject,'Value') returns toggle state of egiradio
+
+
+% --- Executes on button press in othersysradio.
+function othersysradio_Callback(hObject, eventdata, handles)
+% hObject    handle to othersysradio (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+handles = setEEGSystem('Others', handles);
+% Update handles structure
+guidata(hObject, handles);
+% Hint: get(hObject,'Value') returns toggle state of othersysradio
+
+
+
+function chanlocedit_Callback(hObject, eventdata, handles)
+% hObject    handle to chanlocedit (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of chanlocedit as text
+%        str2double(get(hObject,'String')) returns contents of chanlocedit as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function chanlocedit_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to chanlocedit (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function eogchansedit_Callback(hObject, eventdata, handles)
+% hObject    handle to eogchansedit (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of eogchansedit as text
+%        str2double(get(hObject,'String')) returns contents of eogchansedit as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function eogchansedit_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to eogchansedit (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function loctypeedit_Callback(hObject, eventdata, handles)
+% hObject    handle to loctypeedit (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of loctypeedit as text
+%        str2double(get(hObject,'String')) returns contents of loctypeedit as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function loctypeedit_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to loctypeedit (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
 

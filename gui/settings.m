@@ -404,6 +404,10 @@ h = findobj(allchild(0), 'flat', 'Tag', 'main_gui');
 main_gui_handle = guidata(h);
 default_params = handles.default_params;
 
+if( get(main_gui_handle.othersysradio, 'Value') );
+    set(handles.channelreductioncheckbox, 'enable', 'off');
+end
+
 if( get(main_gui_handle.highpasscheckbox, 'Value') )
     set(handles.highpassorderedit, 'enable', 'on');
 else

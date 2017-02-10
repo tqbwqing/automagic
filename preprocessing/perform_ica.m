@@ -1,12 +1,27 @@
 function data = perform_ica(data, varargin)
-% perform_ica
-% The argument must be a map which maps all "possible" current channel
-% labels to the standard channel labels given by FPz, F3, Fz, F4, Cz,
-% Oz, ...
+% perform_ica  perform Independent Component Analysis (ICA) on the data 
+%   data = perform_ica(data, params) where data is the EEGLAB data
+%   structure. params is an optional parameter which must be a structure
+%   with optional fields 'chanloc_map', and 'bool'. 
+%   
+%   params.chanloc_map must be a map (of type containers.Map) what maps all
+%   "possible" current channel labels to the standard channel labels given 
+%   by FPz, F3, Fz, F4, Cz, Oz, ... as required by processMARA. Please note
+%   that if the channel labels are already the same as the mentionned 
+%   standard, an empty map would be enough. However if the map is empty and
+%   none of the labels has the same sematic as required, no ICA will be
+%   applied. For more information please see processMARA.
+%   
+%   params.bool is a boolean. If False the ICA is not applied.
+%   If varargin is ommited, default values are used. If any fields of
+%   varargin is ommited, corresponsing default value is used.
+%
+%   Default values: params.bool = 1
+%                   params.chanloc_map = containers.Map (empty map)
 
 p = inputParser;
 addParameter(p,'chanloc_map', containers.Map, @(x) isa(x, 'containers.Map'));
-addParameter(p,'bool', 0, @isnumeric);
+addParameter(p,'bool', 1, @isnumeric);
 parse(p, varargin{:});
 
 chanloc_map = p.Results.chanloc_map;
@@ -16,6 +31,8 @@ if (~bool)
     return;
 end
 
+% Change channel labels to their corresponding ones as required by processMARA.
+% This is done only for those labels that are given in the map.
 if( ~ isempty(chanloc_map))
     inverse_chanloc_map = containers.Map(chanloc_map.values, chanloc_map.keys);
     idx = find(ismember({data.chanlocs.labels}, chanloc_map.keys));
@@ -30,6 +47,7 @@ options = [0 1 0 0 1];
     
 data = EEG_Mara;
 
+% Change back the labels to the original one
 if( ~ isempty(chanloc_map))
     for i = idx
        data.chanlocs(1,i).labels = inverse_chanloc_map(data.chanlocs(1,i).labels);
@@ -39,8 +57,10 @@ end
 end
 
 function [ALLEEG,EEG,CURRENTSET] = processMARA_with_no_popup(ALLEEG,EEG,CURRENTSET,varargin)
+% This is only an (almost) exact copy of the function processMARA where few
+% of the paramters are changed for our need. (Mainly to supress outputs)
 
-    addpath('../matlab_scripts');
+addpath('../matlab_scripts');
     if isempty(EEG.chanlocs)
         try
             error('No channel locations. Aborting MARA.')
