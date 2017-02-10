@@ -59,12 +59,12 @@ In this section of the manual, only the basic functionality of Automagic will be
 2. Select *Create New Project...*
 3. Name your project.
 4. Write down the file extension that corresponds to your data’s file format. For example raw image files (.raw or .RAW), fractal image files (.fif) or generic data files (.dat).
-5. Choose the EEG System in which your data is recorded. Currently only EGI HCGSN is fully supported for both number of channels 128 and 256 (or 129 and 257 respectively). This information is needed mainly to find channel locations. In case you choose the option 'Other' for your EEG System, you must provide a file in which channel locations are specified. The file format must be one which is also supported by EEG lab (pop_chanedit function). In addition, you must provide a list of indices of the EOG channels of your dataset. Note that here the list contains the indices of those channels and not their labels.
+5. Choose the EEG System in which your data is recorded. Currently only EGI HCGSN is fully supported for both number of channels 128 and 256 (or 129 and 257 respectively). This information is needed mainly to find channel locations. In case you choose the option *Other* for your EEG System, you must provide a file in which channel locations are specified. The file format must be one which is also supported by EEG lab (pop_chanedit function). In addition, you must provide a list of indices of the EOG channels of your dataset. Note that here the list contains the indices of those channels and not their labels.
  * The *Channel location file* must be the entire name of the file, which must be located in the folder '/matlab_scripts'
  * The *Channel location file type* must specify the type of the file as required by pop_chanedit. eg. sfp
  * The list of EOG channels must be integers seperated by space or comma, e.g. 1 32 8 14 17 21 25 125 126 127 128
- * Please note that in case you choose 'Other' as your EEG system, no reduction in number of channels is supported.
- * ICA is supported for 'Other' only in case your channel labels are as it is required by processMARA. They must be of the form FPz, F3, Fz, F4, Cz, Oz, etc. Otherwise the ICA is simply skipped. If only some of your labels have the required format, only those channels are considered for ICA. For more information please see 
+ * Please note that in case you choose *Other* as your EEG system, no reduction in number of channels is supported.
+ * ICA is supported for *Other* only in case your channel labels are as it is required by processMARA. They must be of the form FPz, F3, Fz, F4, Cz, Oz, etc. Otherwise the ICA is simply skipped. If only some of your labels have the required format, only those channels are considered for ICA. For more information please see 
 6. Set the downsampling rate on the manual rating panel. The downsampling only affects the visual representation of your data. A higher downsampling rate will shorten loading times. In general, a downsampling rate of 2 is a good choice. 
  * Important:	You cannot alter paths, the filtering, or the downsampling rate after creating your project.
 7. Specify the path of your data folder. *Automagic* will scan all folders in your data folder for data files. Files and folders in the data folder will not be altered by *Automagic*.
@@ -127,7 +127,7 @@ To merge any number of existing projects without losing the individual projects,
 
 After clicking on *Configurations...* button a new window is opened where you can customize preprocessing steps:
 
-1. If *Reduce number of channels* is checked, then before preprocessing number of channgels is reduced. [Click here](https://github.com/amirrezaw/automagic/blob/master/automagic_resources/reduced_channels.txt) to see list of channels selected. In case you choose *Other* as your EEG System in the *main_gui* then this element is deactivated: not channel reduction is supported for other EEG Systems. 
+1. If *Reduce number of channels* is checked, then before preprocessing number of channgels is reduced. [Click here](https://github.com/amirrezaw/automagic/blob/master/automagic_resources/reduced_channels.txt) to see list of channels selected. In case you choose *Other* as your EEG System in the *main_gui* then this element is deactivated: No channel reduction is supported for other EEG Systems. 
 2. In the *Filtering* section you can choose the order of the filtering. The default value corresponds to the default value computed by *pop_eegfiltnew.m*.
 3. In the *Channel rejection criterias* you can select or deselect the three different criterias *Kurtosis*, *Probability* and *Spectrum* to reject channels (See *pop_rejchan.m*). The corresponding thresholds can also be customized.
 4. *EOG Regression* can be deselected.
