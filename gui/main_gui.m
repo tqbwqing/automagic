@@ -28,7 +28,7 @@ function varargout = main_gui(varargin)
 
 % Edit the above text to modify the response to help main_gui
 
-% Last Modified by GUIDE v2.5 23-Feb-2017 09:35:20
+% Last Modified by GUIDE v2.5 23-Feb-2017 10:19:34
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -684,6 +684,8 @@ if( isempty(ext) || ~ strcmp(ext(1), '.') || length(strsplit('.raw', '.')) > 2 )
         'Error','error'));
     return;
 end
+% Get EOG regression
+handles.params.perform_eog_regression = get(handles.eogregressioncheckbox, 'Value');
 
 % Get the EEG system
 if ~ get(handles.egiradio, 'Value')
@@ -692,7 +694,7 @@ if ~ get(handles.egiradio, 'Value')
    eeg_system.eog_chans = str2num(get(handles.eogchansedit, 'String'));
    eeg_system.file_loc_type = get(handles.loctypeedit, 'String');
    
-   if( isempty(eeg_system.eog_chans))
+   if( get(handles.eogregressioncheckbox, 'Value') && isempty(eeg_system.eog_chans))
         waitfor(msgbox(['A list of channel indices seperated by space or',...
             ' comma must be given to determine EOG channels'],...
             'Error','error'));
@@ -1106,7 +1108,9 @@ switch system
         set(handles.othersysradio, 'Value', 1);
         set(handles.egiradio, 'Value', 0);
         set(handles.chanlocedit, 'enable', 'on');
-        set(handles.eogchansedit, 'enable', 'on');
+        if(get(handles.eogregressioncheckbox, 'Value'))
+            set(handles.eogchansedit, 'enable', 'on');
+        end
         set(handles.loctypeedit, 'enable', 'on');
         set(handles.choosechannelloc, 'enable', 'on');
         handles.params.perform_reduce_channels = 0;
@@ -1215,4 +1219,22 @@ function choosechannelloc_Callback(hObject, eventdata, handles)
 full_address = strcat(y, x);
 if(full_address ~= 0)
     set(handles.chanlocedit, 'String', full_address)
+end
+
+
+% --- Executes on button press in eogregressioncheckbox.
+function eogregressioncheckbox_Callback(hObject, eventdata, handles)
+% hObject    handle to eogregressioncheckbox (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of eogregressioncheckbox
+if( get(handles.eogregressioncheckbox, 'Value'))
+    if(get(handles.othersysradio, 'Value'))
+       set(handles.eogchansedit, 'enable', 'on');
+    end
+else
+    if(get(handles.othersysradio, 'Value'))
+       set(handles.eogchansedit, 'enable', 'off');
+    end
 end

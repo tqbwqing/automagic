@@ -118,8 +118,6 @@ else
     set(handles.probthreshedit, 'String', default_params.channel_rejection_params.prob_thresh);
 end
 
-set(handles.eogregressioncheckbox, 'Value', params.perform_eog_regression);
-
 if( isempty(params.pca_params.lambda) || params.pca_params.lambda ~= -1)
     set(handles.pcacheckbox, 'Value', 1);
     if( isempty( params.pca_params.lambda ))
@@ -236,9 +234,6 @@ default_params = handles.default_params;
 
 perform_reduce_channels = ...
     get(handles.channelreductioncheckbox, 'Value');
-
-perform_eog_regression = ...
-    get(handles.eogregressioncheckbox, 'Value');
 
 ica_bool = get(handles.icacheckbox, 'Value');
 
@@ -371,8 +366,6 @@ else
     set(handles.probthreshedit, 'String', '');
 end
 
-set(handles.eogregressioncheckbox, 'Value', ...
-    default_params.perform_eog_regression);
 if( isempty(params.pca_params.lambda) || default_params.pca_params.lambda ~= -1)
     set(handles.pcacheckbox, 'Value', 1);
     set(handles.lambdaedit, 'String', ...
@@ -760,12 +753,3 @@ function specthreshedit_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
-
-
-% --- Executes on button press in eogregressioncheckbox.
-function eogregressioncheckbox_Callback(hObject, eventdata, handles)
-% hObject    handle to eogregressioncheckbox (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hint: get(hObject,'Value') returns toggle state of eogregressioncheckbox
