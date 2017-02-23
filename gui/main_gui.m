@@ -28,7 +28,7 @@ function varargout = main_gui(varargin)
 
 % Edit the above text to modify the response to help main_gui
 
-% Last Modified by GUIDE v2.5 10-Feb-2017 14:18:22
+% Last Modified by GUIDE v2.5 23-Feb-2017 09:35:20
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -484,11 +484,13 @@ if( strcmp(mode, 'off'))
     set(handles.chanlocedit, 'enable', mode);
     set(handles.eogchansedit, 'enable', mode);
     set(handles.loctypeedit, 'enable', mode);
+    set(handles.choosechannelloc, 'enable', mode);
 elseif(strcmp(mode, 'on'))
     if( ~ get(handles.egiradio, 'Value'))
         set(handles.chanlocedit, 'enable', mode);
         set(handles.eogchansedit, 'enable', mode);
         set(handles.loctypeedit, 'enable', mode);
+        set(handles.choosechannelloc, 'enable', mode);
     end
 end
 
@@ -1098,6 +1100,7 @@ switch system
         set(handles.chanlocedit, 'enable', 'off');
         set(handles.eogchansedit, 'enable', 'off');
         set(handles.loctypeedit, 'enable', 'off');
+        set(handles.choosechannelloc, 'enable', 'off');
         handles.params.perform_reduce_channels = 1;
     case 'Others'
         set(handles.othersysradio, 'Value', 1);
@@ -1105,6 +1108,7 @@ switch system
         set(handles.chanlocedit, 'enable', 'on');
         set(handles.eogchansedit, 'enable', 'on');
         set(handles.loctypeedit, 'enable', 'on');
+        set(handles.choosechannelloc, 'enable', 'on');
         handles.params.perform_reduce_channels = 0;
 end
 
@@ -1198,4 +1202,17 @@ function loctypeedit_CreateFcn(hObject, eventdata, handles)
 %       See ISPC and COMPUTER.
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in choosechannelloc.
+function choosechannelloc_Callback(hObject, eventdata, handles)
+% hObject    handle to choosechannelloc (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+[x, y] = uigetfile('*');
+full_address = strcat(y, x);
+if(full_address ~= 0)
+    set(handles.chanlocedit, 'String', full_address)
 end
