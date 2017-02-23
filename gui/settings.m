@@ -310,7 +310,6 @@ methods = get(handles.interpolationpopupmenu, 'String');
 method = methods{idx};
 
 handles.params.perform_reduce_channels = perform_reduce_channels;
-handles.params.perform_eog_regression = perform_eog_regression;
 handles.params.filter_params.high_order = high_order;
 handles.params.filter_params.low_order = low_order;
 handles.params.channel_rejection_params.kurt_thresh = kurt_val;
