@@ -316,7 +316,7 @@ set(gca,'XTick',XTicks)
 set(gca,'XTickLabel',XTicketLabels)
 title('PCA corrected clean data')
 %figure;
-if( pca_params.lambda ~= -1)
+if( isempty(pca_params.lambda) || pca_params.lambda ~= -1)
     subplot(9,1,8:9)
     imagesc(noise);
     colormap jet
