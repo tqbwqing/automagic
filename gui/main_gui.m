@@ -272,7 +272,7 @@ if(strcmp(name, handles.new_project.LIST_NAME))
     set(handles.fpreprocessednumber, 'String', '')
     set(handles.ratednumber, 'String', '')
     set(handles.interpolatenumber, 'String', '')
-    
+    set(handles.eogregressioncheckbox, 'Value', handles.default_params.perform_eog_regression);
     set(handles.extedit, 'String', '')
     
     handles = setEEGSystem('EGI', handles);
@@ -438,6 +438,9 @@ interpolate_count = project.to_be_interpolated_count();
 set(handles.interpolatenumber, 'String', ...
     [num2str(interpolate_count), ' subjects to interpolate'])
 
+% Set EOG regression checkox
+set(handles.eogregressioncheckbox, 'Value', project.params.perform_eog_regression);
+
 % Disable modifications from gui
 switch_gui('off', 'on', handles);
 
@@ -466,6 +469,7 @@ set(handles.createbutton, 'visible', mode)
 set(handles.deleteprojectbutton, 'visible', visibility)
 set(handles.highfreqedit, 'enable', mode);
 set(handles.lowfreqedit, 'enable', mode);
+set(handles.eogregressioncheckbox, 'enable', mode);
 setEEGSystemVisibility(mode, handles);
 
 % --- Enable or Disable the EEG system related gui components. These are
