@@ -64,7 +64,7 @@ perform_eog_regression = p.Results.perform_eog_regression;
 perform_reduce_channels = p.Results.perform_reduce_channels;
 assert( ( ~ isempty(pca_params.lambda) && pca_params.lambda == -1) ...
          || ica_params.bool == 0);
-     
+
 %% Add path if not added before
 if(~exist('pop_fileio', 'file'))
     matlab_paths = genpath(['..' slash 'matlab_scripts' slash]);
@@ -89,7 +89,7 @@ end
    
 %% Determine the eeg system
 % Case of others where the location file must have been provided
-if (strcmp(eeg_system.name, 'Others'))
+if (~isempty(eeg_system.name) && strcmp(eeg_system.name, 'Others'))
     assert(~ perform_reduce_channels);
     ica_params.chanloc_map = containers.Map; % Map is empty. 
     
@@ -105,7 +105,7 @@ if (strcmp(eeg_system.name, 'Others'))
         'load',{ eeg_system.loc_file , 'filetype', eeg_system.file_loc_type});
 
 % Case of EGI
-elseif(strcmp(eeg_system.name, 'EGI'))
+elseif(~isempty(eeg_system.name) && strcmp(eeg_system.name, 'EGI'))
     
     if( perform_reduce_channels )
         chan128 = [2 3 4 5 6 7 9 10 11 12 13 15 16 18 19 20 22 23 24 26 27 ...
@@ -229,6 +229,14 @@ elseif(strcmp(eeg_system.name, 'EGI'))
                 'Oz', 'O2', 'Pz'};
             ica_params.chanloc_map = containers.Map(keySet,valueSet);
     end
+else
+   if(isempty(data.chanlocs))
+       disp('data.chanlocs is necessary for interpolation.');
+       return;
+   end
+    all_chans = 1:data.nbchan;
+    eog_channels = eeg_system.eog_chans;
+    channels = setdiff(all_chans, eog_channels);
 end
 s = size(data.data);
 assert(data.nbchan == s(1)); clear s;
