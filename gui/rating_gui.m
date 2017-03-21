@@ -755,6 +755,7 @@ if(project.current == -1)
 end
 handles = get_rating_from_gui(handles);
 block = get_current_block(handles);
+update_lines(handles)
 if( block.is_interpolate() )
    handles = turn_on_selection(handles);
 end
