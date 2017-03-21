@@ -25,9 +25,14 @@ end
 addpath(matlab_paths);
 
 
-run_command = [ try_strings.no_check '[EEG, com] = pop_parameters(EEG);' catch_strings.store_and_hist ];
+processing_command = ...
+    [ try_strings.check_chanlocs '[EEG, com] = pop_parameters(EEG);' catch_strings.store_and_hist ];
+rating_command = ...
+    [ try_strings.no_check '[ALLEEG, com] = pop_rating(ALLEEG);' catch_strings.store_and_hist ];
+interpolate_command = ...
+    [ try_strings.check_chanlocs '[ALLEEG, com] = pop_interpolate(ALLEEG);' catch_strings.store_and_hist ];
 
 main = uimenu( fig, 'label', 'Automagic');
-uimenu( main, 'label', 'Start preprocessing...', 'callback', run_command);
-uimenu( main, 'label', 'Start manual rating...', 'callback', 'pop_rating');
-uimenu( main, 'label', 'Start interpolation...', 'callback', 'interpolate_all');
+uimenu( main, 'label', 'Start preprocessing...', 'callback', processing_command);
+uimenu( main, 'label', 'Start manual rating...', 'callback', rating_command);
+uimenu( main, 'label', 'Start interpolation...', 'callback', interpolate_command);
