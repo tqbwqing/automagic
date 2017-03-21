@@ -4,6 +4,20 @@ function varargout = rating_gui(varargin)
 %      directly. Howerver, for test reasons, one can call RATING_GUI if an 
 %      instance of the class Project is given as argument.
 %
+% Copyright (C) 2017  Amirreza Bahreini, amirreza.bahreini@uzh.ch
+% 
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+% 
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+% 
+% You should have received a copy of the GNU General Public License
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 % Last Modified by GUIDE v2.5 28-Oct-2016 14:42:23
 
@@ -40,7 +54,7 @@ if( nargin - 3 ~= 1 )
 end
 
 project = varargin{1};
-assert(isa(project, 'Project'));
+assert(isa(project, 'Project') || isa(project, 'EEGLabProject'));
 handles.project = project;
 
 set(handles.rating_gui, 'units', 'normalized', 'position', [0.05 0.3 0.8 0.8])
@@ -151,8 +165,12 @@ if ( project.current == - 1 || is_filtered(handles, project.current))
     reduced = [];
 else
     block = get_current_block(handles);
-    block.update_addresses(project.data_folder, project.result_folder);
-    load(block.reduced_address);
+    if(isa(block, 'Block'))
+        block.update_addresses(project.data_folder, project.result_folder);
+        load(block.reduced_address); 
+    elseif(isa(block, 'EEGLabBlock'))
+        reduced = block.get_reduced();
+    end
     handles.project.maxX = max(project.maxX, size(reduced.data, 2));% fot the plot
 end
 
@@ -1054,7 +1072,9 @@ switch block.rate
 end
         
 % Save the stateS
-handles.project.save_project();
+if(isa(handles.project, 'Project'))
+    handles.project.save_project();
+end
 
 % --- Executes when user attempts to close rating_gui.
 function rating_gui_CloseRequestFcn(hObject, eventdata, handles)
@@ -1062,6 +1082,11 @@ function rating_gui_CloseRequestFcn(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 save_state(handles);
+
+if(isa(handles.project, 'EEGLabProject'))
+    delete(hObject);
+    return;
+end
 
 % Update the main gui's data after rating processing
 h = findobj(allchild(0), 'flat', 'Tag', 'main_gui');

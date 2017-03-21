@@ -1,23 +1,36 @@
-% Copyright (C) <2017>  <Amirreza Bahreini>
+function [EEG, com] = pop_parameters(EEG)
+% Pops-up a window that takes required parameters and then runs pre_process()
+% function. 
 %
-% This program is free software; you can redistribute it and/or modify
+% Usage:
+%   >> EEG = pop_parameters ( EEG ); % pop up window
+%
+% Inputs:
+%   EEG     - EEGLab EEG structure.
+%
+% Outputs:
+%   EEG     -  EEGLab EEG structure where the data is preprocessed with 
+%   given arguments from the pop-up window. A new field
+%   EEG.automagic will contain information about parameters used
+%   and the channels that have been interpolated during the
+%   automatic detection of bad channels.
+%
+% Copyright (C) 2017  Amirreza Bahreini, amirreza.bahreini@uzh.ch
+% 
+% This program is free software: you can redistribute it and/or modify
 % it under the terms of the GNU General Public License as published by
-% the Free Software Foundation; either version 2 of the License, or
+% the Free Software Foundation, either version 3 of the License, or
 % (at your option) any later version.
-%
+% 
 % This program is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
-%
+% 
 % You should have received a copy of the GNU General Public License
-% along with this program; if not, write to the Free Software
-% Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-function [OUTEEG, com] = pop_parameters(EEG)
-
+% along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 com = ''; 
-OUTEEG = EEG;
 
 % display help if not enough arguments
 % ------------------------------------
@@ -50,6 +63,7 @@ default_params.eeg_system.file_loc_type = '';
 default_params.eeg_system.loc_file = '';
 default_params.eeg_system.eog_chans = '';
 
+
 %--------------------------Create Gui
 %-----------------------------------------------------------
 [uilist, positions, verpos] = getUIControls();
@@ -60,7 +74,6 @@ default_params.eeg_system.eog_chans = '';
 
 %--------------------------Set call backs
 %-----------------------------------------------------------
-% setCallbacks(allhandlers, default_params);
 params = struct;
 euradio = findHandlerFromList(allhandlers, 'notcheu');
 usradio = findHandlerFromList(allhandlers, 'notchus');
@@ -85,7 +98,6 @@ ok = findHandlerFromList(allhandlers, 'ok');
 interpol = findHandlerFromList(allhandlers, 'interpolpopup');
 reduce_chans = findHandlerFromList(allhandlers, 'reducechancheck');
 eog_chans = findHandlerFromList(allhandlers, 'eogchans');
-dsrate = findHandlerFromList(allhandlers, 'dsrate');
 default = findHandlerFromList(allhandlers, 'default_butt');
 
 euradio.set('callback', @euradiocallback);
@@ -100,7 +112,7 @@ pcacheck.set('callback', @pcacheckcallback);
 ok.set('callback', @okcallback);
 default.set('callback', @defaultcallback);
     
-% Notch Filter
+% Notch Filter callback
 % -------------------------------------------
 function euradiocallback(PushButton, EventData)
     if(get(euradio, 'Value'))
@@ -118,19 +130,19 @@ function usradiocallback(PushButton, EventData)
     end
 end
 
-% Low pass
+% Low pass callback
 % -------------------------------------------
 function lowcheckcallback(PushButton, EventData)
     switch_components();
 end
 
-% High pass
+% High pass callback
 % -------------------------------------------
 function highcheckcallback(PushButton, EventData)
     switch_components();
 end
 
-% Channel Rejection criterias
+% Channel Rejection criterias callback
 % -------------------------------------------
 function kurtcheckcallback(PushButton, EventData)
     switch_components();
@@ -142,7 +154,7 @@ function speccheckcallback(PushButton, EventData)
     switch_components();
 end
 
-% ICA and PCA
+% ICA and PCA callback
 % -------------------------------------------
 function icacheckcallback(PushButton, EventData)
     if(get(icacheck, 'Value'))
@@ -172,7 +184,7 @@ function pcacheckcallback(PushButton, EventData)
     end
 end
 
-% OK button. It gathers input and start preprocessing
+% OK button callback. It gathers input and start preprocessing
 % -------------------------------------------
 function okcallback(PushButton, EventData)
     perform_reduce_channels = ...
@@ -262,10 +274,6 @@ function okcallback(PushButton, EventData)
     eeg_system.eog_chans = eog_channels;
     eeg_system.name = '';
     
-    idx = get(dsrate, 'Value');
-    list = get(dsrate, 'String');
-    ds_rate = str2double(list{idx});
-    
     params.eeg_system = eeg_system;
     params.perform_reduce_channels = perform_reduce_channels;
     params.filter_params.high_order = high_order;
@@ -281,7 +289,7 @@ function okcallback(PushButton, EventData)
     close gcbf
 end
 
-% Default button. It sets all values of the gui to default
+% Default button callback. It sets all values of the gui to default
 % -------------------------------------------
 function defaultcallback(PushButton, EventData)
     
@@ -433,23 +441,27 @@ function switch_components()
     end
 end
 
-% Very important line!--- This makes the GUI stop until we make sure the
-% @okcallback returns
+% This makes the code stop until we make sure the pop up window is closed
 waitfor(allhandlers{1})
 
+% If cancel was clicked on
 if( isempty(fieldnames(params)) ||  isempty(EEG.data))
     disp('Cannot preprocess without parameters or dataset.');
     return
 end
 
-
-[OUTEEG, ~] = pre_process(EEG, [], params);  
-OUTEEG.reduced = downsample(OUTEEG.data', ds_rate)';
+% Preprocess EEG with given parameters. Keep all information in a field
+% called 'EEG.automagic'
+% -------------------------
+[EEG, ~] = pre_process(EEG, [], params);
+auto_badchans =  EEG.auto_badchans;
+EEG = rmfield(EEG, 'auto_badchans');
+EEG.automagic.params = params;
+EEG.automagic.auto_badchans = auto_badchans;
 
 % return the string command
 % -------------------------
-com = sprintf(['[OUTEEG, ~] = pre_process( %s , [], params);' ...
-    'OUTEEG.reduced = downsample(OUTEEG.data'', ds_rate)'';'], inputname(1));
+com = sprintf('[EEG] = pop_parameters(EEG)');
 
 end
 
@@ -567,14 +579,6 @@ interpolation_text.style = {{'Style','text',...
             'tag', 'interpolpopup', 'Value', 1} };
 interpolation_text.pos = [1 1];
 
-% Downsampling rate
-% ---------------------------------------
-dsrate.style = {{'Style','text',...
-            'String','Downsampling rate'}  {'Style','popupmenu',...
-            'String',{'1','2','4','6','8','10'}, 'Value', 2, 'tag', 'dsrate'} };
-dsrate.pos = [1 1];
-
-
 % EOG channels
 % ---------------------------------------
 eog.style = {{'Style','text',...
@@ -594,7 +598,7 @@ okcancel.pos = [1 1 1];
             
 % Return both lists of uis and their positions
 % --------------------------------------------
-verpos = [1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1];
+verpos = [1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1];
 uipositions = {notch_text.pos notch_input.pos high_text.pos ...
     high_label.pos high_inputs.pos low_text.pos ...
     low_label.pos low_inputs.pos ...
@@ -602,7 +606,7 @@ uipositions = {notch_text.pos notch_input.pos high_text.pos ...
     channel_rejection_input_kur.pos channel_rejection_input_prob.pos ...
     channel_rejection_input_spec.pos ica_checkbox.pos pca_checkbox.pos ...
     pca_lambda.pos pca_tolerance.pos pca_maxiter.pos reduce_chan_chechbox.pos ...
-    interpolation_text.pos dsrate.pos eog.pos okcancel.pos};
+    interpolation_text.pos eog.pos okcancel.pos};
 uilist = [notch_text.style notch_input.style high_text.style ...
     high_label.style high_inputs.style low_text.style ...
     low_label.style low_inputs.style channel_rejection_text.style ...
@@ -610,7 +614,7 @@ uilist = [notch_text.style notch_input.style high_text.style ...
     channel_rejection_input_prob.style channel_rejection_input_spec.style...
     ica_checkbox.style pca_checkbox.style pca_lambda.style pca_tolerance.style...
     pca_maxiter.style reduce_chan_chechbox.style interpolation_text.style ...
-    dsrate.style eog.style okcancel.style];
+    eog.style okcancel.style];
 
 end
 
