@@ -364,7 +364,7 @@ classdef Project < handle
                     continue;
                 end
                 preprocessed.EEG = eeg_interp(EEG ,...
-                    interpolate_chans ,'spherical');
+                    interpolate_chans , self.params.interpolation_params.method);
                 EEG = preprocessed.EEG;
                 % Downsample the new file and save it
                 reduced.data = (downsample(EEG.data', self.ds_rate))';
