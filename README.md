@@ -190,13 +190,13 @@ There are three main folders:
     This folder (must) contain all external files from *eeg_lab* and other libraries.
 
 ## 4. How to run the application from the code
-For this code to be able to run, functions from [*eeglab*](https://sccn.ucsd.edu/eeglab/),  [*Augmented Lagrange Multiplier (ALM) Method*](http://perception.csl.illinois.edu/matrix-rank/sample_code.html) and [*fieldtrip*](http://www.fieldtriptoolbox.org) are needed to be on your path:
+For this code to be able to run, functions from [*eeglab*](https://sccn.ucsd.edu/eeglab/) and  [*Augmented Lagrange Multiplier (ALM) Method*](http://perception.csl.illinois.edu/matrix-rank/sample_code.html) are needed to be on your path:
 
 1. Download the [*eeglab*](https://sccn.ucsd.edu/eeglab/downloadtoolbox.php) library and put them in the *matlab_scripts* folder.
 2. Download the  *inexact ALM* ( containing the function *[A, E] = inexact_alm_rpca(D, λ)*) from [*(ALM) Method*](http://perception.csl.illinois.edu/matrix-rank/sample_code.html) and put it in the *matlab_scripts* as well. 
-3. Download the [*fieldtrip*](http://www.fieldtriptoolbox.org/download) which is an *eeglab* extension and put it in *matlab_scripts/eeglab13_6_5b/plugins/*.
-4. Now you are able to run the code by running the *gui/main_gui.m*
+3. Now you are able to run the code by running the *gui/main_gui.m*
 
+* NOTE: If your data is with *.fif* extension, you only need to download the [*fieldtrip*](http://www.fieldtriptoolbox.org/download) which is an *eeglab* extension and put it in *matlab_scripts/eeglab13_6_5b/plugins/*.
 
 Note that you can modify anything in the code if you want and change all files and folder structures including matlab paths. 
 
