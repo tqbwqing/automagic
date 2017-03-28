@@ -117,16 +117,12 @@ default.set('callback', @defaultcallback);
 function euradiocallback(PushButton, EventData)
     if(get(euradio, 'Value'))
         set(usradio, 'Value', 0);
-    else
-        set(usradio, 'Value', 1);
     end
 end
 
 function usradiocallback(PushButton, EventData)
     if(get(usradio, 'Value'))
         set(euradio, 'Value', 0);
-    else
-        set(euradio, 'Value', 1);
     end
 end
 
@@ -274,10 +270,18 @@ function okcallback(PushButton, EventData)
     eeg_system.eog_chans = eog_channels;
     eeg_system.name = '';
     
+    if(get(euradio, 'Value'))
+        notch_filter = 'EU';
+    elseif(get(usradio, 'Value'))
+        notch_filter = 'US';
+    else
+        notch_filter = 'None';
+    end
     params.eeg_system = eeg_system;
     params.perform_reduce_channels = perform_reduce_channels;
     params.filter_params.high_order = high_order;
     params.filter_params.low_order = low_order;
+    params.filter_mode = notch_filter;
     params.channel_rejection_params.kurt_thresh = kurt_val;
     params.channel_rejection_params.spec_thresh = spec_val;
     params.channel_rejection_params.prob_thresh = prob_val;
@@ -368,8 +372,9 @@ end
 function switch_components()
     if(get(euradio, 'Value'))
         set(usradio, 'Value', 0);
-    else
-        set(usradio, 'Value', 1);
+    end
+    if(get(usradio, 'Value'))
+        set(euradio, 'Value', 0);
     end
 
     if( get(highcheck, 'Value') )

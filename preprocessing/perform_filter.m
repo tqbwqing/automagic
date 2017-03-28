@@ -7,8 +7,9 @@ function filtered = perform_filter(data, varargin)
 %   parameter which must be a structure with optional parameters
 %   'filter_mode', 'high_freq', 'high_order', 'low_freq' and 'low_order'.
 %   
-%   'filter_mode' is a char that can be either  'EU' or 'US' determining 
-%   the frequency for the Notch filter ([47, 53] or [57, 63] respectively). 
+%   'filter_mode' is a char that can be 'EU', 'US' or 'None' determining 
+%   the frequency for the Notch filter ([47, 53], [57, 63] or no notch filter 
+%   respectively). 
 %
 %   'high_freq' and 'low_freq' are the frequencies for high pass filter and
 %   low pass filter respectively.
@@ -75,9 +76,8 @@ switch filter_mode
         [~, filtered] = evalc('pop_eegfiltnew(data, 57, 63, [], 1)'); % Band-stop filter
     case 'EU'
         [~, filtered] = evalc('pop_eegfiltnew(data, 47, 53, [], 1)'); % Band-stop filter
-    otherwise
-        waitfor(msgbox('Please choose an appropriate filtering mode!', ...
-        'Error','error'));
+    otherwise % If 'None', don't perform notch filter
+        filtered = data;
 end
 
 end

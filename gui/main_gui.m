@@ -41,7 +41,7 @@ function varargout = main_gui(varargin)
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-% Last Modified by GUIDE v2.5 23-Feb-2017 11:39:40
+% Last Modified by GUIDE v2.5 28-Mar-2017 14:27:26
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -421,12 +421,15 @@ else
     set(handles.lowpasscheckbox, 'Value', 0);
 end
 
-US_button = handles.filteringbuttongroup.Children(1);
-EU_button = handles.filteringbuttongroup.Children(1);
+US_button = handles.notchpanel.Children(1);
+EU_button = handles.notchpanel.Children(1);
 if( strcmp('EU', project.params.filter_params.filter_mode ))
     set(EU_button, 'Value', 1);
-else
+elseif(strcmp('US', project.params.filter_params.filter_mode ))
     set(US_button, 'Value', 1);
+else
+    set(US_button, 'Value', 0);
+    set(EU_button, 'Value', 0);
 end
 
 % Set the file extension
@@ -473,8 +476,8 @@ set(handles.extedit, 'enable', mode);
 set(handles.dsrate, 'enable', mode);
 set(handles.choosedata, 'enable', mode);
 set(handles.chooseproject, 'enable', mode);
-set(handles.filteringbuttongroup.Children(1), 'enable', mode);
-set(handles.filteringbuttongroup.Children(2), 'enable', mode);
+set(handles.notchpanel.Children(1), 'enable', mode);
+set(handles.notchpanel.Children(2), 'enable', mode);
 set(handles.highpasscheckbox, 'enable', mode);
 set(handles.lowpasscheckbox, 'enable', mode);
 set(handles.configbutton, 'enable', mode)
@@ -727,7 +730,15 @@ ds = str2double(dsrates{idx});
 
 % Get filter_params params
 filter_params = handles.params.filter_params;
-filter_params.filter_mode = upper(handles.filteringbuttongroup.SelectedObject.String(1:2));
+
+if(get(handles.usradiobutton, 'Value'))
+    filter_params.filter_mode = upper(handles.usradiobutton.String(1:2));
+elseif(get(handles.euradiobutton, 'Value'))
+    filter_params.filter_mode = upper(handles.euradiobutton.String(1:2));
+else
+    filter_params.filter_mode = 'None';
+end
+
 if ( get(handles.highpasscheckbox, 'Value') == 1)
     high_freq = str2double(get(handles.highfreqedit, 'String'));
     if( ~isempty(high_freq) && ~isnan(high_freq))
@@ -849,19 +860,6 @@ end
 
 % Update handles structure
 guidata(hObject, handles);
-
-% --- Get the filter_params mode (US or EU) and save it to the project state
-function filter_paramsbuttongroup_SelectionChangedFcn(hObject, eventdata, handles)
-% hObject    handle to the selected object in filter_paramsbuttongroup
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-name = get(handles.projectname, 'String');
-if( isKey(handles.project_list, name))
-    project = handles.project_list(name);
-    if (exist(project.state_address, 'file'))
-        project.params.filter_params.filter_mode = handles.filteringbuttongroup.SelectedObject.String;
-    end
-end
 
 % --- Executes on button press in lowpasscheckbox.
 function lowpasscheckbox_Callback(hObject, eventdata, handles)
@@ -1254,4 +1252,26 @@ else
     if(get(handles.othersysradio, 'Value'))
        set(handles.eogchansedit, 'enable', 'off');
     end
+end
+
+% --- Executes on button press in usradiobutton.
+function usradiobutton_Callback(hObject, eventdata, handles)
+% hObject    handle to usradiobutton (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of usradiobutton
+if(get(hObject, 'Value'))
+    set(handles.euradiobutton, 'Value', 0)
+end
+
+% --- Executes on button press in euradiobutton.
+function euradiobutton_Callback(hObject, eventdata, handles)
+% hObject    handle to euradiobutton (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of euradiobutton
+if(get(hObject, 'Value'))
+    set(handles.usradiobutton, 'Value', 0)
 end
