@@ -354,9 +354,6 @@ function defaultcallback(PushButton, EventData)
     % EOG channels
     set(eog_chans, 'String', '');
     
-    % EOG channels
-    set(dsrate, 'Value', 2);
-    
     % Interpolation
     IndexC = strfind(interpol.String, ...
         default_params.interpolation_params.method);
