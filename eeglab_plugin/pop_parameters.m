@@ -98,6 +98,7 @@ ok = findHandlerFromList(allhandlers, 'ok');
 interpol = findHandlerFromList(allhandlers, 'interpolpopup');
 reduce_chans = findHandlerFromList(allhandlers, 'reducechancheck');
 eog_chans = findHandlerFromList(allhandlers, 'eogchans');
+eog_chans_check = findHandlerFromList(allhandlers, 'eogchanscheck');
 default = findHandlerFromList(allhandlers, 'default_butt');
 
 euradio.set('callback', @euradiocallback);
@@ -260,8 +261,9 @@ function okcallback(PushButton, EventData)
     methods = get(interpol, 'String');
     method = methods{idx};
 
+    perform_eog_regression = get(eog_chans_check, 'Value');
     eog_channels = str2num(get(eog_chans, 'String'));
-    if( isempty(eog_channels))
+    if( perform_eog_regression && isempty(eog_channels))
         waitfor(msgbox(['A list of channel indices seperated by space or',...
             ' comma must be given to determine EOG channels'],...
             'Error','error'));
@@ -278,10 +280,11 @@ function okcallback(PushButton, EventData)
         notch_filter = 'None';
     end
     params.eeg_system = eeg_system;
+    params.perform_eog_regression = perform_eog_regression;
     params.perform_reduce_channels = perform_reduce_channels;
     params.filter_params.high_order = high_order;
     params.filter_params.low_order = low_order;
-    params.filter_mode = notch_filter;
+    params.filter_params.filter_mode = notch_filter;
     params.channel_rejection_params.kurt_thresh = kurt_val;
     params.channel_rejection_params.spec_thresh = spec_val;
     params.channel_rejection_params.prob_thresh = prob_val;
@@ -357,6 +360,7 @@ function defaultcallback(PushButton, EventData)
         
     % EOG channels
     set(eog_chans, 'String', '');
+    set(eog_chans_check, 'Value', 1);
     
     % Interpolation
     IndexC = strfind(interpol.String, ...
@@ -583,8 +587,9 @@ interpolation_text.pos = [1 1];
 
 % EOG channels
 % ---------------------------------------
-eog.style = {{'Style','text',...
-            'String','EOG Channels'}  {'Style','edit',...
+eog.style = {{'Style','checkbox',...
+            'String','EOG Channels', ...
+            'tag', 'eogchanscheck', 'Value', 1}  {'Style','edit',...
             'String','', 'tag', 'eogchans'} };
 eog.pos = [1 2];
 
