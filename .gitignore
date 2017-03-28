@@ -6,4 +6,5 @@ state.mat
 *.m~
 .DS_Store
 .dropbox
+__MAXOSX
 Icon*
