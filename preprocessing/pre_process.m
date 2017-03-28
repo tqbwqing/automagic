@@ -79,6 +79,12 @@ perform_reduce_channels = p.Results.perform_reduce_channels;
 assert( ( ~ isempty(pca_params.lambda) && pca_params.lambda == -1) ...
          || ica_params.bool == 0);
 
+pca_url = 'http://perception.csl.illinois.edu/matrix-rank/Files/inexact_alm_rpca.zip';
+if(ispc)
+    slash = '\';
+else
+    slash = '/';
+end
 %% Add path if not added before
 if(~exist('pop_fileio', 'file'))
     matlab_paths = genpath(['..' slash 'matlab_scripts' slash]);
@@ -100,7 +106,36 @@ if(~exist('pop_fileio', 'file'))
     end
     addpath(matlab_paths);
 end
-   
+
+%% Check if PCA exists
+if((isempty(pca_params.lambda) || pca_params.lambda ~= -1) && (~exist('inexact_alm_rpca.m', 'file')))
+    ques = 'inexact_alm_rpca is necessary for PCA. Do you want to download it now?';
+    title = 'PCA Requirement installation';
+    if(exist('questdlg2', 'file'))
+        res = questdlg2( ques , title, 'No', 'Yes', 'Yes' );
+    else
+        res = questdlg( ques , title, 'No', 'Yes', 'Yes' );
+    end
+    
+    if(strcmp(res, 'No'))
+       msg = 'Preprocessing failed as PCA package is not yet installed. Please either isntall it or choose not to use PCA.';
+        if(exist('warndlg2', 'file'))
+            warndlg2(msg);
+        else
+            warndlg(msg);
+        end
+        return; 
+    end
+    
+    zip_name = ['..' slash 'matlab_scripts' slash 'inexact_alm_rpca.zip'];
+    out_folder = ['..' slash 'matlab_scripts' slash];
+    outfilename = websave(zip_name,pca_url);
+    unzip(outfilename,out_folder);
+    addpath(genpath(['..' slash 'matlab_scripts' slash 'inexact_alm_rpca' slash]));
+    delete(zip_name);
+    display('PCA package successfully installed. Continuing preprocessing....');
+end
+
 %% Determine the eeg system
 % Case of others where the location file must have been provided
 if (~isempty(eeg_system.name) && strcmp(eeg_system.name, 'Others'))
