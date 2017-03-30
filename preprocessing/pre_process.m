@@ -118,11 +118,11 @@ end
 %% Check if PCA exists
 if((isempty(pca_params.lambda) || pca_params.lambda ~= -1) && (~exist('inexact_alm_rpca.m', 'file')))
     ques = 'inexact_alm_rpca is necessary for PCA. Do you want to download it now?';
-    title = 'PCA Requirement installation';
+    ques_title = 'PCA Requirement installation';
     if(exist('questdlg2', 'file'))
-        res = questdlg2( ques , title, 'No', 'Yes', 'Yes' );
+        res = questdlg2( ques , ques_title, 'No', 'Yes', 'Yes' );
     else
-        res = questdlg( ques , title, 'No', 'Yes', 'Yes' );
+        res = questdlg( ques , ques_title, 'No', 'Yes', 'Yes' );
     end
     
     if(strcmp(res, 'No'))
