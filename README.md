@@ -16,7 +16,7 @@ You need MATLAB installed and activated on your system to use **Automagic**. **A
 There are four different ways of using the application.
 
 1. The easiest and recommended way is to simply install the application from the app installer file `automagic.mlappinstall`. Please see [GUI Manual](#2-gui-manual)
-2. Automagic is also available as an **EEGLab** extension and you can use it to preprocess data loaded by **EEGLab** gui. See [Automagic as EEGLAB plugin](#3-automagic-as-eeglab-plugin)
+2. Automagic is also available as an **EEGLab** extension and you can use it to preprocess data loaded by **EEGLab** gui. See [Automagic as EEGLab extension](#3-automagic-as-eeglab-extension)
 3. You can also use the preprocessing files independent from the gui. See [Application structure](#4-application-structure) and [How to run the app from the code](#5-how-to-run-the-application-from-the-code)  
 4. Or if you wish to make any modifications to any part of the application, be it the gui or the preprocessing part, you can run the application from the code instead of the installer file.  See [Application structure](#3-application-structure) and [How to run the app from the code](#5-how-to-run-the-application-from-the-code)  
 
@@ -45,7 +45,7 @@ In this section of the manual, only the basic functionality of **Automagic** wil
 1. [Create a new project or load an existing project](#231-creating-a-new-project).
 2. [Preprocess the data](#24-the-pre-processing-panel).
 3. [Rate data and manually select bad channels if any](#25-the-manual-rating-panel).
-4. [Interpolate all manually selected channels] (#26-the-interpolation-panel).
+4. [Interpolate all manually selected channels](#26-the-interpolation-panel).
 5. Repeat steps 3 and 4 until all data is rated.
    * NOTE: You can not close the main gui window during the preprocessing. If you wish to stop the preprocessing at any time, you can use `CTRL-C`. In this case, or if by any other reason the preprocessing is stopped before being completely finished, all preprocessed files to that moment will be saved, and you can resume the preprocessing only for the files which are not preprocessed yet. After having used `CTRL-C`, please load your project from the main gui, by reselecting it from the list of existing projects. This will update the gui with the new preprocessed files.
 
@@ -165,13 +165,21 @@ Should you spot bad channels (represented by horizontal lines which are darker t
 3. Manually re-rate the files that contained bad channels. 
    * Note that you can select and interpolate bad channels as often as you want in each file.
 
-## 3. Automagic as EEGLAB extension
+## 3. Automagic as EEGLab extension
 
-You can also run **Automagic** as an EEGLab extension. To do so, you need to simply put the `automagic` folder in the `eeglab_[version]/plugins/` folder. 
-After this being done, on start-up, **EEGLab** will create a new menu item for **Automagic**. This menu item will have three sub-menus: 
-1. *Start Processing...*
-2. *Start Manual Rating...*
-3. *Start Interpolation...*
+![alt tag](https://github.com/amirrezaw/automagic/blob/master/automagic_resources/eeglab.png)
+
+You can also run **Automagic** as an EEGLab [extension](https://sccn.ucsd.edu/wiki/EEGLAB_Extensions_and_plug-ins). To do so, you need to simply put the `automagic` folder in the `eeglab_[your-version]/plugins/` folder. 
+After this being done, on start-up, **EEGLab** will create a new menu item for **Automagic**. This menu item will have three sub-menus, each of which corresponding to the earlier explained steps of preprocessing: 
+1. *Start Processing...* which corresponds to [Preprocessing the data](#24-the-pre-processing-panel)
+2. *Start Manual Rating...* which corresponds to [Manual rating of bad channels](#25-the-manual-rating-panel).
+3. *Start Interpolation...* which corresponds to [Interpolation of all manually selected channels](#26-the-interpolation-panel)
+
+The behaviour of the the second and third step is exactly as explained in previous section. The only difference happens for the first step where you can preprocess only the currently selected EEG structure instead of the list of all of your EEG structures loaded in **EEGLab**.
+
+Also please note that, when using **EEGLab**, there is no more the notion of having projects, or creating a new project,etc. In this case, you simply load your data from within **EEGLab**, preprocess, rate and interpolate them, and all the results are given back in `ALLEEG` structure of the **EEGLab**. From there you may want to save your result yourself.
+
+   * Important: In order to be able to start the preprocessing, you must first add the channel locations to your EEG data strucutre. For more information please see **EEGLab** documentation on this.
 
 ## 4. Application Structure
 
@@ -203,7 +211,8 @@ You can also run **Automagic** without using the installer. A clear reason to do
 For this code to be able to run, functions from [**EEGLab**](https://sccn.ucsd.edu/eeglab/) and  [**Augmented Lagrange Multiplier (ALM) Method**](http://perception.csl.illinois.edu/matrix-rank/sample_code.html) are needed to be on your path:
 
 1. Download the [**EEGLab**](https://sccn.ucsd.edu/eeglab/downloadtoolbox.php) library and put it in the `automagic/matlab_scripts` folder.
-2. Download the  **inexact ALM** ( containing the function `[A, E] = inexact_alm_rpca(D, λ)`) from [**(ALM) Method**](http://perception.csl.illinois.edu/matrix-rank/sample_code.html) and put it in the `automagic/matlab_scripts/` as well. 
+2. Download the  **inexact ALM** ( containing the function `[A, E] = inexact_alm_rpca(D, λ)`) from [**(ALM) Method**](http://perception.csl.illinois.edu/matrix-rank/sample_code.html) and put it in the `automagic/matlab_scripts/` as well.
+    * Important: If you feel too lazy to download this extension and put it in  `automagic/matlab_scripts/`, **don't**. While using **Automagic**, if you choose to use PCA in preprocessing, you will be asked if you agree to download the package, if you answer *Yes*, the package will be downloaded *Automagically* in the right folder. Note that this feature is not yet implemented for the precious step, **EEGLab**.  
 3. Now you are able to run the code by running the `automagic/gui/main_gui.m`
 
 * NOTE: If your data is with `.fif` extension, you need to download [**fieldtrip**](http://www.fieldtriptoolbox.org/download) which is an **EEGLab** extension and put it in `matlab_scripts/eeglab13_6_5b/plugins/`.
