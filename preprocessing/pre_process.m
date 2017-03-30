@@ -138,11 +138,31 @@ if((isempty(pca_params.lambda) || pca_params.lambda ~= -1) && (~exist('inexact_a
         return; 
     end
     
-    zip_name = ['..' slash 'matlab_scripts' slash 'inexact_alm_rpca.zip'];
-    out_folder = ['..' slash 'matlab_scripts' slash];
+    folder = pwd;
+    if(regexp(folder, 'gui'))
+        folder = ['..' slash 'matlab_scripts' slash];
+    elseif(regexp(folder, 'eeglab'))
+        folder = ['plugins' slash 'automagic' slash 'matlab_scripts' slash];
+    else
+      while(isempty(regexp(folder, 'gui', 'once')) || ...
+            isempty(regexp(folder, 'eeg_lab', 'once')))
+        
+        msg = ['For the installation, please choose the root folder of the EEGLAB: your_path/eeglab or',...
+            ' the gui folder of the automagic: your_path/automagic/gui/'];
+        waitfor(msgbox(msg));
+        folder = uigetdir(pwd, msg);
+        
+        if(isempty(folder))
+            return;
+        end
+        
+      end
+    end
+    zip_name = [folder 'inexact_alm_rpca.zip'];  
+    
     outfilename = websave(zip_name,pca_url);
-    unzip(outfilename,out_folder);
-    addpath(genpath(['..' slash 'matlab_scripts' slash 'inexact_alm_rpca' slash]));
+    unzip(outfilename,folder);
+    addpath(genpath([folder 'inexact_alm_rpca' slash]));
     delete(zip_name);
     display('PCA package successfully installed. Continuing preprocessing....');
 end
