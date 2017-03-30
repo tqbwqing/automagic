@@ -459,9 +459,13 @@ end
 % Preprocess EEG with given parameters. Keep all information in a field
 % called 'EEG.automagic'
 % -------------------------
-[EEG, ~] = pre_process(EEG, params);
-auto_badchans =  EEG.auto_badchans;
-EEG = rmfield(EEG, 'auto_badchans');
+[EEG_result, ~] = pre_process(EEG, params);
+if(isempty(EEG_result))
+    return;
+end
+
+auto_badchans =  EEG_result.auto_badchans;
+EEG = rmfield(EEG_result, 'auto_badchans');
 EEG.automagic.params = params;
 EEG.automagic.auto_badchans = auto_badchans;
 

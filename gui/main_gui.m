@@ -86,7 +86,7 @@ for child_idx = 1:length(children)
     end
 end
 
-handles.version = '1.2.0';
+handles.version = '1.3.0';
 
 % Set constant values
 handles.new_project.LIST_NAME = 'Create New Project...';

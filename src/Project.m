@@ -247,9 +247,17 @@ classdef Project < handle
                     else
                         [~ ,data] = evalc('pop_fileio(block.source_address)');
                     end
-                    self.params.original_file = block.source_address;
+                    
+                    if(strcmp('.fif', self.file_extension)) 
+                        self.params.original_file = block.source_address;
+                    end
+                    
                     [EEG, fig] = pre_process(data, self.params);
 
+                    if(strcmp('.fif', self.file_extension)) 
+                        self.params = rmfield(self.params, 'original_file');
+                    end
+                    
                     if( isempty(EEG) )
                         self.write_to_log(block.source_address);
                        continue; 

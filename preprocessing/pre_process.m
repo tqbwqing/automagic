@@ -63,6 +63,9 @@ function [result, fig] = pre_process(data, varargin)
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+result = [];
+fig = [];
+
 p = inputParser;
 addParameter(p,'eeg_system', @isstruct);
 addParameter(p,'filter_params', struct, @isstruct);
