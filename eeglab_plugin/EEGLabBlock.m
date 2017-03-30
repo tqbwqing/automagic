@@ -54,8 +54,8 @@ properties(SetAccess=private)
     % Index of this block in the block list of the project.
     index
 
-    % Unique_name of this block. It has the form
-    % subjectName_rawFileName (ie. subject1_001).
+    % unique_name of this block. It has the form
+    % index_file_name (ie. 2_myfile).
     unique_name
 
     % Name of the raw file of this block

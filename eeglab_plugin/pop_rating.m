@@ -1,7 +1,7 @@
 function [EEG, com] = pop_rating(ALLEEG)
-% Opens up the rating_gui.  After rating it saves all the information in the
+% Opens up the rating_gui. After rating, it saves all the information in the
 % corresponding EEG structure in the field 'EEG.automagic'. This
-% information can be later used for interpolation. To find out 
+% information can be later used for interpolation.
 %
 % Usage:
 %   >> EEG = pop_rating ( EEG );

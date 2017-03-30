@@ -1,14 +1,15 @@
-function [result, fig] = pre_process(data, raw_file_address, varargin)
+function [result, fig] = pre_process(data, varargin)
 % pre_process  preprocess the data 
-%   [result, fig] = pre_process(data, raw_file_address, varargin)
-%   where data is the EEGLAB data structure, raw_file_address is the 
-%   address of the location where this file is located and varargin is an 
+%   [result, fig] = pre_process(data, varargin)
+%   where data is the EEGLAB data structure and varargin is an 
 %   optional parameter which must be a structure with optional fields 
 %   'filter_params', 'channel_rejection_params', 'pca_params', 'ica_params'
-%   'interpolation_params', 'perform_eog_regression', 'eeg_system' and 
-%   'perform_reduce_channels' to specify parameters for filtering, channel
-%   rejection, pca, ica, interpolation, EOG regression, channel locations 
-%   and reducing channels respectively. 
+%   'interpolation_params', 'perform_eog_regression', 'eeg_system', 
+%   'perform_reduce_channels' and 'original_file' to specify parameters for 
+%   filtering, channel rejection, pca, ica, interpolation, EOG regression, 
+%   channel locations, reducing channels and original file address 
+%   respectively. This latter one is needed only if a .fif file is used,
+%   otherwise it can be omitted.
 %   
 %   To learn more about 'filter_params', 'channel_rejection_params', 
 %   ica_params and 'pca_params' please see their corresponding functions 
@@ -28,6 +29,10 @@ function [result, fig] = pre_process(data, raw_file_address, varargin)
 %   reduce the number of channels or not. The default value is
 %   'perform_reduce_channels' = 1.
 %
+%   'original_file' is necassary only in case of .fif files. In that case,
+%   this should be the address of the file where this EEG data is loaded
+%   from.
+%   
 %   eeg_system must be a structure with fields name, eog_chan, loc_file and
 %   file_loc_type. eeg_system.name can be either 'EGI' or 'Others'. In the
 %   former case none of the other fields are used and they can be empty.
@@ -67,6 +72,7 @@ addParameter(p,'ica_params', struct, @isstruct);
 addParameter(p,'interpolation_params', struct('method', 'spherical'), @isstruct);
 addParameter(p,'perform_eog_regression', 1, @isnumeric);
 addParameter(p,'perform_reduce_channels', 1, @isnumeric);
+addParameter(p,'original_file', '', @ischar);
 parse(p, varargin{:});
 eeg_system = p.Results.eeg_system;
 filter_params = p.Results.filter_params;
@@ -76,6 +82,8 @@ ica_params = p.Results.ica_params;
 interpolation_params = p.Results.interpolation_params;
 perform_eog_regression = p.Results.perform_eog_regression;
 perform_reduce_channels = p.Results.perform_reduce_channels;
+original_file_address = p.Results.original_file;
+
 assert( ( ~ isempty(pca_params.lambda) && pca_params.lambda == -1) ...
          || ica_params.bool == 0);
 
@@ -218,7 +226,7 @@ elseif(~isempty(eeg_system.name) && strcmp(eeg_system.name, 'EGI'))
             [~, data] = evalc('pop_select( data , ''channel'', channels)');
             data.data = data.data * 1e6;% Change from volt to microvolt
             % Convert channel positions to EEG_lab format 
-            [~, hd] = evalc('ft_read_header(raw_file_address)');
+            [~, hd] = evalc('ft_read_header(original_file_address)');
             hd_idx = true(1,74);
             hd_idx(63:64) = false;
             positions = hd.elec.chanpos(hd_idx,:);
@@ -347,7 +355,7 @@ XTicks = [] ;
 XTicketLabels = [];
 set(gca,'XTick', XTicks)
 set(gca,'XTickLabel', XTicketLabels)
-title('Filtered EOG data')
+title('Filtered EOG data');
 %eeg figure
 subplot(9,1,2:3)
 imagesc(EEG.data);
@@ -363,7 +371,7 @@ colormap jet
 caxis([-100 100])
 set(gca,'XTick',XTicks)
 set(gca,'XTickLabel',XTicketLabels)
-title('EOG regressed out')
+title('EOG regressed out');
 %figure;
 subplot(9,1,6:7)
 imagesc(EEG_cleared.data);

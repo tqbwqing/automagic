@@ -72,7 +72,7 @@ default_params.eeg_system.eog_chans = '';
     'title', 'Preprocessing inputs');
 
 
-%--------------------------Set call backs
+%--------------------------Set callbacks
 %-----------------------------------------------------------
 params = struct;
 euradio = findHandlerFromList(allhandlers, 'notcheu');
@@ -459,7 +459,7 @@ end
 % Preprocess EEG with given parameters. Keep all information in a field
 % called 'EEG.automagic'
 % -------------------------
-[EEG, ~] = pre_process(EEG, [], params);
+[EEG, ~] = pre_process(EEG, params);
 auto_badchans =  EEG.auto_badchans;
 EEG = rmfield(EEG, 'auto_badchans');
 EEG.automagic.params = params;

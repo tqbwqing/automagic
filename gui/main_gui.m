@@ -279,6 +279,9 @@ if(strcmp(name, handles.new_project.LIST_NAME))
     set(handles.lowpasscheckbox, 'Value', 0);
     set(handles.lowfreqedit, 'String', handles.NONE)
     
+    set(handles.notchpanel.Children(1), 'Value', 0);
+    set(handles.notchpanel.Children(2), 'Value', 1);
+    
     set(handles.subjectnumber, 'String', '')
     set(handles.filenumber, 'String', '')
     set(handles.preprocessednumber, 'String', '')
@@ -422,14 +425,20 @@ else
 end
 
 US_button = handles.notchpanel.Children(1);
-EU_button = handles.notchpanel.Children(1);
+EU_button = handles.notchpanel.Children(2);
 if( strcmp('EU', project.params.filter_params.filter_mode ))
     set(EU_button, 'Value', 1);
+    set(US_button, 'Value', 0);
 elseif(strcmp('US', project.params.filter_params.filter_mode ))
     set(US_button, 'Value', 1);
-else
+    set(EU_button, 'Value', 0);
+elseif(strcmp('EU', project.params.filter_params.filter_mode ) && ...
+    strcmp('US', project.params.filter_params.filter_mode ))
     set(US_button, 'Value', 0);
     set(EU_button, 'Value', 0);
+else
+    waitfor(msgbox('Inconsistency in notch filter parameters.', ...
+    'Error','error'));
 end
 
 % Set the file extension

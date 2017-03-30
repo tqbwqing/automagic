@@ -247,7 +247,8 @@ classdef Project < handle
                     else
                         [~ ,data] = evalc('pop_fileio(block.source_address)');
                     end
-                    [EEG, fig] = pre_process(data, block.source_address, self.params);
+                    self.params.original_file = block.source_address;
+                    [EEG, fig] = pre_process(data, self.params);
 
                     if( isempty(EEG) )
                         self.write_to_log(block.source_address);

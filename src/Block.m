@@ -6,7 +6,7 @@ classdef Block < handle
     %   This information include a unique_name for each block, the name of
     %   the raw_file, its extension, its corresponding Subject, the prefix
     %   of the preprocessed file, parameters of preprocessing (for more 
-    %   info on the prefix and the parameters of the preprocessing see docs) 
+    %   info on the parameters of the preprocessing see pre_process.m) 
     %   , sampling rate of the corresponding project, list of channels
     %   that are chosen to be interpolated, rate of the preprocessed file
     %   given during the rating process in rating_gui, list of channels
