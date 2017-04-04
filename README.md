@@ -195,7 +195,7 @@ There are four main folders (in total 6 folders):
    4. `Automagic.mlappinstall` which is the app installer mentionned in [Installation](#2-1-2-Installation) section.
 3. **`automagic/src/`**
  This folder contains all source files regarding the entire structure of the application:
-   * `Project.m`, `Subject.m` and `Block.m` are classes representing a project created in the gui, its corresponding subjects and the raw files of each subject, respectievly.
+   * `Project.m`, `Subject.m` and `Block.m` are classes representing a project created in the gui, its corresponding subjects and the raw files of each subject, respectievly. `ConstantGlobalValues.m` contains constant variables used throughout the application to avoid duplications.
 4. **`eeglab_plugin/`**
  This folder contains necessary files to integrate **Automagic** as an **EEGLab** extension. There are corresponding `pop_` functions and equivalent functions of `automagic/src/` for the plugin. The structure is very similar to `automagic/src/`.
  
