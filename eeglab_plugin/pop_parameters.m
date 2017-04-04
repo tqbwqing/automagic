@@ -1,5 +1,5 @@
 function [EEG, com] = pop_parameters(EEG)
-% Pops-up a window that takes required parameters and then runs pre_process()
+% Pops-up a window that takes required parameters and then runs preprocess()
 % function. 
 %
 % Usage:
@@ -178,7 +178,7 @@ function okcallback(PushButton, EventData)
             'Error','error'));
         return;
     end
-    eeg_system.exclud_chans = exclud_channels;
+    eeg_system.tobe_excluded_chans = exclud_channels;
     
     ica_bool = get(icacheck, 'Value');
 
@@ -453,7 +453,7 @@ end
 % Preprocess EEG with given parameters. Keep all information in a field
 % called 'EEG.automagic'
 % -------------------------
-[EEG_result, ~] = pre_process(EEG, params);
+[EEG_result, ~] = preprocess(EEG, params);
 if(isempty(EEG_result))
     return;
 end
