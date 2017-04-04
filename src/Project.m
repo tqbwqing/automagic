@@ -149,15 +149,20 @@ classdef Project < handle
         
         % Number of preprocessed subjects.
         processed_subjects
+        
+        % Constant Global Variables
+        CGV
     end
     
     %% Constructor
     methods
         function self = Project(name, d_folder, p_folder, ext, ds, ...
                 params)
+            
             self = self.setName(name);
             self = self.setData_folder(d_folder);
             self = self.setResult_folder(p_folder);
+            self.CGV = ConstantGlobalValues;
             self.state_address = self.make_state_address(self.result_folder);
             self.file_extension = ext;
             self.ds_rate = ds;
@@ -276,7 +281,7 @@ classdef Project < handle
                 if( exist([block.image_address, '.tif'], 'file' ))
                     delete([block.image_address, '.tif']);
                 end
-                block.setRatingInfoAndUpdate( 'Not Rated', [], [], false);
+                block.setRatingInfoAndUpdate( self.CGV.ratings.NotRated, [], [], false);
                 
                 % save results
                 set(fig,'PaperUnits','inches','PaperPosition',[0 0 10 8])
@@ -284,7 +289,7 @@ classdef Project < handle
                 close(fig);
 
                 reduced.data = downsample(EEG.data',self.ds_rate)';
-                rate = 'Not Rated';
+                rate = self.CGV.ratings.NotRated;
                 tobe_interpolated = [];
                 auto_badchans =  EEG.auto_badchans;
                 man_badchans = [];
@@ -293,7 +298,7 @@ classdef Project < handle
                 params = self.params;
                 
                 display('Saving results...');
-                save(block.reduced_address, 'reduced', '-v6');
+                save(block.reduced_address, self.CGV.default_params.general_params.reduced_name, '-v6');
                 save(block.result_address, 'EEG', 'auto_badchans','man_badchans'...
                     , 'rate','tobe_interpolated', 'is_interpolated', ...
                     'params', '-v7.3');
@@ -375,7 +380,7 @@ classdef Project < handle
 
                 display(['Processing file ', block.unique_name ,' ...', '(file ', ...
                     int2str(i), ' out of ', int2str(length(int_list)), ')']); 
-                assert(strcmp(block.rate, 'Interpolate') == 1);
+                assert(strcmp(block.rate, self.CGV.ratings.Interpolate) == 1);
 
                 % Interpolate and save to results
                 preprocessed = matfile(block.result_address,'Writable',true);
@@ -391,10 +396,10 @@ classdef Project < handle
                 EEG = preprocessed.EEG;
                 % Downsample the new file and save it
                 reduced.data = (downsample(EEG.data', self.ds_rate))';
-                save(block.reduced_address, 'reduced', '-v6');
+                save(block.reduced_address, self.CGV.default_params.general_params.reduced_name, '-v6');
 
                 % Setting the new information
-                block.setRatingInfoAndUpdate('Not Rated', [], [block.man_badchans interpolate_chans], true);
+                block.setRatingInfoAndUpdate(self.CGV.ratings.NotRated, [], [block.man_badchans interpolate_chans], true);
                 self.interpolate_list(self.interpolate_list == block.index) = [];
                 self.not_rated_list = ...
                         [self.not_rated_list block.index];
@@ -531,15 +536,15 @@ classdef Project < handle
                     if (~ isempty(block.potential_result_address))
 
                         switch block.rate
-                        case 'Good'
+                        case self.CGV.ratings.Good
                             g_list = [g_list block.index];
-                        case 'OK'
+                        case self.CGV.ratings.OK
                             o_list = [o_list block.index];
-                        case 'Bad'
+                        case self.CGV.ratings.Bad
                             b_list = [b_list block.index];
-                        case 'Interpolate'
+                        case self.CGV.ratings.Interpolate
                             i_list = [i_list block.index];
-                        case 'Not Rated'
+                        case self.CGV.ratings.NotRated
                             n_list = [n_list block.index];
                         end
 
@@ -758,15 +763,15 @@ classdef Project < handle
                     if ( ~ isempty(block.potential_result_address))       
 
                         switch block.rate
-                        case 'Good'
+                        case self.CGV.ratings.Good
                             g_list = [g_list block.index];
-                        case 'OK'
+                        case self.CGV.ratings.OK
                             o_list = [o_list block.index];
-                        case 'Bad'
+                        case self.CGV.ratings.Bad
                             b_list = [b_list block.index];
-                        case 'Interpolate'
+                        case self.CGV.ratings.Interpolate
                             i_list = [i_list block.index];
-                        case 'Not Rated'
+                        case self.CGV.ratings.NotRated
                             n_list = [n_list block.index];
                         end
 
@@ -870,7 +875,7 @@ classdef Project < handle
         function address = make_state_address(p_folder)
             % Return the address of the state file
             
-            address = strcat(p_folder, 'project_state.mat');
+            address = strcat(p_folder, ConstantGlobalValues.state_file.PROJECT_NAME);
         end 
     end
     

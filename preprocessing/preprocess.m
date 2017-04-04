@@ -68,17 +68,20 @@ function [result, fig] = preprocess(data, varargin)
 result = [];
 fig = [];
 
+DEFS = DefaultParameters;
 p = inputParser;
-addParameter(p,'eeg_system', struct('name', 'EGI'),@isstruct);
+addParameter(p,'eeg_system', struct('name', DEFS.eeg_system.name),@isstruct);
 addParameter(p,'filter_params', struct, @isstruct);
 addParameter(p,'channel_rejection_params', struct, @isstruct);
 addParameter(p,'pca_params', struct, @isstruct);
-addParameter(p,'ica_params', struct('bool', 1), @isstruct);
-addParameter(p,'interpolation_params', struct('method', 'spherical'), ...
-    @isstruct);
-addParameter(p,'perform_eog_regression', 1, @isnumeric);
-addParameter(p,'perform_reduce_channels', 1, @isnumeric);
-addParameter(p,'original_file', '', @ischar);
+addParameter(p,'ica_params', struct('bool', DEFS.ica_params.bool), @isstruct);
+addParameter(p,'interpolation_params', ...
+    struct('method', DEFS.interpolation_params.method), @isstruct);
+addParameter(p,'perform_eog_regression', ...
+    DEFS.eog_regression_params.perform_eog_regression, @isnumeric);
+addParameter(p,'perform_reduce_channels', ...
+     DEFS.channel_reduction_params.perform_reduce_channels, @isnumeric);
+addParameter(p,'original_file', DEFS.general_params.original_file, @ischar);
 parse(p, varargin{:});
 eeg_system = p.Results.eeg_system;
 filter_params = p.Results.filter_params;
@@ -93,8 +96,7 @@ original_file_address = p.Results.original_file;
 assert( ( ~ isempty(pca_params.lambda) && pca_params.lambda == -1) ...
          || ica_params.bool == 0);
 
-% Download link of PCA hardcoded :(
-pca_url = 'http://perception.csl.illinois.edu/matrix-rank/Files/inexact_alm_rpca.zip';
+pca_url = DEFS.pca_params.pca_url;
 
 % System dependence:
 if(ispc)
@@ -176,9 +178,9 @@ end
 
 %% Determine the eeg system
 % Case of others where the location file must have been provided
-if (~isempty(eeg_system.name) && strcmp(eeg_system.name, 'Others'))
+if (~isempty(eeg_system.name) && strcmp(eeg_system.name, DEFS.eeg_system.Others_name))
     assert(~ perform_reduce_channels);
-    ica_params.chanloc_map = containers.Map; % Map is empty. 
+    ica_params.chanloc_map = DEFS.ica_params.chanloc_map; % Map is empty. 
     
     
     all_chans = 1:data.nbchan;
@@ -195,7 +197,7 @@ if (~isempty(eeg_system.name) && strcmp(eeg_system.name, 'Others'))
         'load',{ eeg_system.loc_file , 'filetype', eeg_system.file_loc_type});
 
 % Case of EGI
-elseif(~isempty(eeg_system.name) && strcmp(eeg_system.name, 'EGI'))
+elseif(~isempty(eeg_system.name) && strcmp(eeg_system.name, DEFS.eeg_system.EGI_name))
     
     if( perform_reduce_channels )
         chan128 = [2 3 4 5 6 7 9 10 11 12 13 15 16 18 19 20 22 23 24 26 27 ...

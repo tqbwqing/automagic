@@ -35,11 +35,15 @@ function rejected = reject_channels(data, varargin)
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+defaults = DefaultParameters.channel_rejection_params;
 p = inputParser;
-addParameter(p,'kurt_thresh', 3, @isnumeric);
-addParameter(p,'prob_thresh', 4, @isnumeric);
-addParameter(p,'spec_thresh', 4, @isnumeric);
-addParameter(p,'interpolation_params', struct('method', 'spherical'), @isstruct);
+addParameter(p,'kurt_thresh', defaults.kurt_thresh, @isnumeric);
+addParameter(p,'prob_thresh', defaults.prob_thresh, @isnumeric);
+addParameter(p,'spec_thresh', defaults.prob_thresh, @isnumeric);
+addParameter(p,'interpolation_params', ...
+                    struct('method', ...
+                    DefaultParameters.interpolation_params.method), ...
+                    @isstruct);
 parse(p, varargin{:});
 
 
@@ -48,7 +52,7 @@ prob_thresh = p.Results.prob_thresh;
 spec_thresh = p.Results.spec_thresh;
 interpolation_params = p.Results.interpolation_params;
 
-display('Finding bad channels...');
+display(defaults.run_message);
 
 chans = 1:data.nbchan;
 flatchans_idx = std(data.data, 0, 2) < 0.01;

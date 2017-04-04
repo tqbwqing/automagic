@@ -205,7 +205,7 @@ classdef Block < handle
                 self.auto_badchans = preprocessed.auto_badchans;
                 self.man_badchans = preprocessed.man_badchans;
             else
-                self.rate = 'Not Rated';
+                self.rate = self.CGV.ratings.NotRated;
                 self.tobe_interpolated = [];
                 self.auto_badchans = [];
                 self.man_badchans = [];
@@ -294,31 +294,31 @@ classdef Block < handle
         
         function bool = is_interpolate(self)
             % Return to true if this block is rated as Interpolate
-            bool = strcmp(self.rate, 'Interpolate');
+            bool = strcmp(self.rate, ConstantGlobalValues.ratings.Interpolate);
             bool = bool &&  (~ self.is_null);
         end
         
         function bool = is_good(self)
             % Return to true if this block is rated as Good
-            bool = strcmp(self.rate, 'Good');
+            bool = strcmp(self.rate, ConstantGlobalValues.ratings.Good);
             bool = bool &&  (~ self.is_null);
         end
         
         function bool = is_ok(self)
             % Return to true if this block is rated as OK
-            bool = strcmp(self.rate, 'OK');
+            bool = strcmp(self.rate, ConstantGlobalValues.ratings.OK);
             bool = bool &&  (~ self.is_null);
         end
         
         function bool = is_bad(self)
             % Return to true if this block is rated as Bad
-            bool = strcmp(self.rate, 'Bad');
+            bool = strcmp(self.rate, ConstantGlobalValues.ratings.Bad);
             bool = bool &&  (~ self.is_null);
         end
         
         function bool = is_not_rated(self)
             % Return to true if this block is rated as Not Rated
-            bool = strcmp(self.rate, 'Not Rated');
+            bool = strcmp(self.rate, ConstantGlobalValues.ratings.NotRated);
             bool = bool &&  (~ self.is_null);
         end
         
@@ -411,7 +411,7 @@ classdef Block < handle
             end
             
             switch Block.get_rate_from_prefix(prefix)
-                case 'Not Rated'
+                case ConstantGlobalValues.ratings.NotRated
                     bool = false;
                 case ''
                     bool = false;
@@ -423,22 +423,22 @@ classdef Block < handle
             % character of the prefix indicates the rating. 
             
             if( strcmp(prefix, ''))
-                type = 'Not Rated';
+                type = ConstantGlobalValues.ratings.NotRated;
                 return;
             end
             
             type = '';
             switch prefix(1)
                 case 'g'
-                    type = 'Good';
+                    type = ConstantGlobalValues.ratings.Good;
                 case 'o'
-                    type = 'OK';
+                    type = ConstantGlobalValues.ratings.OK;
                 case 'b'
-                    type = 'Bad';
+                    type = ConstantGlobalValues.ratings.Bad;
                 case 'i'
-                    type = 'Interpolate';
+                    type = ConstantGlobalValues.ratings.Interpolate;
                 case 'n'
-                    type = 'Not Rated';
+                    type = ConstantGlobalValues.ratings.NotRated;
             end
         end
 

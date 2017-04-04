@@ -32,10 +32,11 @@ function [data, noise] = perform_pca(data, varargin)
 
 [~ , m] = size(data.data);
 
+defaults = DefaultParameters.pca_params;
 p = inputParser;
 addParameter(p,'lambda', 1 / sqrt(m), @isnumeric);
-addParameter(p,'tol', 1e-7, @isnumeric);
-addParameter(p,'maxIter', 1000, @isnumeric);
+addParameter(p,'tol', defaults.tol, @isnumeric);
+addParameter(p,'maxIter', defaults.maxIter, @isnumeric);
 parse(p, varargin{:});
 
 lambda = p.Results.lambda;
@@ -54,7 +55,7 @@ end
 
 eeg = double(data.data)';
 % Run robust PCA
-display('Performing PCA  (this may take a while...)');
+display(defaults.run_message);
 [~, A_hat, E_hat, ~] = evalc('inexact_alm_rpca(eeg, lambda, tol, maxIter)');
 sig  = A_hat'; % data
 data.data = sig;

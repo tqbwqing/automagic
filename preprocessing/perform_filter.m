@@ -44,12 +44,13 @@ function filtered = perform_filter(data, varargin)
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+defaults = DefaultParameters.filter_params;
 p = inputParser;
-addParameter(p,'filter_mode', 'EU', @ischar);
-addParameter(p,'high_freq', 0.5, @isnumeric);
-addParameter(p,'high_order', [], @isnumeric);
-addParameter(p,'low_freq', -1, @isnumeric);
-addParameter(p,'low_order', [], @isnumeric);
+addParameter(p,'filter_mode', defaults.filter_mode, @ischar);
+addParameter(p,'high_freq', defaults.high_freq, @isnumeric);
+addParameter(p,'high_order', defaults.high_order, @isnumeric);
+addParameter(p,'low_freq', defaults.low_freq, @isnumeric);
+addParameter(p,'low_order', defaults.low_order, @isnumeric);
 parse(p, varargin{:});
 
 
@@ -60,7 +61,7 @@ low_freq = p.Results.low_freq;
 low_order = p.Results.low_order;
 
 
-display('Perform Filtering...');
+display(defaults.run_message);
 
 if( high_freq ~= -1 )
     [~, data] = evalc('pop_eegfiltnew(data, high_freq, 0, high_order)');

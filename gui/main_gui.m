@@ -86,46 +86,10 @@ for child_idx = 1:length(children)
     end
 end
 
-handles.version = '1.3.0';
+% Set Constant Values
+handles.CGV = ConstantGlobalValues;
+handles.params = make_default_params(handles.CGV.default_params);
 
-% Set constant values
-handles.new_project.LIST_NAME = 'Create New Project...';
-handles.new_project.NAME = 'Type the name of your new project...';
-handles.new_project.DATA_FOLDER = 'Choose where your raw data is...';
-handles.new_project.FOLDER = 'Choose where you want the results to be saved...';
-handles.load_selected_project.LIST_NAME = 'Load an existing project...';
-handles.state_file.NAME = 'state.mat';
-handles.state_file.FOLDER = '~/methlab_pipeline/';
-handles.state_file.ADDRESS = strcat(handles.state_file.FOLDER,...
-    handles.state_file.NAME);
-
-
-% Default Settings
-handles.NONE = 'None';
-handles.default_params.Default = 'Default';
-handles.default_params.filter_params.high_freq = 0.5;
-handles.default_params.filter_params.high_order = [];
-handles.default_params.filter_params.low_freq = -1;
-handles.default_params.filter_params.low_order = [];
-handles.default_params.perform_reduce_channels = 1;
-handles.default_params.channel_rejection_params.kurt_thresh = 3;
-handles.default_params.channel_rejection_params.prob_thresh = 4;
-handles.default_params.channel_rejection_params.spec_thresh = 4;
-handles.default_params.perform_eog_regression = 1;
-handles.default_params.pca_params.lambda = [];
-handles.default_params.pca_params.tol = 1e-7;
-handles.default_params.pca_params.maxIter = 1000;
-handles.default_params.ica_params.bool = 0;
-handles.default_params.interpolation_params.method = 'spherical';
-handles.default_params.eeg_system.name = 'EGI';
-handles.default_params.eeg_system.file_loc_type = '';
-handles.default_params.eeg_system.loc_file = '';
-handles.default_params.eeg_system.eog_chans = '';
-handles.default_params.eeg_system.tobe_excluded_chans = '';
-
-% Set settings to default
-handles.params = handles.default_params;
-handles.params = rmfield(handles.params,'Default');
 % Either pca or ica, not both together.
 assert( ( ~ isempty(handles.params.pca_params.lambda) && ...
     handles.params.pca_params.lambda == -1) || handles.params.ica_params.bool == 0);
@@ -162,21 +126,21 @@ varargout{1} = handles.output;
 function handles = load_state(handles)
 % handles       main handles of this gui
 
-if exist(handles.state_file.ADDRESS, 'file')
-    load(handles.state_file.ADDRESS);
-    if( isfield(state, 'version') && strcmp(state.version, handles.version))
+if exist(handles.CGV.state_file.ADDRESS, 'file')
+    load(handles.CGV.state_file.ADDRESS);
+    if( isfield(state, 'version') && strcmp(state.version, handles.CGV.version))
         handles.project_list = state.project_list;
         handles.current_project = state.current_project;
     else % initialise everything if versioning doesn't correspond
         handles.project_list = containers.Map;
-        handles.project_list(handles.new_project.LIST_NAME) = [];
-        handles.project_list(handles.load_selected_project.LIST_NAME) = [];
+        handles.project_list(handles.CGV.new_project.LIST_NAME) = [];
+        handles.project_list(handles.CGV.load_selected_project.LIST_NAME) = [];
         handles.current_project = 1;
     end
 else % initialise everything if main state file does not exist
     handles.project_list = containers.Map;
-    handles.project_list(handles.new_project.LIST_NAME) = [];
-    handles.project_list(handles.load_selected_project.LIST_NAME) = [];
+    handles.project_list(handles.CGV.new_project.LIST_NAME) = [];
+    handles.project_list(handles.CGV.load_selected_project.LIST_NAME) = [];
     handles.current_project = 1;
 end
 
@@ -185,8 +149,8 @@ end
 k = handles.project_list.keys;
 v = handles.project_list.values;
 for i = 1:handles.project_list.Count
-    if( ~ strcmp(k(i), handles.new_project.LIST_NAME) && ...
-            ~ strcmp(k(i), handles.load_selected_project.LIST_NAME) )
+    if( ~ strcmp(k(i), handles.CGV.new_project.LIST_NAME) && ...
+            ~ strcmp(k(i), handles.CGV.load_selected_project.LIST_NAME) )
         name = k{i};
         old_project = v{i};
         if( exist(old_project.state_address, 'file') )
@@ -267,18 +231,19 @@ names = handles.project_list.keys;
 name = names{Index};
 
 % Special case of New Project
-if(strcmp(name, handles.new_project.LIST_NAME))
-    set(handles.projectname, 'String', handles.new_project.NAME);
-    set(handles.datafoldershow, 'String', handles.new_project.DATA_FOLDER);
-    set(handles.projectfoldershow, 'String', handles.new_project.FOLDER);
+if(strcmp(name, handles.CGV.new_project.LIST_NAME))
+    set(handles.projectname, 'String', handles.CGV.new_project.NAME);
+    set(handles.datafoldershow, 'String', handles.CGV.new_project.DATA_FOLDER);
+    set(handles.projectfoldershow, 'String', handles.CGV.new_project.FOLDER);
     
     set(handles.highpasscheckbox, 'Value', 1);
-    set(handles.highfreqedit, 'String', handles.default_params.filter_params.high_freq)
+    set(handles.highfreqedit, 'String', ...
+        handles.CGV.default_params.filter_params.high_freq)
     set(handles.highfreqedit, 'enable', 'on');
     
     set(handles.lowfreqedit, 'enable', 'off');
     set(handles.lowpasscheckbox, 'Value', 0);
-    set(handles.lowfreqedit, 'String', handles.NONE)
+    set(handles.lowfreqedit, 'String', handles.CGV.NONE_keyword)
     
     set(handles.notchpanel.Children(1), 'Value', 0);
     set(handles.notchpanel.Children(2), 'Value', 1);
@@ -289,22 +254,23 @@ if(strcmp(name, handles.new_project.LIST_NAME))
     set(handles.fpreprocessednumber, 'String', '')
     set(handles.ratednumber, 'String', '')
     set(handles.interpolatenumber, 'String', '')
-    set(handles.eogregressioncheckbox, 'Value', handles.default_params.perform_eog_regression);
-    set(handles.excludecheckbox, 'Value', handles.default_params.perform_reduce_channels);
+    set(handles.eogregressioncheckbox, 'Value', ...
+        handles.CGV.default_params.eog_regression_params.perform_eog_regression);
+    set(handles.excludecheckbox, 'Value', ...
+        handles.CGV.default_params.channel_reduction_params.perform_reduce_channels);
     set(handles.extedit, 'String', '')
     
-    handles = setEEGSystem('EGI', handles);
+    handles = setEEGSystem(handles.CGV.default_params.eeg_system.EGI_name, handles);
     
     handles.current_project = Index;
-    handles.params = handles.default_params;
-    handles.params = rmfield(handles.params,'Default');
+    handles.params = make_default_params(handles.CGV.default_params);
     % Enable modifications
     switch_gui('on', 'off', handles);
     return;
 end
 
 % Special case of Load Project
-if(strcmp(name, handles.load_selected_project.LIST_NAME))
+if(strcmp(name, handles.CGV.load_selected_project.LIST_NAME))
     [name, project_path, ~] = uigetfile('load');
     
     % If user cancelled the process, choose the previous project
@@ -415,7 +381,7 @@ if(project.params.filter_params.high_freq ~= -1)
     set(handles.highfreqedit, 'String', num2str(project.params.filter_params.high_freq));
     set(handles.highpasscheckbox, 'Value', 1);
 else
-    set(handles.highfreqedit, 'String', handles.NONE);
+    set(handles.highfreqedit, 'String', handles.CGV.NONE_keyword);
     set(handles.highpasscheckbox, 'Value', 0);
 end
 
@@ -423,7 +389,7 @@ if(project.params.filter_params.low_freq ~= -1)
     set(handles.lowfreqedit, 'String', num2str(project.params.filter_params.low_freq));
     set(handles.lowpasscheckbox, 'Value', 1);
 else
-    set(handles.lowfreqedit, 'String', handles.NONE);
+    set(handles.lowfreqedit, 'String', handles.CGV.NONE_keyword);
     set(handles.lowpasscheckbox, 'Value', 0);
 end
 
@@ -539,12 +505,12 @@ function save_state(handles)
 if(isa(handles, 'struct'))
     state.project_list = handles.project_list;
     state.current_project = handles.current_project;
-    state.version = handles.version;
+    state.version = handles.CGV.version;
     
-    if(~ exist(handles.state_file.FOLDER, 'dir'))
-        mkdir(handles.state_file.FOLDER);
+    if(~ exist(handles.CGV.state_file.FOLDER, 'dir'))
+        mkdir(handles.CGV.state_file.FOLDER);
     end
-    save(handles.state_file.ADDRESS, 'state');
+    save(handles.CGV.state_file.ADDRESS, 'state');
 end
 
 
@@ -702,14 +668,15 @@ function createbutton_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
+CGV = handles.CGV;
 name = get(handles.projectname, 'String');
 project_folder = get(handles.projectfoldershow, 'String');
 data_folder = get(handles.datafoldershow, 'String');
 
 % Data folder and project folder must be at least modified !
-if( strcmp(data_folder, handles.new_project.DATA_FOLDER) || ...
-        strcmp(project_folder, handles.new_project.FOLDER) || ...
-        strcmp(name, handles.new_project.NAME))
+if( strcmp(data_folder, handles.CGV.new_project.DATA_FOLDER) || ...
+        strcmp(project_folder, handles.CGV.new_project.FOLDER) || ...
+        strcmp(name, handles.CGV.new_project.NAME))
     waitfor(msgbox('You must choose a name, project folder and data folder.',...
         'Error','error'));
     return;
@@ -731,7 +698,7 @@ handles.params.perform_eog_regression = get(handles.eogregressioncheckbox, 'Valu
 
 % Get the EEG system
 if ~ get(handles.egiradio, 'Value')
-   eeg_system.name = 'Others';
+   eeg_system.name = CGV.default_params.eeg_system.Others_name;
    eeg_system.loc_file = get(handles.chanlocedit, 'String');
    eeg_system.eog_chans = str2num(get(handles.eogchansedit, 'String'));
    eeg_system.tobe_excluded_chans = str2num(get(handles.excludeedit, 'String'));
@@ -900,10 +867,10 @@ function lowpasscheckbox_Callback(hObject, eventdata, handles)
 
 if (get(hObject,'Value') == get(hObject,'Max'))
 	set(handles.lowfreqedit, 'enable', 'on');
-    set(handles.lowfreqedit, 'String', handles.default_params.filter_params.low_freq)
+    set(handles.lowfreqedit, 'String', handles.CGV.default_params.filter_params.low_freq)
 else
 	set(handles.lowfreqedit, 'enable', 'off');
-    set(handles.lowfreqedit, 'String', handles.NONE)
+    set(handles.lowfreqedit, 'String', handles.CGV.NONE_keyword)
 end
 
 
@@ -916,10 +883,10 @@ function highpasscheckbox_Callback(hObject, eventdata, handles)
 
 if (get(hObject,'Value') == get(hObject,'Max'))
 	set(handles.highfreqedit, 'enable', 'on');
-    set(handles.highfreqedit, 'String', handles.default_params.filter_params.high_freq)
+    set(handles.highfreqedit, 'String', handles.CGV.default_params.filter_params.high_freq)
 else
 	set(handles.highfreqedit, 'enable', 'off');
-    set(handles.highfreqedit, 'String', handles.NONE)
+    set(handles.highfreqedit, 'String', handles.CGV.NONE_keyword)
 end
 
 
@@ -929,7 +896,7 @@ function configbutton_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-h = settings(handles.params, handles.default_params);
+h = settings(handles.params);
 switch_gui('off', 'off', handles);
 set(handles.runpreprocessbutton, 'enable', 'off');
 set(handles.manualratingbutton, 'enable', 'off');
@@ -1098,7 +1065,7 @@ function extedit_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 if( strcmp(get(handles.datafoldershow, 'String'), ... 
-        handles.new_project.DATA_FOLDER) || ...
+        handles.CGV.new_project.DATA_FOLDER) || ...
         isempty(get(handles.extedit, 'String')))
     return
 end
@@ -1351,3 +1318,24 @@ else
        set(handles.excludeedit, 'enable', 'off');
     end
 end
+
+function params = make_default_params(default_params)
+params.filter_params.high_freq = default_params.filter_params.high_freq;
+params.filter_params.high_order = default_params.filter_params.high_order;
+params.filter_params.low_freq = default_params.filter_params.low_freq;
+params.filter_params.low_order = default_params.filter_params.low_order;
+params.perform_reduce_channels = default_params.channel_reduction_params.perform_reduce_channels;
+params.channel_rejection_params.kurt_thresh = default_params.channel_rejection_params.kurt_thresh;
+params.channel_rejection_params.prob_thresh = default_params.channel_rejection_params.prob_thresh;
+params.channel_rejection_params.spec_thresh = default_params.channel_rejection_params.spec_thresh;
+params.perform_eog_regression = default_params.eog_regression_params.perform_eog_regression;
+params.pca_params.lambda = default_params.pca_params.lambda;
+params.pca_params.tol = default_params.pca_params.tol;
+params.pca_params.maxIter = default_params.pca_params.maxIter;
+params.ica_params.bool = default_params.ica_params.bool;
+params.interpolation_params.method = default_params.interpolation_params.method;
+params.eeg_system.name = default_params.eeg_system.name;
+params.eeg_system.file_loc_type = default_params.eeg_system.file_loc_type;
+params.eeg_system.loc_file = default_params.eeg_system.loc_file;
+params.eeg_system.eog_chans = default_params.eog_regression_params.eog_chans;
+params.eeg_system.tobe_excluded_chans = default_params.channel_reduction_params.tobe_excluded_chans;

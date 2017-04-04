@@ -17,7 +17,8 @@ function regressed = EOG_regression(EEG, EOG)
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-display('Perform EOG Regression...');
+defaults = DefaultParameters.filter_params;
+display(defaults.run_message);
 
 eeg = EEG.data';
 eog = EOG.data';

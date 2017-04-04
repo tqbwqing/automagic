@@ -80,6 +80,9 @@ properties(SetAccess=private)
 
     % is true if the block has been already interpolated at least once.
     is_interpolated
+    
+    % Constant Global Variables
+    CGV
 end
 
 %% Constructor
@@ -91,6 +94,7 @@ methods
         self.EEG = EEG;
         self.file_name = file_name;
         self.unique_name = strcat(int2str(index), '_',file_name);
+        self.CGV = ConstantGlobalValues;
 
         self = self.update_rating_info_from_file_if_any();
     end
@@ -101,7 +105,7 @@ methods
     function self = update_rating_info_from_file_if_any(self)
         % If the prefix indicates that the block has been already rated
         if( ~ isfield(self.EEG.automagic, 'rate'))
-            self.EEG.automagic.rate = 'Not Rated';
+            self.EEG.automagic.rate = self.CGV.ratings.NotRated;
             self.EEG.automagic.tobe_interpolated = [];
             self.EEG.automagic.auto_badchans = [];
             self.EEG.automagic.man_badchans = [];
@@ -125,31 +129,31 @@ methods
 
     function bool = is_interpolate(self)
         % Return to true if this block is rated as Interpolate
-        bool = strcmp(self.rate, 'Interpolate');
+        bool = strcmp(self.rate, self.CGV.ratings.Interpolate);
         bool = bool &&  (~ self.is_null);
     end
 
     function bool = is_good(self)
         % Return to true if this block is rated as Good
-        bool = strcmp(self.rate, 'Good');
+        bool = strcmp(self.rate, self.CGV.ratings.Good);
         bool = bool &&  (~ self.is_null);
     end
 
     function bool = is_ok(self)
         % Return to true if this block is rated as OK
-        bool = strcmp(self.rate, 'OK');
+        bool = strcmp(self.rate, self.CGV.ratings.OK);
         bool = bool &&  (~ self.is_null);
     end
 
     function bool = is_bad(self)
         % Return to true if this block is rated as Bad
-        bool = strcmp(self.rate, 'Bad');
+        bool = strcmp(self.rate, self.CGV.ratings.Bad);
         bool = bool &&  (~ self.is_null);
     end
 
     function bool = is_not_rated(self)
         % Return to true if this block is rated as Not Rated
-        bool = strcmp(self.rate, 'Not Rated');
+        bool = strcmp(self.rate, self.CGV.ratings.NotRated);
         bool = bool &&  (~ self.is_null);
     end
 
@@ -188,7 +192,7 @@ methods
         self.EEG = eeg_interp(self.EEG , interpolate_chans , mode);
 
         % Setting the new information
-        self.setRatingInfoAndUpdate('Not Rated', [], [self.man_badchans interpolate_chans], true);
+        self.setRatingInfoAndUpdate(self.CGV.ratings.NotRated, [], [self.man_badchans interpolate_chans], true);
         self.saveRatingsToFile();
     end
 end

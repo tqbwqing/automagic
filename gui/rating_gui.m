@@ -56,6 +56,7 @@ end
 project = varargin{1};
 assert(isa(project, 'Project') || isa(project, 'EEGLabProject'));
 handles.project = project;
+handles.CGV = ConstantGlobalValues;
 
 set(handles.rating_gui, 'units', 'normalized', 'position', [0.05 0.3 0.8 0.8])
 % set checkboxes to be all selected on startup
@@ -140,17 +141,17 @@ block = get_current_block(handles);
 set(handles.turnonbutton,'Enable', 'off')
 set(handles.turnoffbutton,'Enable', 'off')
 switch block.rate
-    case 'Good'
+    case handles.CGV.ratings.Good
        set(handles.rategroup,'selectedobject',handles.goodrate)
-    case 'OK'
+    case handles.CGV.ratings.OK
         set(handles.rategroup,'selectedobject',handles.okrate)
-    case 'Bad'
+    case handles.CGV.ratings.Bad
         set(handles.rategroup,'selectedobject',handles.badrate)
-    case 'Interpolate'
+    case handles.CGV.ratings.Interpolate
         set(handles.rategroup,'selectedobject',handles.interpolaterate)
         set(handles.turnonbutton,'Enable', 'on')
         set(handles.turnoffbutton,'Enable', 'on')
-    case 'Not Rated'
+    case handles.CGV.ratings.NotRated
         set(handles.rategroup,'selectedobject',handles.notrate)
 end
 
@@ -403,15 +404,15 @@ end
 block = project.block_map(unique_name);
 rate = block.rate;
 switch rate
-    case 'Good'
+    case handles.CGV.ratings.Good
         bool = ~ get(handles.goodcheckbox,'Value');
-    case 'OK'
+    case handles.CGV.ratings.OK
         bool = ~ get(handles.okcheckbox,'Value');
-    case 'Bad'
+    case handles.CGV.ratings.Bad
         bool = ~ get(handles.badcheckbox,'Value');
-    case 'Interpolate'
+    case handles.CGV.ratings.Interpolate
         bool = ~ get(handles.interpolatecheckbox,'Value');
-    case 'Not Rated'
+    case handles.CGV.ratings.NotRated
         bool = ~ get(handles.notratedcheckbox,'Value');
     otherwise
         bool = false;
@@ -854,9 +855,9 @@ else
     block = get_current_block(handles);
     new_rate = handles.rategroup.SelectedObject.String;
     switch new_rate
-        case {'Good', 'OK', 'Bad', 'Not Rated'}
+        case {handles.CGV.ratings.Good, handles.CGV.ratings.OK, handles.CGV.ratings.Bad, handles.CGV.ratings.NotRated}
             block.setRatingInfoAndUpdate(new_rate, [], block.man_badchans, block.is_interpolated);
-        case 'Interpolate'
+        case handles.CGV.ratings.Interpolate
             % The interpolate_list is untouched at this step. There maybe even
             % conflicts in it which are not checked.
             block.setRatingInfoAndUpdate(new_rate, block.tobe_interpolated, block.man_badchans, block.is_interpolated);
@@ -971,7 +972,7 @@ else
     list = [list y];
     draw_line(y, handles.project.maxX, handles, 'b');
 end
-block.setRatingInfoAndUpdate('Interpolate', list, block.man_badchans, block.is_interpolated);
+block.setRatingInfoAndUpdate(handles.CGV.ratings.Interpolate, list, block.man_badchans, block.is_interpolated);
 set(handles.channellistbox,'String',list)
 
 % --- Redraw all lines
@@ -1001,7 +1002,7 @@ delete(p);
 block = get_current_block(handles);
 list = block.tobe_interpolated;
 list = list(list ~= y);
-block.setRatingInfoAndUpdate('Interpolate', list, block.man_badchans, block.is_interpolated);
+block.setRatingInfoAndUpdate(handles.CGV.ratings.Interpolate, list, block.man_badchans, block.is_interpolated);
 set(handles.channellistbox,'String',list)
 
 % --- Save the state of the project
@@ -1019,7 +1020,7 @@ block.saveRatingsToFile();
 % Now we should update five lists of ratings which are used to speed up the
 % filtering pocess.
 switch block.rate
-    case 'Good'
+    case handles.CGV.ratings.Good
         if( ~ ismember(block.index, handles.project.good_list ) )
             handles.project.good_list = ...
                 [handles.project.good_list block.index];
@@ -1030,7 +1031,7 @@ switch block.rate
             handles.project.good_list = sort(handles.project.good_list);
 
         end
-    case 'OK'
+    case handles.CGV.ratings.OK
         if( ~ ismember(block.index, handles.project.ok_list ) )
             handles.project.ok_list = ...
                 [handles.project.ok_list block.index];
@@ -1040,7 +1041,7 @@ switch block.rate
             handles.project.interpolate_list(handles.project.interpolate_list == block.index) = [];
             handles.project.ok_list = sort(handles.project.ok_list);
         end
-    case 'Bad'
+    case handles.CGV.ratings.Bad
         if( ~ ismember(block.index, handles.project.bad_list ) )
             handles.project.bad_list = ...
                 [handles.project.bad_list block.index];
@@ -1050,7 +1051,7 @@ switch block.rate
             handles.project.interpolate_list(handles.project.interpolate_list == block.index) = [];
             handles.project.bad_list = sort(handles.project.bad_list);
         end
-    case 'Interpolate'
+    case handles.CGV.ratings.Interpolate
         if( ~ ismember(block.index, handles.project.interpolate_list ) )
             handles.project.interpolate_list = ...
                 [handles.project.interpolate_list block.index];
@@ -1060,7 +1061,7 @@ switch block.rate
             handles.project.good_list(handles.project.good_list == block.index) = [];
             handles.project.interpolate_list = sort(handles.project.interpolate_list);
         end
-    case 'Not Rated'
+    case handles.CGV.ratings.NotRated
         if( ~ ismember(block.index, handles.project.not_rated_list ) )
             handles.project.not_rated_list = ...
                 [handles.project.not_rated_list block.index];

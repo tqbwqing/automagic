@@ -65,7 +65,7 @@ function settings_OpeningFcn(hObject, eventdata, handles, varargin)
 % handles    structure with handles and user data (see GUIDATA)
 % varargin   command line arguments to settings (see VARARGIN)
 
-if( nargin - 3 ~= 2 )
+if( nargin - 3 ~= 1 )
     error('wrong number of arguments. Project must be given as argument.')
 end
 
@@ -81,25 +81,24 @@ for child_idx = 1:length(children)
     end
 end
 
+CGV = ConstantGlobalValues;
 params = varargin{1};
-default_params = varargin{2};
 assert(isa(params, 'struct'));
-assert(isa(default_params, 'struct'));
+assert(isa(CGV, 'ConstantGlobalValues'));
 handles.params = params;
-handles.default_params = default_params;
-
+handles.CGV = CGV;
 % Either pca or ica, not both together.
 assert( ( ~ isempty(handles.params.pca_params.lambda) && ...
     handles.params.pca_params.lambda == -1) || handles.params.ica_params.bool == 0);
 
 if( isempty( params.filter_params.high_order) )
-    set(handles.highpassorderedit, 'String', default_params.Default);
+    set(handles.highpassorderedit, 'String', CGV.DEFAULT_keyword);
 else
     set(handles.highpassorderedit, 'String', params.filter_params.high_order);
 end
 
 if( isempty( params.filter_params.low_order) )
-    set(handles.lowpassorderedit, 'String', default_params.Default);
+    set(handles.lowpassorderedit, 'String', CGV.DEFAULT_keyword);
 else
     set(handles.lowpassorderedit, 'String', params.filter_params.low_order);
 end
@@ -109,7 +108,7 @@ if( params.channel_rejection_params.kurt_thresh ~= -1)
     set(handles.kurtthreshedit, 'String', params.channel_rejection_params.kurt_thresh);
 else
     set(handles.kurtcheckbox, 'Value', 0);
-    set(handles.kurtthreshedit, 'String', default_params.channel_rejection_params.kurt_thresh);
+    set(handles.kurtthreshedit, 'String', CGV.default_params.channel_rejection_params.kurt_thresh);
 end
 
 if( params.channel_rejection_params.spec_thresh ~= -1)
@@ -118,7 +117,7 @@ if( params.channel_rejection_params.spec_thresh ~= -1)
     
 else
     set(handles.speccheckbox, 'Value', 0);
-    set(handles.specthreshedit, 'String', default_params.channel_rejection_params.spec_thresh);
+    set(handles.specthreshedit, 'String', CGV.default_params.channel_rejection_params.spec_thresh);
 end
 
 if( params.channel_rejection_params.prob_thresh ~= -1)
@@ -126,13 +125,13 @@ if( params.channel_rejection_params.prob_thresh ~= -1)
     set(handles.probthreshedit, 'String', params.channel_rejection_params.prob_thresh);
 else
     set(handles.probcheckbox, 'Value', 0);
-    set(handles.probthreshedit, 'String', default_params.channel_rejection_params.prob_thresh);
+    set(handles.probthreshedit, 'String', CGV.default_params.channel_rejection_params.prob_thresh);
 end
 
 if( isempty(params.pca_params.lambda) || params.pca_params.lambda ~= -1)
     set(handles.pcacheckbox, 'Value', 1);
     if( isempty( params.pca_params.lambda ))
-       set(handles.lambdaedit, 'String', default_params.Default);
+       set(handles.lambdaedit, 'String', CGV.DEFAULT_keyword);
     else
         set(handles.lambdaedit, 'String', params.pca_params.lambda); 
     end
@@ -140,9 +139,9 @@ if( isempty(params.pca_params.lambda) || params.pca_params.lambda ~= -1)
     set(handles.maxIteredit, 'String', params.pca_params.maxIter);
 else
     set(handles.pcacheckbox, 'Value', 0);
-    set(handles.lambdaedit, 'String', default_params.Default);
-    set(handles.toledit, 'String', default_params.pca_params.tol);
-    set(handles.maxIteredit, 'String', default_params.pca_params.maxIter);
+    set(handles.lambdaedit, 'String', CGV.DEFAULT_keyword);
+    set(handles.toledit, 'String', CGV.default_params.pca_params.tol);
+    set(handles.maxIteredit, 'String', CGV.default_params.pca_params.maxIter);
 end
 
 set(handles.icacheckbox, 'Value', params.ica_params.bool);
@@ -241,7 +240,7 @@ function handles = get_inputs(handles)
 
 h = findobj(allchild(0), 'flat', 'Tag', 'main_gui');
 main_gui_handle = guidata(h);
-default_params = handles.default_params;
+CGV = handles.CGV;
 
 ica_bool = get(handles.icacheckbox, 'Value');
 
@@ -250,7 +249,7 @@ if( get(main_gui_handle.highpasscheckbox, 'Value') )
     high_order = str2double(get(handles.highpassorderedit, 'String'));
 end
 if(isnan(high_order) )
-    high_order = default_params.filter_params.high_order;
+    high_order = CGV.default_params.filter_params.high_order;
 end
 
 
@@ -259,7 +258,7 @@ if( get(main_gui_handle.lowpasscheckbox, 'Value') )
     low_order = str2double(get(handles.lowpassorderedit, 'String'));
 end
 if(isnan(low_order))
-    low_order = default_params.filter_params.high_order;
+    low_order = CGV.default_params.filter_params.high_order;
 end
 
 if( get(handles.kurtcheckbox, 'Value') )
@@ -268,7 +267,7 @@ else
     kurt_val = -1;
 end
 if( isempty(kurt_val) || isnan(kurt_val))
-   kurt_val = default_params.channel_rejection_params.kurt_thresh; 
+   kurt_val = CGV.default_params.channel_rejection_params.kurt_thresh; 
 end
 
 if( get(handles.speccheckbox, 'Value') )
@@ -277,7 +276,7 @@ else
     spec_val = -1;
 end
 if( isempty(spec_val) || isnan(spec_val))
-   spec_val = default_params.channel_rejection_params.spec_thresh; 
+   spec_val = CGV.default_params.channel_rejection_params.spec_thresh; 
 end
 
 
@@ -287,7 +286,7 @@ else
     prob_val = -1;
 end
 if( isempty(prob_val) || isnan(prob_val))
-   prob_val = default_params.channel_rejection_params.prob_thresh; 
+   prob_val = CGV.default_params.channel_rejection_params.prob_thresh; 
 end
 
 
@@ -296,7 +295,7 @@ if( get(handles.pcacheckbox, 'Value') )
     tol = str2double(get(handles.toledit, 'String'));
     maxIter = str2double(get(handles.maxIteredit, 'String'));
     if(isnan(lambda) )
-        lambda = default_params.pca_params.lambda;
+        lambda = CGV.default_params.pca_params.lambda;
     end
 else
     lambda = -1;
@@ -305,11 +304,11 @@ else
 end
 
 if(isempty(tol) || isnan(tol))
-    tol = default_params.pca_params.tol;
+    tol = CGV.default_params.pca_params.tol;
 end
 
 if( isempty(maxIter) || isnan(maxIter)) 
-    maxIter = default_params.pca_params.maxIter;
+    maxIter = CGV.default_params.pca_params.maxIter;
 end
 
 
@@ -333,50 +332,50 @@ function defaultpushbutton_Callback(hObject, eventdata, handles)
 % hObject    handle to defaultpushbutton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-default_params = handles.default_params;
+CGV = handles.CGV;
 params = handles.params;
 
 set(handles.highpassorderedit, 'String', ...
-    default_params.Default);
+    CGV.DEFAULT_keyword);
 set(handles.lowpassorderedit, 'String', ...
-    default_params.filter_params.low_order);
+    CGV.default_params.filter_params.low_order);
 
-set(handles.icacheckbox, 'Value', default_params.ica_params.bool);
+set(handles.icacheckbox, 'Value', CGV.default_params.ica_params.bool);
 
-if( default_params.channel_rejection_params.kurt_thresh ~= -1)
+if( CGV.default_params.channel_rejection_params.kurt_thresh ~= -1)
     set(handles.kurtcheckbox, 'Value', 1);
     set(handles.kurtthreshedit, 'String', ...
-        default_params.channel_rejection_params.kurt_thresh);
+        CGV.default_params.channel_rejection_params.kurt_thresh);
 else
     set(handles.kurtcheckbox, 'Value', 0);
     set(handles.kurtthreshedit, 'String', '');
 end
 
-if( default_params.channel_rejection_params.spec_thresh ~= -1)
+if( CGV.default_params.channel_rejection_params.spec_thresh ~= -1)
     set(handles.speccheckbox, 'Value', 1);
     set(handles.specthreshedit, 'String', ...
-        default_params.channel_rejection_params.spec_thresh);
+        CGV.default_params.channel_rejection_params.spec_thresh);
 else
     set(handles.speccheckbox, 'Value', 0);
     set(handles.specthreshedit, 'String', '');
 end
-if( default_params.channel_rejection_params.prob_thresh ~= -1)
+if( CGV.default_params.channel_rejection_params.prob_thresh ~= -1)
     set(handles.probcheckbox, 'Value', 1);
     set(handles.probthreshedit, 'String', ...
-        default_params.channel_rejection_params.prob_thresh);
+        CGV.default_params.channel_rejection_params.prob_thresh);
 else
     set(handles.probcheckbox, 'Value', 0);
     set(handles.probthreshedit, 'String', '');
 end
 
-if( isempty(params.pca_params.lambda) || default_params.pca_params.lambda ~= -1)
+if( isempty(CGV.default_params.pca_params.lambda) || CGV.default_params.pca_params.lambda ~= -1)
     set(handles.pcacheckbox, 'Value', 1);
     set(handles.lambdaedit, 'String', ...
-        default_params.Default);
+        CGV.DEFAULT_keyword);
     set(handles.toledit, 'String', ...
-        default_params.pca_params.tol);
+        CGV.default_params.pca_params.tol);
     set(handles.maxIteredit, 'String', ...
-        default_params.pca_params.maxIter);
+        CGV.default_params.pca_params.maxIter);
 else
     set(handles.pcacheckbox, 'Value', 0);
     set(handles.lambdaedit, 'String', '');
@@ -385,7 +384,7 @@ else
 end
 
 IndexC = strfind(handles.interpolationpopupmenu.String, ...
-    default_params.interpolation_params.method);
+    CGV.default_params.interpolation_params.method);
 index = find(not(cellfun('isempty', IndexC)));
 set(handles.interpolationpopupmenu, 'Value', index);
 
@@ -398,14 +397,14 @@ function handles = switch_components(handles)
 
 h = findobj(allchild(0), 'flat', 'Tag', 'main_gui');
 main_gui_handle = guidata(h);
-default_params = handles.default_params;
+CGV = handles.CGV;
 
 if( get(main_gui_handle.highpasscheckbox, 'Value') )
     set(handles.highpassorderedit, 'enable', 'on');
 else
     set(handles.highpassorderedit, 'enable', 'off');
     set(handles.highpassorderedit, 'String', ...
-        default_params.filter_params.high_order);
+        CGV.default_params.filter_params.high_order);
 end
 
 if( get(main_gui_handle.lowpasscheckbox, 'Value') )
@@ -413,7 +412,7 @@ if( get(main_gui_handle.lowpasscheckbox, 'Value') )
 else
     set(handles.lowpassorderedit, 'enable', 'off');
     set(handles.lowpassorderedit, 'String', ...
-        default_params.filter_params.low_order);
+        CGV.default_params.filter_params.low_order);
 end
 
 if( get(handles.kurtcheckbox, 'Value') )
@@ -421,7 +420,7 @@ if( get(handles.kurtcheckbox, 'Value') )
 else
     set(handles.kurtthreshedit, 'enable', 'off');
     set(handles.kurtthreshedit, 'String', ...
-        num2str(default_params.channel_rejection_params.kurt_thresh));
+        num2str(CGV.default_params.channel_rejection_params.kurt_thresh));
 end
 
 if( get(handles.speccheckbox, 'Value') )
@@ -429,7 +428,7 @@ if( get(handles.speccheckbox, 'Value') )
 else
     set(handles.specthreshedit, 'enable', 'off');
     set(handles.specthreshedit, 'String', ...
-        num2str(default_params.channel_rejection_params.spec_thresh));
+        num2str(CGV.default_params.channel_rejection_params.spec_thresh));
 end
 
 if( get(handles.probcheckbox, 'Value') )
@@ -437,7 +436,7 @@ if( get(handles.probcheckbox, 'Value') )
 else
     set(handles.probthreshedit, 'enable', 'off');
     set(handles.probthreshedit, 'String', ...
-        num2str(default_params.channel_rejection_params.prob_thresh));
+        num2str(CGV.default_params.channel_rejection_params.prob_thresh));
 end
 
 if( get(handles.pcacheckbox, 'Value') )
@@ -449,11 +448,11 @@ else
     set(handles.toledit, 'enable', 'off');
     set(handles.maxIteredit, 'enable', 'off');
     set(handles.lambdaedit, 'String', ...
-        num2str(default_params.Default));
+        num2str(CGV.DEFAULT_keyword));
     set(handles.toledit, 'String', ...
-        num2str(default_params.pca_params.tol));
+        num2str(CGV.default_params.pca_params.tol));
     set(handles.maxIteredit, 'String', ...
-        num2str(default_params.pca_params.maxIter));
+        num2str(CGV.default_params.pca_params.maxIter));
 end
 
 % --- Executes on button press in cancelpushbutton.

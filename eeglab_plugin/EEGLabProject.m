@@ -88,6 +88,9 @@ properties(SetAccess=private)
 
     % Number of preprocessed blocks.
     processed_files
+    
+    % Constant Global Variables
+    CGV
 end
 
 %% Constructor
@@ -95,6 +98,7 @@ methods
     function self = EEGLabProject(ALLEEG, params)
         self.ALLEEG = ALLEEG;
         self.params = params;
+        self.CGV = ConstantGlobalValues;
         self = self.create_rating_structure();
 
     end
@@ -121,7 +125,7 @@ methods
 
             display(['Processing file ', block.unique_name ,' ...', '(file ', ...
                 int2str(i), ' out of ', int2str(length(int_list)), ')']); 
-            assert(strcmp(block.rate, 'Interpolate') == 1);
+            assert(strcmp(block.rate, self.CGV.ratings.Interpolate) == 1);
             
             block.interpolate_channels(self.params.interpolation_params.method);
             self.interpolate_list(self.interpolate_list == block.index) = [];
@@ -166,15 +170,15 @@ methods(Access=private)
             if ( ~ isempty(block.rate))       
 
                 switch block.rate
-                case 'Good'
+                case self.CGV.ratings.Good
                     g_list = [g_list block.index];
-                case 'OK'
+                case self.CGV.ratings.OK
                     o_list = [o_list block.index];
-                case 'Bad'
+                case self.CGV.ratings.Bad
                     b_list = [b_list block.index];
-                case 'Interpolate'
+                case self.CGV.ratings.Interpolate
                     i_list = [i_list block.index];
-                case 'Not Rated'
+                case self.CGV.ratings.NotRated
                     n_list = [n_list block.index];
                 end
 

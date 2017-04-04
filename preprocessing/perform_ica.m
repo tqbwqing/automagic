@@ -34,9 +34,10 @@ function data = perform_ica(data, varargin)
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+defaults = DefaultParameters.ica_params;
 p = inputParser;
-addParameter(p,'chanloc_map', containers.Map, @(x) isa(x, 'containers.Map'));
-addParameter(p,'bool', 1, @isnumeric);
+addParameter(p,'chanloc_map', defaults.chanloc_map, @(x) isa(x, 'containers.Map'));
+addParameter(p,'bool', defaults.bool, @isnumeric);
 parse(p, varargin{:});
 
 chanloc_map = p.Results.chanloc_map;
@@ -56,7 +57,7 @@ if( ~ isempty(chanloc_map))
     end
 end
 
-display('Performing ICA  (this may take a while...)');
+display(defaults.run_message);
 options = [0 1 0 0 1];
 [~, ~, EEG_Mara, ~] = evalc('processMARA_with_no_popup(data, data, 1, options)');
     

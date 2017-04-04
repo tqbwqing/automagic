@@ -43,26 +43,9 @@ end;
 
 %--------------------------Set default parameters
 %-----------------------------------------------------------
-default_params.Default = 'Default';
-default_params.filter_params.high_freq = 0.5;
-default_params.filter_params.high_order = [];
-default_params.filter_params.low_freq = -1;
-default_params.filter_params.low_order = [];
-default_params.perform_reduce_channels = 1;
-default_params.channel_rejection_params.kurt_thresh = 3;
-default_params.channel_rejection_params.prob_thresh = 4;
-default_params.channel_rejection_params.spec_thresh = 4;
-default_params.perform_eog_regression = 1;
-default_params.pca_params.lambda = [];
-default_params.pca_params.tol = 1e-7;
-default_params.pca_params.maxIter = 1000;
-default_params.ica_params.bool = 0;
-default_params.interpolation_params.method = 'spherical';
-default_params.eeg_system.name = 'EGI';
-default_params.eeg_system.file_loc_type = '';
-default_params.eeg_system.loc_file = '';
-default_params.eeg_system.eog_chans = '';
-default_params.eeg_system.tobe_excluded_chans = '';
+default_params = ConstantGlobalValues.default_params;
+DEFAULT_keyword = ConstantGlobalValues.DEFAULT_keyword;
+
 
 %--------------------------Create Gui
 %-----------------------------------------------------------
@@ -158,7 +141,7 @@ function icacheckcallback(PushButton, EventData)
     if(get(icacheck, 'Value'))
         set(pcacheck, 'value', 0)
         set(lambdain, 'enable', 'off', 'String', ...
-            format_default(num2str(default_params.Default)));
+            format_default(num2str(DEFAULT_keyword)));
         set(tolin, 'enable', 'off', 'String', ...
             format_default(num2str(default_params.pca_params.tol)));
         set(maxiterin, 'enable', 'off', 'String', ...
@@ -174,7 +157,7 @@ function pcacheckcallback(PushButton, EventData)
         set(icacheck, 'value', 0)
     else
         set(lambdain, 'enable', 'off', 'String', ...
-            format_default(num2str(default_params.Default)));
+            format_default(num2str(DEFAULT_keyword)));
         set(tolin, 'enable', 'off', 'String', ...
             format_default(num2str(default_params.pca_params.tol)));
         set(maxiterin, 'enable', 'off', 'String', ...
@@ -317,7 +300,7 @@ function defaultcallback(PushButton, EventData)
     set(highcheck, 'Value', 1);
     set(lowcheck, 'Value', 0);
     set(highorder, 'String', ...
-        format_default(default_params.Default));
+        format_default(DEFAULT_keyword));
     set(highfreq, 'String', ...
         format_default(default_params.filter_params.high_freq));
 
@@ -353,7 +336,7 @@ function defaultcallback(PushButton, EventData)
     if( isempty(default_params.pca_params.lambda) || default_params.pca_params.lambda ~= -1)
         set(pcacheck, 'Value', 1);
         format_default(set(lambdain, 'String', ...
-            default_params.Default));
+            DEFAULT_keyword));
         set(tolin, 'String', ...
             format_default(default_params.pca_params.tol));
         set(maxiterin, 'String', ...
@@ -367,7 +350,7 @@ function defaultcallback(PushButton, EventData)
 
     % Reduce channels
     set(exclud_chans, 'String', '');
-    set(reduce_chans, 'Value', default_params.perform_reduce_channels);
+    set(reduce_chans, 'Value', default_params.channel_reduction_params.perform_reduce_channels);
         
     % EOG channels
     set(eog_chans, 'String', '');
@@ -397,7 +380,7 @@ function switch_components()
         set(highfreq, 'enable', 'on');
     else
         set(highorder, 'enable', 'off', 'String', ...
-            format_default(default_params.Default));
+            format_default(DEFAULT_keyword));
         set(highfreq, 'enable', 'off', 'String', ...
             format_default(default_params.filter_params.high_freq));
     end
@@ -440,7 +423,7 @@ function switch_components()
         set(icacheck, 'value', 0)
     else
         set(lambdain, 'enable', 'off', 'String', ...
-            format_default(num2str(default_params.Default)));
+            format_default(num2str(DEFAULT_keyword)));
         set(tolin, 'enable', 'off', 'String', ...
             format_default(num2str(default_params.pca_params.tol)));
         set(maxiterin, 'enable', 'off', 'String', ...
@@ -450,7 +433,7 @@ function switch_components()
     if(get(icacheck, 'Value'))
         set(pcacheck, 'value', 0)
         set(lambdain, 'enable', 'off', 'String', ...
-            format_default(num2str(default_params.Default)));
+            format_default(num2str(DEFAULT_keyword)));
         set(tolin, 'enable', 'off', 'String', ...
             format_default(num2str(default_params.pca_params.tol)));
         set(maxiterin, 'enable', 'off', 'String', ...
@@ -593,7 +576,7 @@ reduce_chan_chechbox.style = { {'Style','checkbox',...
             'String','Reduce Number of Channels (Only for EGI systems)', ...
             'tag', 'reducechancheck', 'Value', 1} {'Style','edit',...
             'String','', 'tag', 'excludchans'}};
-reduce_chan_chechbox.pos = [1 2]; 
+reduce_chan_chechbox.pos = [1 1]; 
 
 interpolation_text.style = {{'Style','text',...
             'String','Interpolation'}  {'Style','popupmenu',...
