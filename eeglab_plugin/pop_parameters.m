@@ -1,5 +1,5 @@
 function [EEG, com] = pop_parameters(EEG)
-% Pops-up a window that takes required parameters and then runs preprocess()
+% Pops-up a window that takes required parameters and then runs pre_process()
 % function. 
 %
 % Usage:
@@ -62,7 +62,7 @@ default_params.eeg_system.name = 'EGI';
 default_params.eeg_system.file_loc_type = '';
 default_params.eeg_system.loc_file = '';
 default_params.eeg_system.eog_chans = '';
-
+default_params.eeg_system.tobe_excluded_chans = '';
 
 %--------------------------Create Gui
 %-----------------------------------------------------------
@@ -98,6 +98,7 @@ ok = findHandlerFromList(allhandlers, 'ok');
 interpol = findHandlerFromList(allhandlers, 'interpolpopup');
 reduce_chans = findHandlerFromList(allhandlers, 'reducechancheck');
 eog_chans = findHandlerFromList(allhandlers, 'eogchans');
+exclud_chans = findHandlerFromList(allhandlers, 'excludchans');
 eog_chans_check = findHandlerFromList(allhandlers, 'eogchanscheck');
 default = findHandlerFromList(allhandlers, 'default_butt');
 
@@ -186,7 +187,16 @@ end
 function okcallback(PushButton, EventData)
     perform_reduce_channels = ...
         get(reduce_chans, 'Value');
-
+    
+    exclud_channels = str2num(get(exclud_chans, 'String'));
+    if( perform_reduce_channels && isempty(exclud_channels))
+        waitfor(msgbox(['A list of channel indices seperated by space or',...
+            ' comma must be given to determine channels to be excluded'],...
+            'Error','error'));
+        return;
+    end
+    eeg_system.exclud_chans = exclud_channels;
+    
     ica_bool = get(icacheck, 'Value');
 
     high_order = [];
@@ -356,6 +366,7 @@ function defaultcallback(PushButton, EventData)
     end
 
     % Reduce channels
+    set(exclud_chans, 'String', '');
     set(reduce_chans, 'Value', default_params.perform_reduce_channels);
         
     % EOG channels
@@ -459,7 +470,7 @@ end
 % Preprocess EEG with given parameters. Keep all information in a field
 % called 'EEG.automagic'
 % -------------------------
-[EEG_result, ~] = preprocess(EEG, params);
+[EEG_result, ~] = pre_process(EEG, params);
 if(isempty(EEG_result))
     return;
 end
@@ -580,8 +591,9 @@ pca_maxiter.pos = [1 1 1];
 % ---------------------------------------
 reduce_chan_chechbox.style = { {'Style','checkbox',...
             'String','Reduce Number of Channels (Only for EGI systems)', ...
-            'tag', 'reducechancheck', 'Value', 1} };
-reduce_chan_chechbox.pos = 1; 
+            'tag', 'reducechancheck', 'Value', 1} {'Style','edit',...
+            'String','', 'tag', 'excludchans'}};
+reduce_chan_chechbox.pos = [1 2]; 
 
 interpolation_text.style = {{'Style','text',...
             'String','Interpolation'}  {'Style','popupmenu',...
@@ -616,15 +628,15 @@ uipositions = {notch_text.pos notch_input.pos high_text.pos ...
     channel_rejection_text.pos channel_rejection_label.pos ...
     channel_rejection_input_kur.pos channel_rejection_input_prob.pos ...
     channel_rejection_input_spec.pos ica_checkbox.pos pca_checkbox.pos ...
-    pca_lambda.pos pca_tolerance.pos pca_maxiter.pos reduce_chan_chechbox.pos ...
-    interpolation_text.pos eog.pos okcancel.pos};
+    pca_lambda.pos pca_tolerance.pos pca_maxiter.pos interpolation_text.pos ...
+    reduce_chan_chechbox.pos eog.pos okcancel.pos};
 uilist = [notch_text.style notch_input.style high_text.style ...
     high_label.style high_inputs.style low_text.style ...
     low_label.style low_inputs.style channel_rejection_text.style ...
     channel_rejection_label.style channel_rejection_input_kur.style ...
     channel_rejection_input_prob.style channel_rejection_input_spec.style...
     ica_checkbox.style pca_checkbox.style pca_lambda.style pca_tolerance.style...
-    pca_maxiter.style reduce_chan_chechbox.style interpolation_text.style ...
+    pca_maxiter.style interpolation_text.style reduce_chan_chechbox.style ...
     eog.style okcancel.style];
 
 end
