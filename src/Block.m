@@ -205,7 +205,7 @@ classdef Block < handle
                 self.auto_badchans = preprocessed.auto_badchans;
                 self.man_badchans = preprocessed.man_badchans;
             else
-                self.rate = self.CGV.ratings.NotRated;
+                self.rate = ConstantGlobalValues.ratings.NotRated;
                 self.tobe_interpolated = [];
                 self.auto_badchans = [];
                 self.man_badchans = [];
