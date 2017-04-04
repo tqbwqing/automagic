@@ -41,7 +41,7 @@ function varargout = main_gui(varargin)
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-% Last Modified by GUIDE v2.5 28-Mar-2017 14:27:26
+% Last Modified by GUIDE v2.5 04-Apr-2017 10:12:59
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -121,6 +121,7 @@ handles.default_params.eeg_system.name = 'EGI';
 handles.default_params.eeg_system.file_loc_type = '';
 handles.default_params.eeg_system.loc_file = '';
 handles.default_params.eeg_system.eog_chans = '';
+handles.default_params.eeg_system.tobe_excluded_chans = '';
 
 % Set settings to default
 handles.params = handles.default_params;
@@ -289,6 +290,7 @@ if(strcmp(name, handles.new_project.LIST_NAME))
     set(handles.ratednumber, 'String', '')
     set(handles.interpolatenumber, 'String', '')
     set(handles.eogregressioncheckbox, 'Value', handles.default_params.perform_eog_regression);
+    set(handles.excludecheckbox, 'Value', handles.default_params.perform_reduce_channels);
     set(handles.extedit, 'String', '')
     
     handles = setEEGSystem('EGI', handles);
@@ -379,6 +381,7 @@ if ~ exist(project.state_address, 'file')
         set(handles.highfreqedit, 'String', '')
         set(handles.chanlocedit, 'String', '');
         set(handles.eogchansedit, 'String', '');
+        set(handles.excludeedit, 'String', '');
         % Disable modifications from gui
         switch_gui('off', 'on', handles);
         return;
@@ -466,6 +469,9 @@ set(handles.interpolatenumber, 'String', ...
 % Set EOG regression checkox
 set(handles.eogregressioncheckbox, 'Value', project.params.perform_eog_regression);
 
+% Set reduce channel checkbox
+set(handles.excludecheckbox, 'Value', project.params.perform_reduce_channels);
+
 % Disable modifications from gui
 switch_gui('off', 'on', handles);
 
@@ -495,6 +501,7 @@ set(handles.deleteprojectbutton, 'visible', visibility)
 set(handles.highfreqedit, 'enable', mode);
 set(handles.lowfreqedit, 'enable', mode);
 set(handles.eogregressioncheckbox, 'enable', mode);
+set(handles.excludecheckbox, 'enable', mode);
 setEEGSystemVisibility(mode, handles);
 
 % --- Enable or Disable the EEG system related gui components. These are
@@ -512,12 +519,14 @@ set(handles.othersysradio, 'enable', mode);
 if( strcmp(mode, 'off'))
     set(handles.chanlocedit, 'enable', mode);
     set(handles.eogchansedit, 'enable', mode);
+    set(handles.excludeedit, 'enable', mode);
     set(handles.loctypeedit, 'enable', mode);
     set(handles.choosechannelloc, 'enable', mode);
 elseif(strcmp(mode, 'on'))
     if( ~ get(handles.egiradio, 'Value'))
         set(handles.chanlocedit, 'enable', mode);
         set(handles.eogchansedit, 'enable', mode);
+        set(handles.excludeedit, 'enable', mode);
         set(handles.loctypeedit, 'enable', mode);
         set(handles.choosechannelloc, 'enable', mode);
     end
@@ -713,6 +722,10 @@ if( isempty(ext) || ~ strcmp(ext(1), '.') || length(strsplit('.raw', '.')) > 2 )
         'Error','error'));
     return;
 end
+
+% Get reduce checkbox
+handles.params.perform_reduce_channels = get(handles.excludecheckbox, 'Value');
+
 % Get EOG regression
 handles.params.perform_eog_regression = get(handles.eogregressioncheckbox, 'Value');
 
@@ -721,6 +734,7 @@ if ~ get(handles.egiradio, 'Value')
    eeg_system.name = 'Others';
    eeg_system.loc_file = get(handles.chanlocedit, 'String');
    eeg_system.eog_chans = str2num(get(handles.eogchansedit, 'String'));
+   eeg_system.tobe_excluded_chans = str2num(get(handles.excludeedit, 'String'));
    eeg_system.file_loc_type = get(handles.loctypeedit, 'String');
    
    if( get(handles.eogregressioncheckbox, 'Value') && isempty(eeg_system.eog_chans))
@@ -1127,6 +1141,7 @@ switch system
         set(handles.eogchansedit, 'enable', 'off');
         set(handles.loctypeedit, 'enable', 'off');
         set(handles.choosechannelloc, 'enable', 'off');
+        set(handles.excludeedit, 'enable', 'off');
         handles.params.perform_reduce_channels = 1;
     case 'Others'
         set(handles.othersysradio, 'Value', 1);
@@ -1134,6 +1149,9 @@ switch system
         set(handles.chanlocedit, 'enable', 'on');
         if(get(handles.eogregressioncheckbox, 'Value'))
             set(handles.eogchansedit, 'enable', 'on');
+        end
+        if(get(handles.excludecheckbox, 'Value'))
+           set(handles.excludeedit, 'enable', 'on'); 
         end
         set(handles.loctypeedit, 'enable', 'on');
         set(handles.choosechannelloc, 'enable', 'on');
@@ -1283,4 +1301,45 @@ function euradiobutton_Callback(hObject, eventdata, handles)
 % Hint: get(hObject,'Value') returns toggle state of euradiobutton
 if(get(hObject, 'Value'))
     set(handles.usradiobutton, 'Value', 0)
+end
+
+
+
+function excludeedit_Callback(hObject, eventdata, handles)
+% hObject    handle to excludeedit (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of excludeedit as text
+%        str2double(get(hObject,'String')) returns contents of excludeedit as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function excludeedit_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to excludeedit (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in excludecheckbox.
+function excludecheckbox_Callback(hObject, eventdata, handles)
+% hObject    handle to excludecheckbox (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of excludecheckbox
+if( get(handles.excludecheckbox, 'Value'))
+    if(get(handles.othersysradio, 'Value'))
+       set(handles.excludeedit, 'enable', 'on');
+    end
+else
+    if(get(handles.othersysradio, 'Value'))
+       set(handles.excludeedit, 'enable', 'off');
+    end
 end

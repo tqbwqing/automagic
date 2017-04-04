@@ -129,7 +129,7 @@ classdef Project < handle
         file_extension
         
         % Parameters of the preprocessing. To learn more please see
-        % preprocessing/pre_process.m
+        % preprocessing/preprocess.m
         params
         
         % List of names of all preprocessed blocks so far.
@@ -179,9 +179,9 @@ classdef Project < handle
                 slash = '\';
             end
 
-            % pre_process is checked as an example of a file in preprocessing, it could
+            % preprocess is checked as an example of a file in preprocessing, it could
             % be any other file in that folder.
-            if( ~exist('pre_process', 'file'))
+            if( ~exist('preprocess', 'file'))
                 addpath(['..' slash 'preprocessing']);
             end
 
@@ -252,7 +252,7 @@ classdef Project < handle
                         self.params.original_file = block.source_address;
                     end
                     
-                    [EEG, fig] = pre_process(data, self.params);
+                    [EEG, fig] = preprocess(data, self.params);
 
                     if(strcmp('.fif', self.file_extension)) 
                         self.params = rmfield(self.params, 'original_file');

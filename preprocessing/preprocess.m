@@ -1,6 +1,6 @@
-function [result, fig] = pre_process(data, varargin)
-% pre_process  preprocess the data 
-%   [result, fig] = pre_process(data, varargin)
+function [result, fig] = preprocess(data, varargin)
+% preprocess  preprocess the data 
+%   [result, fig] = preprocess(data, varargin)
 %   where data is the EEGLAB data structure and varargin is an 
 %   optional parameter which must be a structure with optional fields 
 %   'filter_params', 'channel_rejection_params', 'pca_params', 'ica_params'
@@ -33,16 +33,18 @@ function [result, fig] = pre_process(data, varargin)
 %   this should be the address of the file where this EEG data is loaded
 %   from.
 %   
-%   eeg_system must be a structure with fields name, eog_chan, loc_file and
-%   file_loc_type. eeg_system.name can be either 'EGI' or 'Others'. In the
-%   former case none of the other fields are used and they can be empty.
-%   In the latter case eeg_system.eog_chan must be an array of numbers
-%   indicating indices of the EOG channels in the data, eeg_system.loc_file
-%   must be the name of the file located in 'matlab_scripts' folder that 
-%   can be used by pop_chanedit to find channel locations and finally 
-%   eeg_system.file_loc_type must be the type of that file. Please see 
-%   pop_chanedit for more information. Obviously only types supported by 
-%   pop_chanedit are supported.
+%   eeg_system must be a structure with fields name, eog_chan, 
+%   tobe_excluded_chans, loc_file and file_loc_type. eeg_system.name can 
+%   be either 'EGI' or 'Others'. In the former case none of the other 
+%   fields are used and they can be empty. In the latter case 
+%   eeg_system.eog_chan must be an array of numbers indicating indices of 
+%   the EOG channels in the data, eeg_system.tobe_excluded_chans must be an
+%   array of numbers indicating indices of the channels to be excluded from 
+%   the analysis, eeg_system.loc_file must be the name of the file located 
+%   in 'matlab_scripts' folder that can be used by pop_chanedit to find 
+%   channel locations and finally eeg_system.file_loc_type must be the type 
+%   of that file. Please see pop_chanedit for more information. Obviously 
+%   only types supported by pop_chanedit are supported.
 %   
 %   If varargin is ommited, default values are used. If any of the fields
 %   of varargin are ommited, corresponsing default values are used. Please
@@ -67,12 +69,13 @@ result = [];
 fig = [];
 
 p = inputParser;
-addParameter(p,'eeg_system', @isstruct);
+addParameter(p,'eeg_system', struct('name', 'EGI'),@isstruct);
 addParameter(p,'filter_params', struct, @isstruct);
 addParameter(p,'channel_rejection_params', struct, @isstruct);
 addParameter(p,'pca_params', struct, @isstruct);
-addParameter(p,'ica_params', struct, @isstruct);
-addParameter(p,'interpolation_params', struct('method', 'spherical'), @isstruct);
+addParameter(p,'ica_params', struct('bool', 1), @isstruct);
+addParameter(p,'interpolation_params', struct('method', 'spherical'), ...
+    @isstruct);
 addParameter(p,'perform_eog_regression', 1, @isnumeric);
 addParameter(p,'perform_reduce_channels', 1, @isnumeric);
 addParameter(p,'original_file', '', @ischar);
@@ -90,7 +93,10 @@ original_file_address = p.Results.original_file;
 assert( ( ~ isempty(pca_params.lambda) && pca_params.lambda == -1) ...
          || ica_params.bool == 0);
 
+% Download link of PCA hardcoded :(
 pca_url = 'http://perception.csl.illinois.edu/matrix-rank/Files/inexact_alm_rpca.zip';
+
+% System dependence:
 if(ispc)
     slash = '\';
 else
@@ -119,7 +125,8 @@ if(~exist('pop_fileio', 'file'))
 end
 
 %% Check if PCA exists
-if((isempty(pca_params.lambda) || pca_params.lambda ~= -1) && (~exist('inexact_alm_rpca.m', 'file')))
+if((isempty(pca_params.lambda) || pca_params.lambda ~= -1) && ...
+        (~exist('inexact_alm_rpca.m', 'file')))
     ques = 'inexact_alm_rpca is necessary for PCA. Do you want to download it now?';
     ques_title = 'PCA Requirement installation';
     if(exist('questdlg2', 'file'))
@@ -173,10 +180,13 @@ if (~isempty(eeg_system.name) && strcmp(eeg_system.name, 'Others'))
     assert(~ perform_reduce_channels);
     ica_params.chanloc_map = containers.Map; % Map is empty. 
     
-    all_chans = 1:data.nbchan;
-    eog_channels = eeg_system.eog_chans;
-    channels = setdiff(all_chans, eog_channels);
     
+    all_chans = 1:data.nbchan;
+    tobe_excluded_chans = eeg_system.tobe_excluded_chans;
+    eog_channels = eeg_system.eog_chans;
+    channels = setdiff(all_chans, union(eog_channels, tobe_excluded_chans));
+    
+    % Dangesrous assumption
     if( mod(data.nbchan, 2) == 0)
         data.data(end+1,:) = 0;
         data.nbchan = data.nbchan + 1; 
@@ -316,7 +326,8 @@ else
    end
     all_chans = 1:data.nbchan;
     eog_channels = eeg_system.eog_chans;
-    channels = setdiff(all_chans, eog_channels);
+    tobe_excluded_chans = eeg_system.tobe_excluded_chans;
+    channels = setdiff(all_chans, union(eog_channels, tobe_excluded_chans));
 end
 s = size(data.data);
 assert(data.nbchan == s(1)); clear s;

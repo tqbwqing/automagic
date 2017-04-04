@@ -92,8 +92,6 @@ handles.default_params = default_params;
 assert( ( ~ isempty(handles.params.pca_params.lambda) && ...
     handles.params.pca_params.lambda == -1) || handles.params.ica_params.bool == 0);
 
-
-set(handles.channelreductioncheckbox, 'Value', params.perform_reduce_channels);
 if( isempty( params.filter_params.high_order) )
     set(handles.highpassorderedit, 'String', default_params.Default);
 else
@@ -245,9 +243,6 @@ h = findobj(allchild(0), 'flat', 'Tag', 'main_gui');
 main_gui_handle = guidata(h);
 default_params = handles.default_params;
 
-perform_reduce_channels = ...
-    get(handles.channelreductioncheckbox, 'Value');
-
 ica_bool = get(handles.icacheckbox, 'Value');
 
 high_order = [];
@@ -322,7 +317,6 @@ idx = get(handles.interpolationpopupmenu, 'Value');
 methods = get(handles.interpolationpopupmenu, 'String');
 method = methods{idx};
 
-handles.params.perform_reduce_channels = perform_reduce_channels;
 handles.params.filter_params.high_order = high_order;
 handles.params.filter_params.low_order = low_order;
 handles.params.channel_rejection_params.kurt_thresh = kurt_val;
@@ -341,9 +335,6 @@ function defaultpushbutton_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 default_params = handles.default_params;
 params = handles.params;
-
-set(handles.channelreductioncheckbox, 'Value', ...
-    default_params.perform_reduce_channels);
 
 set(handles.highpassorderedit, 'String', ...
     default_params.Default);
@@ -408,10 +399,6 @@ function handles = switch_components(handles)
 h = findobj(allchild(0), 'flat', 'Tag', 'main_gui');
 main_gui_handle = guidata(h);
 default_params = handles.default_params;
-
-if( get(main_gui_handle.othersysradio, 'Value') );
-    set(handles.channelreductioncheckbox, 'enable', 'off');
-end
 
 if( get(main_gui_handle.highpasscheckbox, 'Value') )
     set(handles.highpassorderedit, 'enable', 'on');
@@ -642,15 +629,6 @@ function varargout = settings_OutputFcn(hObject, eventdata, handles)
 
 % Get default command line output from handles structure
 varargout{1} = handles.output;
-
-
-% --- Executes on button press in channelreductioncheckbox.
-function channelreductioncheckbox_Callback(hObject, eventdata, handles)
-% hObject    handle to channelreductioncheckbox (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-% Hint: get(hObject,'Value') returns toggle state of channelreductioncheckbox
 
 % --- Executes on selection change in highpasspopupmenu.
 function highpasspopupmenu_Callback(hObject, eventdata, handles)

@@ -1,5 +1,5 @@
 function [EEG, com] = pop_parameters(EEG)
-% Pops-up a window that takes required parameters and then runs pre_process()
+% Pops-up a window that takes required parameters and then runs preprocess()
 % function. 
 %
 % Usage:
@@ -459,7 +459,7 @@ end
 % Preprocess EEG with given parameters. Keep all information in a field
 % called 'EEG.automagic'
 % -------------------------
-[EEG_result, ~] = pre_process(EEG, params);
+[EEG_result, ~] = preprocess(EEG, params);
 if(isempty(EEG_result))
     return;
 end

@@ -59,7 +59,7 @@ In this section of the manual, only the basic functionality of **Automagic** wil
 1. Navigate to the drop-down list labelled *Select Project*.
 2. Select *Create New Project...*
 3. Name your project.
-4. Write down the file extension that corresponds to your data’s file format. For example raw image files (`.raw` or `.RAW`), fractal image files (`.fif`) or generic data files (`.dat`).
+4. Write down the file extension that corresponds to your data???s file format. For example raw image files (`.raw` or `.RAW`), fractal image files (`.fif`) or generic data files (`.dat`).
 5. Choose the EEG System in which your data is recorded. Currently only **EGI HCGSN** is fully supported for both number of channels 128 and 256 (or 129 and 257 respectively). This information is needed mainly to find channel locations. In case you choose the option *Other...* for your EEG System, you must provide a file in which channel locations are specified. The file format must be one which is also supported by EEGLab (`pop_chanedit` function). In addition, you must provide a list of indices of the EOG channels of your dataset. Note that here the list contains the indices of those channels and not their labels (You can also simply deselect the EOG regression and this step will be skipped during the preprocessing).
    * The *Channel location file* must be the full address of the channel location file.
    * The *Channel location file type* must specify the type of the file as required by `pop_chanedit`. eg. `sfp`
@@ -70,7 +70,7 @@ In this section of the manual, only the basic functionality of **Automagic** wil
    * Important:	You cannot alter paths, the filtering, or the downsampling rate after creating your project.
 8. Specify the path of your data folder. **Automagic** will scan all folders in your data folder for data files. Files and folders in the data folder will not be altered by **Automagic**.
    * Important: 	The data folder must contain a folder for each subject (subject folders). Your data folder should not contain any other kinds of folders since this will lead to a wrong number of subjects. 
-9. Specify the path of your project folder. If the specified folder does not yet exist, **Automagic** will create it for you. **Automagic** will save all processed data to your project folder. By default, **Automagic** opts for your data folder’s path and adds `_results` to your data folder’s name, e.g. `\PathDataFolder\MyDataFolder_results\`
+9. Specify the path of your project folder. If the specified folder does not yet exist, **Automagic** will create it for you. **Automagic** will save all processed data to your project folder. By default, **Automagic** opts for your data folder???s path and adds `_results` to your data folder???s name, e.g. `\PathDataFolder\MyDataFolder_results\`
    * Important:	A subject folder must contain EEG files. Automagic can only load data saved in subject folders. Since subject folders are defined as folders in the data folder, no specific naming is required.
  
  ![alt tag](https://github.com/amirrezaw/automagic/blob/master/automagic_resources/folder_structure.png)
@@ -186,7 +186,7 @@ Also please note that, when using **EEGLab**, there is no more the notion of hav
 There are four main folders (in total 6 folders): 
 
 1. **`automagic/preprocessing/`**
- This folder contains all relevant files of preprocessing step (with no GUIs). The folder is standalone and can be used independent from the entire application. The main function to be called is `pre_process.m` which needs two atguments. The first argument is the EEG data structure loaded by `pop_fileio.m` function (or a similar function) of **EEGLab** and the second argument is preprocessing parameters (see documations, ie. `pre_process.m` to learn about the second argument). The first ouput of `pre_process.m` is an EEG data structure similar to the input EEG structure, where the `EEG.data` field has the preprocessed results. This EEG data streucture has some new fields like the parameters used for preprocessing and channels that have been interpolated by automatic detection. The second output is a figure showing the effects of preprocessing. For more information on how to run the code without installer please see  [How to run the app from the code](#5-how-to-run-the-application-from-the-code).
+ This folder contains all relevant files of preprocessing step (with no GUIs). The folder is standalone and can be used independent from the entire application. The main function to be called is `preprocess.m` which needs two atguments. The first argument is the EEG data structure loaded by `pop_fileio.m` function (or a similar function) of **EEGLab** and the second argument is preprocessing parameters (see documations, ie. `preprocess.m` to learn about the second argument). The first ouput of `preprocess.m` is an EEG data structure similar to the input EEG structure, where the `EEG.data` field has the preprocessed results. This EEG data streucture has some new fields like the parameters used for preprocessing and channels that have been interpolated by automatic detection. The second output is a figure showing the effects of preprocessing. For more information on how to run the code without installer please see  [How to run the app from the code](#5-how-to-run-the-application-from-the-code).
 2. **`automagic/gui/`**
  This folder contains files created by *MATLAB GUIDE*. All callback operations related to the gui are implemented here.
    1. `main\_gui.m` is the main function of the project which must be started to run the application.
@@ -211,7 +211,7 @@ You can also run **Automagic** without using the installer. A clear reason to do
 For this code to be able to run, functions from [**EEGLab**](https://sccn.ucsd.edu/eeglab/) and  [**Augmented Lagrange Multiplier (ALM) Method**](http://perception.csl.illinois.edu/matrix-rank/sample_code.html) are needed to be on your path:
 
 1. Download the [**EEGLab**](https://sccn.ucsd.edu/eeglab/downloadtoolbox.php) library and put it in the `automagic/matlab_scripts` folder.
-2. Download the  **inexact ALM** ( containing the function `[A, E] = inexact_alm_rpca(D, λ)`) from [**(ALM) Method**](http://perception.csl.illinois.edu/matrix-rank/sample_code.html) and put it in the `automagic/matlab_scripts/` as well.
+2. Download the  **inexact ALM** ( containing the function `[A, E] = inexact_alm_rpca(D, ??)`) from [**(ALM) Method**](http://perception.csl.illinois.edu/matrix-rank/sample_code.html) and put it in the `automagic/matlab_scripts/` as well.
     * Important: If you feel too lazy to download this extension and put it in  `automagic/matlab_scripts/`, **don't**. While using **Automagic**, if you choose to use PCA in preprocessing, you will be asked if you agree to download the package, if you answer *Yes*, the package will be downloaded *Automagically* in the right folder. Note that this feature is not yet implemented for the precious step, **EEGLab**.  
 3. Now you are able to run the code by running the `automagic/gui/main_gui.m`
 

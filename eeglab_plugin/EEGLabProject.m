@@ -16,7 +16,7 @@ classdef EEGLabProject < handle
 %   by rating_gui or interpolated. It's necessary that EEG files be already
 %   preprocessed.
 %   params is the structure containing preprocessing parameters. Plese see 
-%   preprocessing/pre_process.m more information on params.
+%   preprocessing/preprocess.m more information on params.
 %   This constructor calls create_rating_structures in order to create
 %   and initialise corresponding data structures.
 %
@@ -74,7 +74,7 @@ properties(SetAccess=private)
     ALLEEG
 
     % struct containing parameters of preprocessing. Please see 
-    % preprocessing/pre_process.m
+    % preprocessing/preprocess.m
     params
 
     % List of names of all preprocessed blocks so far.
