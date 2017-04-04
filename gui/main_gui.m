@@ -743,6 +743,14 @@ if ~ get(handles.egiradio, 'Value')
             'Error','error'));
         return;
    end
+   
+    if( get(handles.excludecheckbox, 'Value') && isempty(eeg_system.tobe_excluded_chans))
+        waitfor(msgbox(['A list of channel indices seperated by space or',...
+            ' comma must be given to determine channels to be excluded'],...
+            'Error','error'));
+        return;
+    end
+   
    handles.params.eeg_system = eeg_system;
 end
 
