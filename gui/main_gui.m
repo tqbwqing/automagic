@@ -86,6 +86,15 @@ for child_idx = 1:length(children)
     end
 end
 
+% Add project paths
+% Checks 'project.m' as an example of a file in /src. Could be any other file
+% in /src
+if( ~exist('Subject.m', 'file')) 
+    addpath('../src/');
+    addpath('../preprocessing/');
+end
+
+
 % Set Constant Values
 handles.CGV = ConstantGlobalValues;
 handles.params = make_default_params(handles.CGV.default_params);
@@ -93,13 +102,6 @@ handles.params = make_default_params(handles.CGV.default_params);
 % Either pca or ica, not both together.
 assert( ( ~ isempty(handles.params.pca_params.lambda) && ...
     handles.params.pca_params.lambda == -1) || handles.params.ica_params.bool == 0);
-
-% Add project paths
-% Checks 'project.m' as an example of a file in /src. Could be any other file
-% in /src
-if( ~exist('Subject.m', 'file')) 
-    addpath('../src/');
-end
 
 % Load the state and then the current project
 handles = load_state(handles);

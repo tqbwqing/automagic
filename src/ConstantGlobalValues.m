@@ -29,7 +29,11 @@ classdef ConstantGlobalValues
     
     methods
         function self = ConstantGlobalValues
-            addpath('../preprocessing/');
+            % Checks 'DefaultParameters.m' as an example of a file in 
+            % /preprocessing. Could be any other file in that folder
+            if( ~ exist('DefaultParameters.m', 'file')) 
+                addpath('../preprocessing/');
+            end
         end
     end
 end
