@@ -169,7 +169,7 @@ Should you spot bad channels (represented by horizontal lines which are darker t
 
 ![alt tag](https://github.com/amirrezaw/automagic/blob/master/automagic_resources/eeglab.png)
 
-You can also run **Automagic** as an EEGLab [extension](https://sccn.ucsd.edu/wiki/EEGLAB_Extensions_and_plug-ins). To do so, you need to simply put the `automagic` folder in the `eeglab_[your-version]/plugins/` folder. 
+You can also run **Automagic** as an EEGLab [extension](https://sccn.ucsd.edu/wiki/EEGLAB_Extensions_and_plug-ins). To do so, you need to simply put the `automagic/` folder in the `eeglab_[your-version]/plugins/` folder. 
 After this being done, on start-up, **EEGLab** will create a new menu item for **Automagic**. This menu item will have three sub-menus, each of which corresponding to the earlier explained steps of preprocessing: 
 1. *Start Processing...* which corresponds to [Preprocessing the data](#24-the-pre-processing-panel)
 2. *Start Manual Rating...* which corresponds to [Manual rating of bad channels](#25-the-manual-rating-panel).
