@@ -214,7 +214,7 @@ For this code to be able to run, functions from [**EEGLab**](https://sccn.ucsd.e
 
 1. Download the [**EEGLab**](https://sccn.ucsd.edu/eeglab/downloadtoolbox.php) library and put it in the `automagic/matlab_scripts` folder.
 2. Download the  **inexact ALM** ( containing the function `[A, E] = inexact_alm_rpca(D, ??)`) from [**(ALM) Method**](http://perception.csl.illinois.edu/matrix-rank/sample_code.html) and put it in the `automagic/matlab_scripts/` as well.
-    * Important: If you feel too lazy to download this extension and put it in  `automagic/matlab_scripts/`, **don't**. While using **Automagic**, if you choose to use PCA in preprocessing, you will be asked if you agree to download the package, if you answer *Yes*, the package will be downloaded *Automagically* in the right folder. Note that this feature is not yet implemented for the precious step, **EEGLab**.  
+    * Important: If you feel too lazy to download this extension and put it in  `automagic/matlab_scripts/`, **don't**. While using **Automagic**, if you choose to use PCA in preprocessing, you will be asked if you agree to download the package, if you answer *Yes*, the package will be downloaded *Automagically* in the right folder. Note that this feature is not yet implemented for the previous step, **EEGLab**.  
 3. Now you are able to run the code by running the `automagic/gui/main_gui.m`
 
 * NOTE: If your data is with `.fif` extension, you need to download [**fieldtrip**](http://www.fieldtriptoolbox.org/download) which is an **EEGLab** extension and put it in `matlab_scripts/eeglab13_6_5b/plugins/`.
