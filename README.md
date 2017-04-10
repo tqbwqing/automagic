@@ -4,6 +4,8 @@
 
 ## What is Automagic ?
 
+**Automagic** is a MATLAB based toolbox for preprocessing of EEG-datasets. First, the toolbox *automagically* removes artifacts (e.g. eye movements, noisy electrodes, etc.) from your raw EEG-data. In a second step, **Automagic** lets you check visually the entire dataset for remaining artifacts. You will be able to select and remove these manually in an efficient way. Furthermore, you can rate the quality of individual EEG-files.
+
 ![alt tag](https://github.com/amirrezaw/automagic/blob/master/automagic_resources/main_gui.png)
 
 ## 1. Setup
