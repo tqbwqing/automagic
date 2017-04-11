@@ -4,6 +4,8 @@
 
 ## What is Automagic ?
 
+**Automagic** is a MATLAB based toolbox for preprocessing of EEG-datasets. First, the toolbox *automagically* removes artifacts (e.g. eye movements, noisy electrodes, etc.) from your raw EEG-data. In a second step, **Automagic** lets you check visually the entire dataset for remaining artifacts. You will be able to select and remove these manually in an efficient way. Furthermore, you can rate the quality of individual EEG-files.
+
 ![alt tag](https://github.com/amirrezaw/automagic/blob/master/automagic_resources/main_gui.png)
 
 ## 1. Setup
@@ -186,7 +188,7 @@ Also please note that, when using **EEGLab**, there is no more the notion of hav
 There are four main folders (in total 6 folders): 
 
 1. **`automagic/preprocessing/`**
- This folder contains all relevant files of preprocessing step (with no GUIs). The folder is standalone and can be used independent from the entire application. The main function to be called is `preprocess.m` which needs two atguments. The first argument is the EEG data structure loaded by `pop_fileio.m` function (or a similar function) of **EEGLab** and the second argument is preprocessing parameters (see documations, ie. `preprocess.m` to learn about the second argument). The first ouput of `preprocess.m` is an EEG data structure similar to the input EEG structure, where the `EEG.data` field has the preprocessed results. This EEG data streucture has some new fields like the parameters used for preprocessing and channels that have been interpolated by automatic detection. The second output is a figure showing the effects of preprocessing. For more information on how to run the code without installer please see  [How to run the app from the code](#5-how-to-run-the-application-from-the-code).
+ This folder contains all relevant files of preprocessing step (with no GUIs). The folder is standalone and can be used independent from the entire application. The main function to be called is `preprocess.m` which needs two arguments. The first argument is the EEG data structure loaded by `pop_fileio.m` function (or a similar function) of **EEGLab** and the second argument is preprocessing parameters (see documations, ie. `preprocess.m` to learn about the second argument). The first ouput of `preprocess.m` is an EEG data structure similar to the input EEG structure, where the `EEG.data` field has the preprocessed results. This EEG data streucture has some new fields like the parameters used for preprocessing and channels that have been interpolated by automatic detection. The second output is a figure showing the effects of preprocessing. For more information on how to run the code without installer please see  [How to run the app from the code](#5-how-to-run-the-application-from-the-code).
 2. **`automagic/gui/`**
  This folder contains files created by *MATLAB GUIDE*. All callback operations related to the gui are implemented here.
    1. `main\_gui.m` is the main function of the project which must be started to run the application.
@@ -212,7 +214,7 @@ For this code to be able to run, functions from [**EEGLab**](https://sccn.ucsd.e
 
 1. Download the [**EEGLab**](https://sccn.ucsd.edu/eeglab/downloadtoolbox.php) library and put it in the `automagic/matlab_scripts` folder.
 2. Download the  **inexact ALM** ( containing the function `[A, E] = inexact_alm_rpca(D, ??)`) from [**(ALM) Method**](http://perception.csl.illinois.edu/matrix-rank/sample_code.html) and put it in the `automagic/matlab_scripts/` as well.
-    * Important: If you feel too lazy to download this extension and put it in  `automagic/matlab_scripts/`, **don't**. While using **Automagic**, if you choose to use PCA in preprocessing, you will be asked if you agree to download the package, if you answer *Yes*, the package will be downloaded *Automagically* in the right folder. Note that this feature is not yet implemented for the precious step, **EEGLab**.  
+    * Important: If you feel too lazy to download this extension and put it in  `automagic/matlab_scripts/`, **don't**. While using **Automagic**, if you choose to use PCA in preprocessing, you will be asked if you agree to download the package, if you answer *Yes*, the package will be downloaded *Automagically* in the right folder. Note that this feature is not yet implemented for the previous step, **EEGLab**.  
 3. Now you are able to run the code by running the `automagic/gui/main_gui.m`
 
 * NOTE: If your data is with `.fif` extension, you need to download [**fieldtrip**](http://www.fieldtriptoolbox.org/download) which is an **EEGLab** extension and put it in `matlab_scripts/eeglab13_6_5b/plugins/`.
