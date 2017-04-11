@@ -1,19 +1,19 @@
 <deployment-project plugin="plugin.apptool" plugin-version="1.0">
-  <configuration build-checksum="650915522" file="/Users/amirreza/workspace/ppp/pipline/gui/automagic.prj" location="/Users/amirreza/workspace/ppp/pipline/gui" name="automagic" target="target.mlapps" target-name="Package App">
-    <param.appname>automagic</param.appname>
-    <param.authnamewatermark>Amirreza Bahreini</param.authnamewatermark>
-    <param.email />
+  <configuration build-checksum="2521124974" file="/Users/amirreza/workspace/ppp/pipline/gui/Automagic.prj" location="/Users/amirreza/workspace/ppp/pipline/gui" name="Automagic" target="target.mlapps" target-name="Package App">
+    <param.appname>Automagic</param.appname>
+    <param.authnamewatermark>amirreza</param.authnamewatermark>
+    <param.email>amirreza.bahreini@uzh.ch</param.email>
     <param.company>UZH</param.company>
-    <param.icon>${PROJECT_ROOT}/automagic_resources/icon_24.png</param.icon>
+    <param.icon>${PROJECT_ROOT}/Automagic_resources/icon_24.png</param.icon>
     <param.icons>
       <file>${PROJECT_ROOT}/automagic_resources/icon_48.png</file>
       <file>${PROJECT_ROOT}/automagic_resources/icon_24.png</file>
       <file>${PROJECT_ROOT}/automagic_resources/icon_16.png</file>
     </param.icons>
-    <param.summary />
-    <param.description />
+    <param.summary>Automatic artifact removal of EEG data</param.summary>
+    <param.description>Automagic is a MATLAB based toolbox for preprocessing of EEG-datasets. First, the toolbox automagically removes artifacts (e.g. eye movements, noisy electrodes, etc.) from your raw EEG-data. In a second step, Automagic lets you check visually the entire dataset for remaining artifacts. You will be able to select and remove these manually in an efficient way. Furthermore, you can rate the quality of individual EEG-files.</param.description>
     <param.screenshot>${PROJECT_ROOT}/Automagic_resources/icon_48.png</param.screenshot>
-    <param.version>1.3.0</param.version>
+    <param.version>1.4.0</param.version>
     <param.products.name />
     <param.products.id />
     <param.products.version />
@@ -23,9 +23,6 @@
     <param.output>/Users/amirreza/workspace/ppp/pipline/gui</param.output>
     <param.guid>48fa8a7d-827c-40e3-a4da-d1c320ed36be</param.guid>
     <unset>
-      <param.email />
-      <param.summary />
-      <param.description />
       <param.products.name />
       <param.products.id />
       <param.products.version />

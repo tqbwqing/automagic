@@ -60,6 +60,8 @@ DEFAULT_keyword = ConstantGlobalValues.DEFAULT_keyword;
 params = struct;
 euradio = findHandlerFromList(allhandlers, 'notcheu');
 usradio = findHandlerFromList(allhandlers, 'notchus');
+otherradio = findHandlerFromList(allhandlers, 'notchother');
+notchedit = findHandlerFromList(allhandlers, 'notchedit');
 lowcheck = findHandlerFromList(allhandlers, 'lowcheckin');
 lowfreq = findHandlerFromList(allhandlers, 'lowfreqin');
 loworder = findHandlerFromList(allhandlers, 'loworderin');
@@ -87,6 +89,8 @@ default = findHandlerFromList(allhandlers, 'default_butt');
 
 euradio.set('callback', @euradiocallback);
 usradio.set('callback', @usradiocallback);
+otherradio.set('callback', @otherradiocallback);
+notchedit.set('callback', @notcheditcallback);
 lowcheck.set('callback', @lowcheckcallback);
 highcheck.set('callback', @highcheckcallback);
 kurtcheck.set('callback', @kurtcheckcallback);
@@ -102,12 +106,41 @@ default.set('callback', @defaultcallback);
 function euradiocallback(PushButton, EventData)
     if(get(euradio, 'Value'))
         set(usradio, 'Value', 0);
+        set(otherradio, 'Value', 0);
+        set(notchedit, 'String', num2str(default_params.filter_params.notch_eu));
     end
 end
 
 function usradiocallback(PushButton, EventData)
     if(get(usradio, 'Value'))
         set(euradio, 'Value', 0);
+        set(otherradio, 'Value', 0);
+        set(notchedit, 'String', num2str(default_params.filter_params.notch_us));
+    end
+end
+
+function otherradiocallback(PushButton, EventData)
+    if(get(usradio, 'Value'))
+        set(euradio, 'Value', 0);
+        set(usradio, 'Value', 0);
+        set(notchedit, 'String', num2str(default_params.filter_params.notch_other));
+    end
+end
+
+function notcheditcallback(PushButton, EventData)
+    notch_freq = str2double(get(notchedit, 'String'));
+    if(notch_freq == default_params.filter_params.notch_eu)
+        set(euradio, 'Value', 1);
+        set(usradio, 'Value', 0);
+        set(otherradio, 'Value', 0);
+    elseif(notch_freq == default_params.filter_params.notch_us)
+        set(usradio, 'Value', 1);
+        set(euradio, 'Value', 0);
+        set(otherradio, 'Value', 0);
+    else
+        set(otherradio, 'Value', 1);
+        set(euradio, 'Value', 0);
+        set(usradio, 'Value', 0);
     end
 end
 
@@ -265,19 +298,20 @@ function okcallback(PushButton, EventData)
     eeg_system.eog_chans = eog_channels;
     eeg_system.name = '';
     
-    if(get(euradio, 'Value'))
-        notch_filter = 'EU';
-    elseif(get(usradio, 'Value'))
-        notch_filter = 'US';
-    else
-        notch_filter = 'None';
+    notch_freq = str2num(get(notchedit, 'String'));
+    if(isempty(notch_freq))
+        notch_freq = -1; % Skip notch filter
+        waitfor(...
+            msgbox('Notch filter is left empty and therefore will be skipped.'))
     end
+    
+    
     params.eeg_system = eeg_system;
     params.perform_eog_regression = perform_eog_regression;
     params.perform_reduce_channels = perform_reduce_channels;
     params.filter_params.high_order = high_order;
     params.filter_params.low_order = low_order;
-    params.filter_params.filter_mode = notch_filter;
+    params.filter_params.notch_freq = notch_freq;
     params.channel_rejection_params.kurt_thresh = kurt_val;
     params.channel_rejection_params.spec_thresh = spec_val;
     params.channel_rejection_params.prob_thresh = prob_val;
@@ -481,8 +515,10 @@ notch_text.pos = 1;
 
 notch_input.style = { {} {'Style','radio',...
             'String','Europe (50Hz)', 'tag', 'notcheu', 'Value', 1}  {'Style','radio',...
-            'String','US (60Hz)', 'tag', 'notchus'}};
-notch_input.pos = [1 1 1];
+            'String','US (60Hz)', 'tag', 'notchus'} {'Style','radio',...
+            'String','Other...', 'tag', 'notchother'} {'Style','edit',...
+            'String','50', 'tag', 'notchedit', 'Enable', 'on'}};
+notch_input.pos = [1 1 1 1 1];
 
 % High pass filter
 % ---------------------------------------
