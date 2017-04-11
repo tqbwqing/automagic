@@ -1,6 +1,9 @@
 classdef DefaultParameters
     properties(Constant)        
-        filter_params = struct('filter_mode', 'EU', ...
+        filter_params = struct('notch_freq', 50, ...
+                                'notch_eu', 50, ...
+                                'notch_us', 60, ...
+                                'notch_other', [], ...
                                 'high_freq', 0.5, ...
                                 'high_order', [], ... % Will use default
                                 'low_freq', -1, ... % Will desactivate the operation
@@ -42,8 +45,3 @@ classdef DefaultParameters
                     
     end
 end
-
-
-
-%       eeg_system
-%       perform_reduce_channels

@@ -41,7 +41,7 @@ function varargout = main_gui(varargin)
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-% Last Modified by GUIDE v2.5 04-Apr-2017 10:12:59
+% Last Modified by GUIDE v2.5 11-Apr-2017 09:26:05
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -264,6 +264,8 @@ if(strcmp(name, handles.CGV.new_project.LIST_NAME))
     
     handles = setEEGSystem(handles.CGV.default_params.eeg_system.EGI_name, handles);
     
+    handles = setNotchFilter(handles.CGV.default_params.filter_params.notch_eu, handles);
+    
     handles.current_project = Index;
     handles.params = make_default_params(handles.CGV.default_params);
     % Enable modifications
@@ -395,22 +397,7 @@ else
     set(handles.lowpasscheckbox, 'Value', 0);
 end
 
-US_button = handles.notchpanel.Children(1);
-EU_button = handles.notchpanel.Children(2);
-if( strcmp('EU', project.params.filter_params.filter_mode ))
-    set(EU_button, 'Value', 1);
-    set(US_button, 'Value', 0);
-elseif(strcmp('US', project.params.filter_params.filter_mode ))
-    set(US_button, 'Value', 1);
-    set(EU_button, 'Value', 0);
-elseif(strcmp('EU', project.params.filter_params.filter_mode ) && ...
-    strcmp('US', project.params.filter_params.filter_mode ))
-    set(US_button, 'Value', 0);
-    set(EU_button, 'Value', 0);
-else
-    waitfor(msgbox('Inconsistency in notch filter parameters.', ...
-    'Error','error'));
-end
+handles = setNotchFilter(project.params.filter_params.notch_freq, handles);
 
 % Set the file extension
 set(handles.extedit, 'String', project.file_extension);
@@ -731,14 +718,7 @@ ds = str2double(dsrates{idx});
 % Get filter_params params
 filter_params = handles.params.filter_params;
 
-if(get(handles.usradiobutton, 'Value'))
-    filter_params.filter_mode = upper(handles.usradiobutton.String(1:2));
-elseif(get(handles.euradiobutton, 'Value'))
-    filter_params.filter_mode = upper(handles.euradiobutton.String(1:2));
-else
-    filter_params.filter_mode = 'None';
-end
-
+filter_params.notch_freq = str2double(get(handles.notchedit, 'String'));
 if ( get(handles.highpasscheckbox, 'Value') == 1)
     high_freq = str2double(get(handles.highfreqedit, 'String'));
     if( ~isempty(high_freq) && ~isnan(high_freq))
@@ -1135,6 +1115,17 @@ switch system
         handles.params.perform_reduce_channels = 0;
 end
 
+function handles = setNotchFilter(notch_freq, handles)
+
+filter_params = handles.CGV.default_params.filter_params;
+set(handles.notchedit, 'String', num2str(notch_freq))
+if(~ isempty(notch_freq) && notch_freq == filter_params.notch_eu)
+    set(handles.euradiobutton, 'Value', 1)
+elseif(~ isempty(notch_freq) && notch_freq == filter_params.notch_us)
+    set(handles.usradiobutton, 'Value', 1)
+else
+    set(handles.otherradiobutton, 'Value', 1)
+end
 % --- Executes on button press in egiradio.
 function egiradio_Callback(hObject, eventdata, handles)
 % hObject    handle to egiradio (see GCBO)
@@ -1264,9 +1255,9 @@ function usradiobutton_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hint: get(hObject,'Value') returns toggle state of usradiobutton
+filter_params = handles.CGV.default_params.filter_params;
 if(get(hObject, 'Value'))
-    set(handles.euradiobutton, 'Value', 0)
+    set(handles.notchedit, 'String', num2str(filter_params.notch_us))
 end
 
 % --- Executes on button press in euradiobutton.
@@ -1275,12 +1266,30 @@ function euradiobutton_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-% Hint: get(hObject,'Value') returns toggle state of euradiobutton
+filter_params = handles.CGV.default_params.filter_params;
 if(get(hObject, 'Value'))
-    set(handles.usradiobutton, 'Value', 0)
+    set(handles.notchedit, 'String', num2str(filter_params.notch_eu))
+end
+
+% --- Executes on button press in otherradiobutton.
+function otherradiobutton_Callback(hObject, eventdata, handles)
+% hObject    handle to otherradiobutton (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+filter_params = handles.CGV.default_params.filter_params;
+if(get(hObject, 'Value'))
+    set(handles.notchedit, 'String', num2str(filter_params.notch_other))
 end
 
 
+
+function notchedit_Callback(hObject, eventdata, handles)
+% hObject    handle to notchedit (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+notch_freq = str2double(get(hObject,'String'));
+setNotchFilter(notch_freq, handles);
 
 function excludeedit_Callback(hObject, eventdata, handles)
 % hObject    handle to excludeedit (see GCBO)
@@ -1341,3 +1350,16 @@ params.eeg_system.file_loc_type = default_params.eeg_system.file_loc_type;
 params.eeg_system.loc_file = default_params.eeg_system.loc_file;
 params.eeg_system.eog_chans = default_params.eog_regression_params.eog_chans;
 params.eeg_system.tobe_excluded_chans = default_params.channel_reduction_params.tobe_excluded_chans;
+
+
+% --- Executes during object creation, after setting all properties.
+function notchedit_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to notchedit (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
