@@ -1,5 +1,5 @@
 <deployment-project plugin="plugin.apptool" plugin-version="1.0">
-  <configuration build-checksum="2521124974" file="/Users/amirreza/workspace/ppp/pipline/gui/Automagic.prj" location="/Users/amirreza/workspace/ppp/pipline/gui" name="Automagic" target="target.mlapps" target-name="Package App">
+  <configuration build-checksum="3254321610" file="/Users/amirreza/Dropbox/automagic/gui/Automagic.prj" location="/Users/amirreza/Dropbox/automagic/gui" name="Automagic" target="target.mlapps" target-name="Package App">
     <param.appname>Automagic</param.appname>
     <param.authnamewatermark>amirreza</param.authnamewatermark>
     <param.email>amirreza.bahreini@uzh.ch</param.email>
@@ -20,7 +20,7 @@
     <param.platforms>
       <item>win32</item>
     </param.platforms>
-    <param.output>/Users/amirreza/workspace/ppp/pipline/gui</param.output>
+    <param.output>/Users/amirreza/Dropbox/automagic/gui</param.output>
     <param.guid>48fa8a7d-827c-40e3-a4da-d1c320ed36be</param.guid>
     <unset>
       <param.products.name />
@@ -1082,7 +1082,7 @@
     </fileset.resources>
     <fileset.package />
     <build-deliverables>
-      <file location="/Users/amirreza/workspace/ppp/pipline" name="gui" optional="false">/Users/amirreza/workspace/ppp/pipline/gui</file>
+      <file location="/Users/amirreza/Dropbox/automagic" name="gui" optional="false">/Users/amirreza/Dropbox/automagic/gui</file>
     </build-deliverables>
     <workflow />
     <matlab>
