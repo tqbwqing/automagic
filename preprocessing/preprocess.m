@@ -33,10 +33,12 @@ function [result, fig] = preprocess(data, varargin)
 %   this should be the address of the file where this EEG data is loaded
 %   from.
 %   
-%   eeg_system must be a structure with fields name, eog_chan, 
+%   eeg_system must be a structure with fields name, sys10_20, eog_chan, 
 %   tobe_excluded_chans, loc_file and file_loc_type. eeg_system.name can 
-%   be either 'EGI' or 'Others'. In the former case none of the other 
-%   fields are used and they can be empty. In the latter case 
+%   be either 'EGI' or 'Others'. eeg_system.sys10_20 is a boolean indicating 
+%   whether to use 10-20 system to find channel locations or not. All other 
+%   following fields are optional if eeg_system.name='EGI' and can be left 
+%   empty. But in the case of eeg_system.name='Others':
 %   eeg_system.eog_chan must be an array of numbers indicating indices of 
 %   the EOG channels in the data, eeg_system.tobe_excluded_chans must be an
 %   array of numbers indicating indices of the channels to be excluded from 
@@ -104,7 +106,9 @@ if(ispc)
 else
     slash = '/';
 end
+
 %% Add path if not added before
+eeg_system.sys10_20_file = DEFS.eeg_system.sys10_20_file;
 if(~exist('pop_fileio', 'file'))
     matlab_paths = genpath(['..' slash 'matlab_scripts' slash]);
     if(ispc)
@@ -124,7 +128,14 @@ if(~exist('pop_fileio', 'file'))
         matlab_paths = strjoin(parts, ':');
     end
     addpath(matlab_paths);
+    
+    % Add path for 10_20 system
+    IndexC = strfind(parts, 'BESA');
+    Index = not(cellfun('isempty', IndexC));
+    eeg_system.sys10_20_file = ...
+        strcat(parts{Index}, slash, DEFS.eeg_system.sys10_20_file);
 end
+
 
 %% Check if PCA exists
 if((isempty(pca_params.lambda) || pca_params.lambda ~= -1) && ...
@@ -193,8 +204,14 @@ if (~isempty(eeg_system.name) && strcmp(eeg_system.name, DEFS.eeg_system.Others_
         data.data(end+1,:) = 0;
         data.nbchan = data.nbchan + 1; 
     end
-    data = pop_chanedit(data,  ...
-        'load',{ eeg_system.loc_file , 'filetype', eeg_system.file_loc_type});
+    
+    if(~ eeg_system.sys10_20)
+        [~, data] = evalc(['pop_chanedit(data,' ...
+            '''load'',{ eeg_system.loc_file , ''filetype'', eeg_system.file_loc_type})']);
+    else
+        [~, data] = evalc(['pop_chanedit(data, ''lookup'', eeg_system.sys10_20_file,' ...
+            '''load'',{ eeg_system.loc_file , ''filetype'', ''autodetect''})']);
+    end
 
 % Case of EGI
 elseif(~isempty(eeg_system.name) && strcmp(eeg_system.name, DEFS.eeg_system.EGI_name))
@@ -230,27 +247,48 @@ elseif(~isempty(eeg_system.name) && strcmp(eeg_system.name, DEFS.eeg_system.EGI_
             channels = setdiff(chan128, eog_channels);
             data.data(end+1,:) = 0;
             data.nbchan = data.nbchan + 1;
-            data = pop_chanedit(data,  ...
-                'load',{ 'GSN-HydroCel-129.sfp', 'filetype', 'sfp'});
+            
+            if(~ eeg_system.sys10_20)
+                [~, data] = evalc(['pop_chanedit(data,' ...
+                    '''load'',{ ''GSN-HydroCel-129.sfp'' , ''filetype'', ''sfp''})']);
+            else
+                [~, data] = evalc(['pop_chanedit(data, ''lookup'', eeg_system.sys10_20_file,' ...
+                    '''load'',{ ''GSN-HydroCel-129.sfp'' , ''filetype'', ''autodetect''})']);
+            end
         case (128 + 1)
             eog_channels = sort([1 32 8 14 17 21 25 125 126 127 128]);
             channels = setdiff(chan128, eog_channels);
-            data = pop_chanedit(data, ...
-                'load',{ 'GSN-HydroCel-129.sfp', 'filetype', 'sfp'});
+            if(~ eeg_system.sys10_20)
+                [~, data] = evalc(['pop_chanedit(data,' ...
+                    '''load'',{ ''GSN-HydroCel-129.sfp'' , ''filetype'', ''sfp''})']);
+            else
+                [~, data] = evalc(['pop_chanedit(data, ''lookup'', eeg_system.sys10_20_file,' ...
+                    '''load'',{ ''GSN-HydroCel-129.sfp'' , ''filetype'', ''autodetect''})']);
+            end
         case 256
             eog_channels = sort([31 32 37 46 54 252 248 244 241 25 18 10 1 226 ...
                 230 234 238]);
             channels = setdiff(chan256, eog_channels);
             data.data(end+1,:) = 0;
             data.nbchan = data.nbchan + 1;
-            data = pop_chanedit(data, ...
-                'load',{ 'GSN-HydroCel-257_be.sfp', 'filetype', 'sfp'});
+            if(~ eeg_system.sys10_20)
+                [~, data] = evalc(['pop_chanedit(data,' ...
+                    '''load'',{ ''GSN-HydroCel-257.sfp'' , ''filetype'', ''sfp''})']);
+            else
+                [~, data] = evalc(['pop_chanedit(data, ''lookup'', eeg_system.sys10_20_file,' ...
+                    '''load'',{ ''GSN-HydroCel-257.sfp'' , ''filetype'', ''autodetect''})']);
+            end
         case (256 + 1)
             eog_channels = sort([31 32 37 46 54 252 248 244 241 25 18 10 1 226 ...
                 230 234 238]);
             channels = setdiff(chan256, eog_channels);
-            data = pop_chanedit(data, ...
-                'load',{ 'GSN-HydroCel-257_be.sfp', 'filetype', 'sfp'});
+            if(~ eeg_system.sys10_20)
+                [~, data] = evalc(['pop_chanedit(data,' ...
+                    '''load'',{ ''GSN-HydroCel-257.sfp'' , ''filetype'', ''sfp''})']);
+            else
+                [~, data] = evalc(['pop_chanedit(data, ''lookup'', eeg_system.sys10_20_file,' ...
+                    '''load'',{ ''GSN-HydroCel-257.sfp'' , ''filetype'', ''autodetect''})']);
+            end
         case 395  %% .fif files
             addpath('../fieldtrip-20160630/'); 
             % Get rid of two wrong channels 63 and 64

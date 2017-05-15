@@ -35,13 +35,17 @@ classdef ConstantGlobalValues
         
         load_selected_project = struct('LIST_NAME', 'Load an existing project...');
         
-        default_params = DefaultParameters
-        
         ratings = struct('Good', 'Good', ...
                         'Bad', 'Bad', ...
                         'OK', 'OK', ...
                         'Interpolate', 'Interpolate', ...
                         'NotRated', 'Not Rated');
+        
+        extensions = struct('mat', '.mat', ...
+                            'text', '.txt', ...
+                            'fif', '.fif')
+                        
+        default_params = DefaultParameters
     end
     
     methods

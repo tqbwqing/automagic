@@ -41,7 +41,7 @@ function varargout = main_gui(varargin)
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-% Last Modified by GUIDE v2.5 11-Apr-2017 09:26:05
+% Last Modified by GUIDE v2.5 15-May-2017 11:09:17
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -261,7 +261,8 @@ if(strcmp(name, handles.CGV.new_project.LIST_NAME))
     set(handles.excludecheckbox, 'Value', ...
         handles.CGV.default_params.channel_reduction_params.perform_reduce_channels);
     set(handles.extedit, 'String', '')
-    
+    set(handles.srateedit, 'String', '')
+    set(handles.checkbox1020, 'Value', 0)
     handles = setEEGSystem(handles.CGV.default_params.eeg_system.EGI_name, handles);
     
     handles = setNotchFilter(handles.CGV.default_params.filter_params.notch_eu, handles);
@@ -352,6 +353,7 @@ if ~ exist(project.state_address, 'file')
         set(handles.chanlocedit, 'String', '');
         set(handles.eogchansedit, 'String', '');
         set(handles.excludeedit, 'String', '');
+        set(handles.checkbox1020, 'Value', 0)
         % Disable modifications from gui
         switch_gui('off', 'on', handles);
         return;
@@ -402,8 +404,14 @@ handles = setNotchFilter(project.params.filter_params.notch_freq, handles);
 % Set the file extension
 set(handles.extedit, 'String', project.file_extension);
 
+% Set the sampling rate. It won't be empty only for .txt extension
+set(handles.srateedit, 'String', num2str(project.srate))
+
 % Set EEG system
 handles = setEEGSystem(project.params.eeg_system.name , handles);
+
+% Set 10-20 checkbox
+set(handles.checkbox1020, 'Value', project.params.eeg_system.sys10_20);
 
 % Set the downsampling rate
 IndexC = strfind(handles.dsrate.String, int2str(handles.dsrate.Value));
@@ -458,6 +466,7 @@ set(handles.lowfreqedit, 'enable', mode);
 set(handles.eogregressioncheckbox, 'enable', mode);
 set(handles.excludecheckbox, 'enable', mode);
 setEEGSystemVisibility(mode, handles);
+setSRateVisibility(mode, handles);
 
 % --- Enable or Disable the EEG system related gui components. These are
 % all closely together related. Basically the channel location, eog channel 
@@ -470,7 +479,8 @@ function setEEGSystemVisibility(mode, handles)
 
 set(handles.egiradio, 'enable', mode);
 set(handles.othersysradio, 'enable', mode);
-        
+set(handles.checkbox1020, 'enable', mode);
+
 if( strcmp(mode, 'off'))
     set(handles.chanlocedit, 'enable', mode);
     set(handles.eogchansedit, 'enable', mode);
@@ -486,6 +496,22 @@ elseif(strcmp(mode, 'on'))
         set(handles.choosechannelloc, 'enable', mode);
     end
 end
+
+% --- Enable or Disable the sampling rate based on the extension. If
+% extension is 'txt' it can be enabled.
+function setSRateVisibility(mode, handles)
+% handles    main handles of the gui
+% mode       string that can be either 'off' (to disable) or 'on' (to enable)
+if( strcmp(mode, 'off'))
+    set(handles.srateedit, 'enable', mode);
+elseif(strcmp(mode, 'on'))
+    if( strcmp(get(handles.extedit, 'Value'), handles.CGV.extensions.text))
+        set(handles.srateedit, 'enable', mode);
+    else
+        set(handles.srateedit, 'enable', 'off');
+    end
+end
+
 
 % --- Save the gui state
 function save_state(handles)
@@ -673,11 +699,19 @@ end
 
 % Get the file extension
 ext = get(handles.extedit, 'String');
-if( isempty(ext) || ~ strcmp(ext(1), '.') || length(strsplit('.raw', '.')) > 2 )
+if( isempty(ext) || ~ strcmp(ext(1), '.'))
     waitfor(msgbox('A correct file extension must be given.',...
         'Error','error'));
     return;
 end
+
+srate = str2num(get(handles.srateedit, 'String'));
+if(strcmp(ext, handles.CGV.extensions.text) && isempty(srate))
+    waitfor(msgbox('Sampling rate is required when the file extensions is .txt',...
+        'Error','error'));
+    return;
+end
+    
 
 % Get reduce checkbox
 handles.params.perform_reduce_channels = get(handles.excludecheckbox, 'Value');
@@ -709,6 +743,7 @@ if ~ get(handles.egiradio, 'Value')
    
    handles.params.eeg_system = eeg_system;
 end
+handles.params.eeg_system.sys10_20 = get(handles.checkbox1020, 'Value');
 
 % Get the downsampling rate
 idx = get(handles.dsrate, 'Value');
@@ -768,7 +803,7 @@ switch choice
                 delete(Project.make_state_address(project_folder));
             end
         end
-        project = Project(name, data_folder, project_folder, ext, ds, params);
+        project = Project(name, data_folder, project_folder, ext, ds, params, srate);
 end
 name = project.name; % Overwrite the name in case the project is loaded.
 
@@ -1046,6 +1081,15 @@ function extedit_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
+ext = get(handles.extedit, 'String');
+if(strcmp(ext, handles.CGV.extensions.text))
+    set(handles.srateedit, 'enable', 'on')
+    set(handles.srateedit, 'String', '')
+else
+    set(handles.srateedit, 'enable', 'off')
+    set(handles.srateedit, 'String', '')
+end
+
 if( strcmp(get(handles.datafoldershow, 'String'), ... 
         handles.CGV.new_project.DATA_FOLDER) || ...
         isempty(get(handles.extedit, 'String')))
@@ -1053,7 +1097,6 @@ if( strcmp(get(handles.datafoldershow, 'String'), ...
 end
 
 folder = get(handles.datafoldershow, 'String');
-ext = get(handles.extedit, 'String');
 [subject_count, file_count] = ...
     get_subject_and_file_numbers(handles, folder, ext);
 
@@ -1346,6 +1389,7 @@ params.pca_params.maxIter = default_params.pca_params.maxIter;
 params.ica_params.bool = default_params.ica_params.bool;
 params.interpolation_params.method = default_params.interpolation_params.method;
 params.eeg_system.name = default_params.eeg_system.name;
+params.eeg_system.sys10_20 = default_params.eeg_system.sys10_20;
 params.eeg_system.file_loc_type = default_params.eeg_system.file_loc_type;
 params.eeg_system.loc_file = default_params.eeg_system.loc_file;
 params.eeg_system.eog_chans = default_params.eog_regression_params.eog_chans;
@@ -1363,3 +1407,35 @@ function notchedit_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
+
+
+
+function srateedit_Callback(hObject, eventdata, handles)
+% hObject    handle to srateedit (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of srateedit as text
+%        str2double(get(hObject,'String')) returns contents of srateedit as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function srateedit_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to srateedit (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in checkbox1020.
+function checkbox1020_Callback(hObject, eventdata, handles)
+% hObject    handle to checkbox1020 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of checkbox1020

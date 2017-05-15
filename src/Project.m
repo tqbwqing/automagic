@@ -124,8 +124,12 @@ classdef Project < handle
         % Sampling rate to crate reduced files.
         ds_rate
         
+        % Sampling rate of the recorded data. This is necessary only in the
+        % case of file_extension = '.txt'
+        srate
+        
         % File extension of the raw files in this project. Can be .raw,
-        % .RAW, .dat , .fif or even .mat if it's saved as a matlab file
+        % .RAW, .dat , .fif , .txt or even .mat if it's saved as a matlab file
         file_extension
         
         % Parameters of the preprocessing. To learn more please see
@@ -157,7 +161,7 @@ classdef Project < handle
     %% Constructor
     methods
         function self = Project(name, d_folder, p_folder, ext, ds, ...
-                params)
+                params, varargin)
             
             self = self.setName(name);
             self = self.setData_folder(d_folder);
@@ -165,6 +169,11 @@ classdef Project < handle
             self.CGV = ConstantGlobalValues;
             self.state_address = self.make_state_address(self.result_folder);
             self.file_extension = ext;
+            
+            if(strcmp(self.file_extension, self.CGV.extensions.text))
+                self.srate = varargin{1};
+            end
+            
             self.ds_rate = ds;
             self.params = params;
             self = self.create_rating_structure();
@@ -246,20 +255,25 @@ classdef Project < handle
                     continue;
                 else
                     % Load and preprocess
-                    if( strcmp(block.file_extension, '.mat'))
+                    if( strcmp(block.file_extension, self.CGV.extensions.mat))
                         data = load(block.source_address);
                         data = data.EEG;
+                    elseif(strcmp(block.file_extension, self.CGV.extensions.text))
+                        [~, data] = ...
+                            evalc(['pop_importdata(''dataformat'',''ascii'',' ...
+                            '''data'', block.source_address,''srate'', self.srate,' ...
+                            '''pnts'',0,''xmin'',0)']);
                     else
-                        [~ ,data] = evalc('pop_fileio(block.source_address)');
+                        [~ , data] = evalc('pop_fileio(block.source_address)');
                     end
                     
-                    if(strcmp('.fif', self.file_extension)) 
+                    if(strcmp(self.CGV.extensions.fif, self.file_extension)) 
                         self.params.original_file = block.source_address;
                     end
                     
                     [EEG, fig] = preprocess(data, self.params);
 
-                    if(strcmp('.fif', self.file_extension)) 
+                    if(strcmp(self.CGV.extensions.fif, self.file_extension)) 
                         self.params = rmfield(self.params, 'original_file');
                     end
                     
@@ -645,7 +659,7 @@ classdef Project < handle
             data_changed = self.folder_is_changed(self.data_folder, ...
                 self.subject_count, self.file_count, self.file_extension);
             result_changed = self.folder_is_changed(self.result_folder, []...
-                , self.processed_files, '.mat');
+                , self.processed_files, self.CGV.extensions.mat);
             modified = data_changed || result_changed;
         end
         
