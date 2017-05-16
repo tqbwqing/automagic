@@ -17,7 +17,7 @@ classdef ConstantGlobalValues
     % You should have received a copy of the GNU General Public License
     % along with this program.  If not, see <http://www.gnu.org/licenses/>.
     properties(Constant)
-        version = '1.4.0';
+        version = '1.4.1';
             
         DEFAULT_keyword = 'Default';
                 
