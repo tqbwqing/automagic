@@ -61,7 +61,9 @@ In this section of the manual, only the basic functionality of **Automagic** wil
 1. Navigate to the drop-down list labelled *Select Project*.
 2. Select *Create New Project...*
 3. Name your project.
-4. Write down the file extension that corresponds to your data???s file format. For example raw image files (`.raw` or `.RAW`), fractal image files (`.fif`) or generic data files (`.dat`).
+4. Write down the file extension that corresponds to your data file format. For example raw image files (`.raw` or `.RAW`), fractal image files (`.fif`), generic data files (`.dat`) or even texts (`.txt` or `.asc`).
+    * In case you choose a text format (`.txt`, `.asc` or `.csv`) , then an edit box below in the window is enabled so that you determine the sampling rate of you recorded data. This information is not necessary for other formats and the edit box is disabled.
+  
 5. Choose the EEG System in which your data is recorded. Currently only **EGI HCGSN** is fully supported for both number of channels 128 and 256 (or 129 and 257 respectively). This information is needed mainly to find channel locations. In case you choose the option *Other...* for your EEG System, you must provide a file in which channel locations are specified. The file format must be one which is also supported by EEGLab (`pop_chanedit` function). In addition, you must provide a list of indices of the EOG channels of your dataset. Note that here the list contains the indices of those channels and not their labels (You can also simply deselect the EOG regression and this step will be skipped during the preprocessing).
    * The *Channel location file* must be the full address of the channel location file.
    * The *Channel location file type* must specify the type of the file as required by `pop_chanedit`. eg. `sfp`
