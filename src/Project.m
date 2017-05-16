@@ -255,7 +255,7 @@ classdef Project < handle
                     continue;
                 else
                     % Load and preprocess
-                    if( strcmp(block.file_extension, self.CGV.extensions.mat))
+                    if( any(strcmp(block.file_extension, {self.CGV.extensions.mat})))
                         data = load(block.source_address);
                         data = data.EEG;
                     elseif(any(strcmp(block.file_extension, {self.CGV.extensions.text})))
@@ -267,13 +267,13 @@ classdef Project < handle
                         [~ , data] = evalc('pop_fileio(block.source_address)');
                     end
                     
-                    if(strcmp(self.CGV.extensions.fif, self.file_extension)) 
+                    if(any(strcmp({self.CGV.extensions.fif}, self.file_extension))) 
                         self.params.original_file = block.source_address;
                     end
                     
                     [EEG, fig] = preprocess(data, self.params);
 
-                    if(strcmp(self.CGV.extensions.fif, self.file_extension)) 
+                    if(any(strcmp({self.CGV.extensions.fif}, self.file_extension))) 
                         self.params = rmfield(self.params, 'original_file');
                     end
                     
@@ -659,7 +659,7 @@ classdef Project < handle
             data_changed = self.folder_is_changed(self.data_folder, ...
                 self.subject_count, self.file_count, self.file_extension);
             result_changed = self.folder_is_changed(self.result_folder, []...
-                , self.processed_files, self.CGV.extensions.mat);
+                , self.processed_files, self.CGV.extensions(1).mat);
             modified = data_changed || result_changed;
         end
         
