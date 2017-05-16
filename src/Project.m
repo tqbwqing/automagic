@@ -170,7 +170,7 @@ classdef Project < handle
             self.state_address = self.make_state_address(self.result_folder);
             self.file_extension = ext;
             
-            if(strcmp(self.file_extension, self.CGV.extensions.text))
+            if(any(strcmp(self.file_extension, {self.CGV.extensions.text})))
                 self.srate = varargin{1};
             end
             
@@ -258,7 +258,7 @@ classdef Project < handle
                     if( strcmp(block.file_extension, self.CGV.extensions.mat))
                         data = load(block.source_address);
                         data = data.EEG;
-                    elseif(strcmp(block.file_extension, self.CGV.extensions.text))
+                    elseif(any(strcmp(block.file_extension, {self.CGV.extensions.text})))
                         [~, data] = ...
                             evalc(['pop_importdata(''dataformat'',''ascii'',' ...
                             '''data'', block.source_address,''srate'', self.srate,' ...

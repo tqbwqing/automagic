@@ -505,7 +505,7 @@ function setSRateVisibility(mode, handles)
 if( strcmp(mode, 'off'))
     set(handles.srateedit, 'enable', mode);
 elseif(strcmp(mode, 'on'))
-    if( strcmp(get(handles.extedit, 'Value'), handles.CGV.extensions.text))
+    if( any(strcmp(get(handles.extedit, 'Value'), {handles.CGV.extensions.text})))
         set(handles.srateedit, 'enable', mode);
     else
         set(handles.srateedit, 'enable', 'off');
@@ -706,7 +706,7 @@ if( isempty(ext) || ~ strcmp(ext(1), '.'))
 end
 
 srate = str2num(get(handles.srateedit, 'String'));
-if(strcmp(ext, handles.CGV.extensions.text) && isempty(srate))
+if(any(strcmp(ext, {handles.CGV.extensions.text})) && isempty(srate))
     waitfor(msgbox('Sampling rate is required when the file extensions is .txt',...
         'Error','error'));
     return;
@@ -1082,7 +1082,7 @@ function extedit_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 ext = get(handles.extedit, 'String');
-if(strcmp(ext, handles.CGV.extensions.text))
+if(any(strcmp(ext, {handles.CGV.extensions.text})))
     set(handles.srateedit, 'enable', 'on')
     set(handles.srateedit, 'String', '')
 else
