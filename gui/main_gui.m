@@ -456,6 +456,8 @@ set(handles.choosedata, 'enable', mode);
 set(handles.chooseproject, 'enable', mode);
 set(handles.notchpanel.Children(1), 'enable', mode);
 set(handles.notchpanel.Children(2), 'enable', mode);
+set(handles.notchpanel.Children(3), 'enable', mode);
+set(handles.notchpanel.Children(4), 'enable', mode);
 set(handles.highpasscheckbox, 'enable', mode);
 set(handles.lowpasscheckbox, 'enable', mode);
 set(handles.configbutton, 'enable', mode)
