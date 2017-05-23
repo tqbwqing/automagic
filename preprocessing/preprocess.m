@@ -273,10 +273,10 @@ elseif(~isempty(eeg_system.name) && strcmp(eeg_system.name, DEFS.eeg_system.EGI_
             data.nbchan = data.nbchan + 1;
             if(~ eeg_system.sys10_20)
                 [~, data] = evalc(['pop_chanedit(data,' ...
-                    '''load'',{ ''GSN-HydroCel-257.sfp'' , ''filetype'', ''sfp''})']);
+                    '''load'',{ ''GSN-HydroCel-257_be.sfp'' , ''filetype'', ''sfp''})']);
             else
                 [~, data] = evalc(['pop_chanedit(data, ''lookup'', eeg_system.sys10_20_file,' ...
-                    '''load'',{ ''GSN-HydroCel-257.sfp'' , ''filetype'', ''autodetect''})']);
+                    '''load'',{ ''GSN-HydroCel-257_be.sfp'' , ''filetype'', ''autodetect''})']);
             end
         case (256 + 1)
             eog_channels = sort([31 32 37 46 54 252 248 244 241 25 18 10 1 226 ...
@@ -284,10 +284,10 @@ elseif(~isempty(eeg_system.name) && strcmp(eeg_system.name, DEFS.eeg_system.EGI_
             channels = setdiff(chan256, eog_channels);
             if(~ eeg_system.sys10_20)
                 [~, data] = evalc(['pop_chanedit(data,' ...
-                    '''load'',{ ''GSN-HydroCel-257.sfp'' , ''filetype'', ''sfp''})']);
+                    '''load'',{ ''GSN-HydroCel-257_be.sfp'' , ''filetype'', ''sfp''})']);
             else
                 [~, data] = evalc(['pop_chanedit(data, ''lookup'', eeg_system.sys10_20_file,' ...
-                    '''load'',{ ''GSN-HydroCel-257.sfp'' , ''filetype'', ''autodetect''})']);
+                    '''load'',{ ''GSN-HydroCel-257_be.sfp'' , ''filetype'', ''autodetect''})']);
             end
         case 395  %% .fif files
             addpath('../fieldtrip-20160630/'); 
