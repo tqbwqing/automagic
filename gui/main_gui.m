@@ -664,7 +664,9 @@ projects = get(handles.existingpopupmenu, 'String');
 name = projects{idx};
 project = handles.project_list(name);
 
-project.preprocess_all();
+if( ~ isempty(project))
+    project.preprocess_all();
+end
 
 
 % --- Load the selected project by gui
