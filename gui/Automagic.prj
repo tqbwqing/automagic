@@ -1,5 +1,5 @@
 <deployment-project plugin="plugin.apptool" plugin-version="1.0">
-  <configuration build-checksum="4288543346" file="/Users/amirreza/workspace/ppp/pipline/gui/Automagic.prj" location="/Users/amirreza/workspace/ppp/pipline/gui" name="Automagic" target="target.mlapps" target-name="Package App">
+  <configuration build-checksum="873860132" file="/Users/amirreza/workspace/ppp/pipline/gui/Automagic.prj" location="/Users/amirreza/workspace/ppp/pipline/gui" name="Automagic" target="target.mlapps" target-name="Package App">
     <param.appname>Automagic</param.appname>
     <param.authnamewatermark>amirreza</param.authnamewatermark>
     <param.email>amirreza.bahreini@uzh.ch</param.email>
@@ -432,6 +432,14 @@
       <file>/Users/amirreza/workspace/ppp/pipline/matlab_scripts/eeglab13_6_5b/functions/statistics</file>
       <file>/Users/amirreza/workspace/ppp/pipline/matlab_scripts/eeglab13_6_5b/functions/studyfunc</file>
       <file>/Users/amirreza/workspace/ppp/pipline/matlab_scripts/eeglab13_6_5b/functions/timefreqfunc</file>
+      <file>/Users/amirreza/workspace/ppp/pipline/matlab_scripts/eeglab13_6_5b/plugins/MARA-master/MARA.m</file>
+      <file>/Users/amirreza/workspace/ppp/pipline/matlab_scripts/eeglab13_6_5b/plugins/MARA-master/eegplugin_MARA.m</file>
+      <file>/Users/amirreza/workspace/ppp/pipline/matlab_scripts/eeglab13_6_5b/plugins/MARA-master/fv_training_MARA.mat</file>
+      <file>/Users/amirreza/workspace/ppp/pipline/matlab_scripts/eeglab13_6_5b/plugins/MARA-master/inv_matrix_icbm152.mat</file>
+      <file>/Users/amirreza/workspace/ppp/pipline/matlab_scripts/eeglab13_6_5b/plugins/MARA-master/pop_processMARA.m</file>
+      <file>/Users/amirreza/workspace/ppp/pipline/matlab_scripts/eeglab13_6_5b/plugins/MARA-master/pop_selectcomps_MARA.m</file>
+      <file>/Users/amirreza/workspace/ppp/pipline/matlab_scripts/eeglab13_6_5b/plugins/MARA-master/pop_visualizeMARAfeatures.m</file>
+      <file>/Users/amirreza/workspace/ppp/pipline/matlab_scripts/eeglab13_6_5b/plugins/MARA-master/processMARA.m</file>
       <file>/Users/amirreza/workspace/ppp/pipline/matlab_scripts/eeglab13_6_5b/plugins/dipfit2.3/README.txt</file>
       <file>/Users/amirreza/workspace/ppp/pipline/matlab_scripts/eeglab13_6_5b/plugins/dipfit2.3/adjustcylinder2.m</file>
       <file>/Users/amirreza/workspace/ppp/pipline/matlab_scripts/eeglab13_6_5b/plugins/dipfit2.3/channelselection.m</file>
