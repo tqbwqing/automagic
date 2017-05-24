@@ -1,5 +1,5 @@
 <deployment-project plugin="plugin.apptool" plugin-version="1.0">
-  <configuration build-checksum="3013820184" file="/Users/amirreza/workspace/ppp/pipline/gui/Automagic.prj" location="/Users/amirreza/workspace/ppp/pipline/gui" name="Automagic" target="target.mlapps" target-name="Package App">
+  <configuration build-checksum="4288543346" file="/Users/amirreza/workspace/ppp/pipline/gui/Automagic.prj" location="/Users/amirreza/workspace/ppp/pipline/gui" name="Automagic" target="target.mlapps" target-name="Package App">
     <param.appname>Automagic</param.appname>
     <param.authnamewatermark>amirreza</param.authnamewatermark>
     <param.email>amirreza.bahreini@uzh.ch</param.email>
@@ -432,8 +432,37 @@
       <file>/Users/amirreza/workspace/ppp/pipline/matlab_scripts/eeglab13_6_5b/functions/statistics</file>
       <file>/Users/amirreza/workspace/ppp/pipline/matlab_scripts/eeglab13_6_5b/functions/studyfunc</file>
       <file>/Users/amirreza/workspace/ppp/pipline/matlab_scripts/eeglab13_6_5b/functions/timefreqfunc</file>
+      <file>/Users/amirreza/workspace/ppp/pipline/matlab_scripts/eeglab13_6_5b/plugins/dipfit2.3/README.txt</file>
+      <file>/Users/amirreza/workspace/ppp/pipline/matlab_scripts/eeglab13_6_5b/plugins/dipfit2.3/adjustcylinder2.m</file>
+      <file>/Users/amirreza/workspace/ppp/pipline/matlab_scripts/eeglab13_6_5b/plugins/dipfit2.3/channelselection.m</file>
+      <file>/Users/amirreza/workspace/ppp/pipline/matlab_scripts/eeglab13_6_5b/plugins/dipfit2.3/dipfit_1_to_2.m</file>
+      <file>/Users/amirreza/workspace/ppp/pipline/matlab_scripts/eeglab13_6_5b/plugins/dipfit2.3/dipfit_erpeeg.m</file>
+      <file>/Users/amirreza/workspace/ppp/pipline/matlab_scripts/eeglab13_6_5b/plugins/dipfit2.3/dipfit_gridsearch.m</file>
+      <file>/Users/amirreza/workspace/ppp/pipline/matlab_scripts/eeglab13_6_5b/plugins/dipfit2.3/dipfit_nonlinear.m</file>
+      <file>/Users/amirreza/workspace/ppp/pipline/matlab_scripts/eeglab13_6_5b/plugins/dipfit2.3/dipfit_reject.m</file>
+      <file>/Users/amirreza/workspace/ppp/pipline/matlab_scripts/eeglab13_6_5b/plugins/dipfit2.3/dipfitdefs.m</file>
+      <file>/Users/amirreza/workspace/ppp/pipline/matlab_scripts/eeglab13_6_5b/plugins/dipfit2.3/dipplot.m</file>
+      <file>/Users/amirreza/workspace/ppp/pipline/matlab_scripts/eeglab13_6_5b/plugins/dipfit2.3/eeglab2fieldtrip.m</file>
+      <file>/Users/amirreza/workspace/ppp/pipline/matlab_scripts/eeglab13_6_5b/plugins/dipfit2.3/eegplugin_dipfit.m</file>
+      <file>/Users/amirreza/workspace/ppp/pipline/matlab_scripts/eeglab13_6_5b/plugins/dipfit2.3/electroderealign.m</file>
+      <file>/Users/amirreza/workspace/ppp/pipline/matlab_scripts/eeglab13_6_5b/plugins/dipfit2.3/fieldtripchan2eeglab.m</file>
+      <file>/Users/amirreza/workspace/ppp/pipline/matlab_scripts/eeglab13_6_5b/plugins/dipfit2.3/headcoordinates.m</file>
+      <file>/Users/amirreza/workspace/ppp/pipline/matlab_scripts/eeglab13_6_5b/plugins/dipfit2.3/homogenous2traditional.m</file>
+      <file>/Users/amirreza/workspace/ppp/pipline/matlab_scripts/eeglab13_6_5b/plugins/dipfit2.3/mni2tal.m</file>
+      <file>/Users/amirreza/workspace/ppp/pipline/matlab_scripts/eeglab13_6_5b/plugins/dipfit2.3/mni2tal_matrix.m</file>
+      <file>/Users/amirreza/workspace/ppp/pipline/matlab_scripts/eeglab13_6_5b/plugins/dipfit2.3/pop_dipfit_batch.m</file>
+      <file>/Users/amirreza/workspace/ppp/pipline/matlab_scripts/eeglab13_6_5b/plugins/dipfit2.3/pop_dipfit_gridsearch.m</file>
+      <file>/Users/amirreza/workspace/ppp/pipline/matlab_scripts/eeglab13_6_5b/plugins/dipfit2.3/pop_dipfit_manual.m</file>
+      <file>/Users/amirreza/workspace/ppp/pipline/matlab_scripts/eeglab13_6_5b/plugins/dipfit2.3/pop_dipfit_nonlinear.m</file>
+      <file>/Users/amirreza/workspace/ppp/pipline/matlab_scripts/eeglab13_6_5b/plugins/dipfit2.3/pop_dipfit_settings.m</file>
+      <file>/Users/amirreza/workspace/ppp/pipline/matlab_scripts/eeglab13_6_5b/plugins/dipfit2.3/pop_dipplot.m</file>
+      <file>/Users/amirreza/workspace/ppp/pipline/matlab_scripts/eeglab13_6_5b/plugins/dipfit2.3/pop_multifit.m</file>
+      <file>/Users/amirreza/workspace/ppp/pipline/matlab_scripts/eeglab13_6_5b/plugins/dipfit2.3/private</file>
+      <file>/Users/amirreza/workspace/ppp/pipline/matlab_scripts/eeglab13_6_5b/plugins/dipfit2.3/sph2spm.m</file>
+      <file>/Users/amirreza/workspace/ppp/pipline/matlab_scripts/eeglab13_6_5b/plugins/dipfit2.3/standard_BEM</file>
       <file>/Users/amirreza/workspace/ppp/pipline/matlab_scripts/eeglab13_6_5b/plugins/dipfit2.3/standard_BESA</file>
       <file>/Users/amirreza/workspace/ppp/pipline/matlab_scripts/eeglab13_6_5b/plugins/dipfit2.3/standard_BESA/standard-10-5-cap385.elp</file>
+      <file>/Users/amirreza/workspace/ppp/pipline/matlab_scripts/eeglab13_6_5b/plugins/dipfit2.3/traditionaldipfit.m</file>
       <file>/Users/amirreza/workspace/ppp/pipline/matlab_scripts/eeglab13_6_5b/plugins/fieldtrip-20161108/@config</file>
       <file>/Users/amirreza/workspace/ppp/pipline/matlab_scripts/eeglab13_6_5b/plugins/fieldtrip-20161108/COPYING</file>
       <file>/Users/amirreza/workspace/ppp/pipline/matlab_scripts/eeglab13_6_5b/plugins/fieldtrip-20161108/Contents.m</file>
