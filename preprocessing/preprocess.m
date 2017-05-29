@@ -95,7 +95,7 @@ perform_eog_regression = p.Results.perform_eog_regression;
 perform_reduce_channels = p.Results.perform_reduce_channels;
 original_file_address = p.Results.original_file;
 
-assert( ( ~ isempty(pca_params.lambda) && pca_params.lambda == -1) ...
+assert( isempty(fieldnames(pca_params)) || ( ~ isempty(pca_params.lambda) && pca_params.lambda == -1) ...
          || ica_params.bool == 0);
 
 pca_url = DEFS.pca_params.pca_url;
@@ -138,7 +138,7 @@ end
 
 
 %% Check if PCA exists
-if((isempty(pca_params.lambda) || pca_params.lambda ~= -1) && ...
+if((isempty(fieldnames(pca_params)) || (isempty(pca_params.lambda) || pca_params.lambda ~= -1)) && ...
         (~exist('inexact_alm_rpca.m', 'file')))
     ques = 'inexact_alm_rpca is necessary for PCA. Do you want to download it now?';
     ques_title = 'PCA Requirement installation';
