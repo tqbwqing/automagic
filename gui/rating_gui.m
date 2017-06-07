@@ -19,7 +19,7 @@ function varargout = rating_gui(varargin)
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-% Last Modified by GUIDE v2.5 28-Oct-2016 14:42:23
+% Last Modified by GUIDE v2.5 07-Jun-2017 10:05:59
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -95,6 +95,7 @@ varargout{1} = handles.output;
 function handles = load_project(handles)
 % handles       structure with handles of the gui
 
+set_color_scale(handles);
 handles = set_gui_subjects_list(handles);
 set_gui_rating(handles);
 handles = update_next_and_previous_button(handles);
@@ -104,6 +105,14 @@ handles = update_next_and_previous_button(handles);
 handles = show_current(data, handles);
 clear data;
 
+% --- Set components related to color scale
+function set_color_scale(handles)
+% handles       structure with handles of the gui
+
+scale = handles.project.colorScale;
+set(handles.scaletext, 'String', ...
+    ['[ -', num2str(scale), ' ' , num2str(scale),']']);
+set(handles.colorscale, 'Value', scale);
 
 % --- Set the gui menu to show all avaiable files that are not filtered by 
 % the gui
@@ -183,10 +192,12 @@ function handles = show_current(reduced, handles)
 if isfield(reduced, 'data')
     data = reduced.data;
     project = handles.project;
+    colorScale = project.colorScale;
     unique_name = project.processed_list{project.current};
 else
     data = [];
     unique_name = 'no image';
+    colorScale = handles.CGV.COLOR_SCALE;
 end
 
 
@@ -197,7 +208,7 @@ im = imagesc(data);
 set(im, 'ButtonDownFcn', {@on_selection,handles})
 set(gcf, 'Color', [1,1,1])
 colormap jet
-caxis([-100 100])
+caxis([-colorScale colorScale])
 title(unique_name, 'Interpreter','none')
 handles.im = im;
 
@@ -1126,4 +1137,32 @@ function channellistbox_CreateFcn(hObject, eventdata, handles)
 %       See ISPC and COMPUTER.
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on slider movement.
+function colorscale_Callback(hObject, eventdata, handles)
+% hObject    handle to colorscale (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+new_value = int16(get(hObject,'Value'));
+set(handles.scaletext, 'String', ['[ -',num2str(new_value), ' ' ,num2str(new_value),']']);
+handles.project.colorScale = new_value;
+load_project(handles);
+% Update handles structure
+guidata(hObject, handles);
+
+% Hints: get(hObject,'Value') returns position of slider
+%        get(hObject,'Min') and get(hObject,'Max') to determine range of slider
+
+
+% --- Executes during object creation, after setting all properties.
+function colorscale_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to colorscale (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: slider controls usually have a light gray background.
+if isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor',[.9 .9 .9]);
 end

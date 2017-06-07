@@ -105,6 +105,10 @@ classdef Project < handle
         % aspects of the plot.
         maxX
         
+        % This determines the color scale in rating gui:
+        % [-colorScale, colorScale]. Default is 100.
+        colorScale
+        
         % Adress of the folder where raw data are stored.
         data_folder
         
@@ -174,6 +178,7 @@ classdef Project < handle
                 self.srate = varargin{1};
             end
             
+            self.colorScale = self.CGV.COLOR_SCALE;
             self.ds_rate = ds;
             self.params = params;
             self = self.create_rating_structure();

@@ -44,7 +44,8 @@ classdef ConstantGlobalValues
         extensions = struct('mat', '.mat', ...
                             'text', {'.txt', '.asc', '.csv'}, ...
                             'fif', '.fif')
-                        
+        COLOR_SCALE = 100;
+        
         default_params = DefaultParameters
     end
     
