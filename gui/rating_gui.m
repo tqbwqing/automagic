@@ -19,7 +19,7 @@ function varargout = rating_gui(varargin)
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-% Last Modified by GUIDE v2.5 07-Jun-2017 10:05:59
+% Last Modified by GUIDE v2.5 07-Jun-2017 10:44:34
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -71,6 +71,9 @@ handles.selection_mode = false;
 
 handles = load_project(handles);
 
+% Set keyboard shortcuts for rating
+handles = set_shortcuts(handles);
+
 % Choose default command line output for rating_gui
 handles.output = hObject;
 
@@ -103,6 +106,7 @@ handles = update_next_and_previous_button(handles);
 % Load and show the first image
 [handles, data] = load_current(handles);
 handles = show_current(data, handles);
+
 clear data;
 
 % --- Set components related to color scale
@@ -204,13 +208,12 @@ end
 axe = handles.axes;
 cla(axe);
 
-im = imagesc(data);
+im = imagesc(data, 'tag', 'im');
 set(im, 'ButtonDownFcn', {@on_selection,handles})
 set(gcf, 'Color', [1,1,1])
 colormap jet
 caxis([-colorScale colorScale])
 title(unique_name, 'Interpreter','none')
-handles.im = im;
 
 draw_lines(handles);
 mark_interpolated_chans(handles)
@@ -761,6 +764,16 @@ function rategroup_SelectionChangedFcn(hObject, eventdata, handles)
 % hObject    handle to the selected object in rategroup 
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+
+handles = change_rating(handles);
+
+% Update handles structure
+guidata(hObject, handles);
+
+% --- updates the rating based on gui input
+function handles = change_rating(handles)
+% handles  structure with handles of the gui
+
 project = handles.project;
 if(project.current == -1)
     return;
@@ -771,10 +784,6 @@ update_lines(handles)
 if( block.is_interpolate() )
    handles = turn_on_selection(handles);
 end
-
-% Update handles structure
-guidata(hObject, handles);
-
 
 % --- Executes on selection change in channellistbox. If a channel from the
 % channel list is chosen, it will be drawn with 'red' color. Just a visual
@@ -893,7 +902,7 @@ set(handles.channellistbox,'String',list)
 
 % --- Draw a horizontal line on the channel selected by y to mark it on the
 % plot
-function draw_line(y, maxX, handles, color)
+function handles = draw_line(y, maxX, handles, color)
 % handles  structure with handles of the gui
 % y        the y-coordinate of the selected point to be drawn
 % maxX     the maximum x-coordinate until which the line must be drawn in
@@ -938,7 +947,8 @@ handles.selection_mode = true;
 
 % To update both oncall functions with new handles where the selection is
 % changed
-set(handles.im, 'ButtonDownFcn', {@on_selection,handles})
+im = findobj(allchild(0), 'Tag', 'im');
+set(im, 'ButtonDownFcn', {@on_selection,handles})
 update_lines(handles)
 
 set(gcf,'Pointer','crosshair');
@@ -953,7 +963,8 @@ handles.selection_mode = false;
 
 % To update both oncall functions with new handles where the selection is
 % changed
-set(handles.im, 'ButtonDownFcn', {@on_selection,handles})
+im = findobj(allchild(0), 'Tag', 'im');
+set(im, 'ButtonDownFcn', {@on_selection,handles})
 update_lines(handles)
 
 set(gcf,'Pointer','arrow');
@@ -1114,6 +1125,38 @@ main_gui();
 % Hint: delete(hObject) closes the figure
 delete(hObject);
 
+function handles = set_shortcuts(handles)
+h = findobj(allchild(0), 'flat', 'Tag', 'rating_gui');
+set(h, 'KeyPressFcn', {@keyPress,handles})
+
+function handles = keyPress(src, e, handles)
+set(handles.turnonbutton,'Enable', 'off')
+set(handles.turnoffbutton,'Enable', 'off')
+shortcuts = handles.CGV.KEYBOARD_SHORTCUTS;
+
+    switch e.Key
+        case {shortcuts.GOOD}
+            set(handles.rategroup,'selectedobject',handles.goodrate)
+            handles = change_rating(handles);
+        case {shortcuts.OK}
+            set(handles.rategroup,'selectedobject',handles.okrate)
+            handles = change_rating(handles);
+        case {shortcuts.BAD}
+            set(handles.rategroup,'selectedobject',handles.badrate)
+            handles = change_rating(handles);
+        case {shortcuts.INTERPOLATE}
+            set(handles.rategroup,'selectedobject',handles.interpolaterate)
+            set(handles.turnonbutton,'Enable', 'on')
+            set(handles.turnoffbutton,'Enable', 'on')
+            handles = change_rating(handles);
+        case {shortcuts.NOTRATED}
+            set(handles.rategroup,'selectedobject',handles.notrate)
+            handles = change_rating(handles);
+        case {shortcuts.NEXT}
+            handles = previous(handles);
+        case {shortcuts.PREVIOUS}
+            handles = next(handles);
+    end
 
 % --- Executes during object creation, after setting all properties.
 function subjectsmenu_CreateFcn(hObject, eventdata, handles)
@@ -1148,7 +1191,7 @@ function colorscale_Callback(hObject, eventdata, handles)
 new_value = int16(get(hObject,'Value'));
 set(handles.scaletext, 'String', ['[ -',num2str(new_value), ' ' ,num2str(new_value),']']);
 handles.project.colorScale = new_value;
-load_project(handles);
+handles = load_project(handles);
 % Update handles structure
 guidata(hObject, handles);
 
@@ -1166,3 +1209,13 @@ function colorscale_CreateFcn(hObject, eventdata, handles)
 if isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor',[.9 .9 .9]);
 end
+
+
+% --- Executes on key press with focus on goodcheckbox and none of its controls.
+function goodcheckbox_KeyPressFcn(hObject, eventdata, handles)
+% hObject    handle to goodcheckbox (see GCBO)
+% eventdata  structure with the following fields (see MATLAB.UI.CONTROL.UICONTROL)
+%	Key: name of the key that was pressed, in lower case
+%	Character: character interpretation of the key(s) that was pressed
+%	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
+% handles    structure with handles and user data (see GUIDATA)
