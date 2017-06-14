@@ -795,6 +795,7 @@ function channellistbox_Callback(hObject, eventdata, handles)
 if( handles.project.current == -1)
     return;
 end
+project = handles.project;
 index_selected = get(handles.channellistbox,'Value');
 
 if( isempty(index_selected))
