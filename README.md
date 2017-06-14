@@ -155,12 +155,22 @@ Click on *Start...* to open the rating GUI.
  
 A visualisation of the currently selected file is displayed. Time corresponds to the x-axis, EEG channels correspond to the y-axis. You can use the tools in the top left corner to e.g. magnify an area or select a specific point of the current visualisation. Use the filters right below the tools to focus on a subset of your files based on their rating. You can navigate between files of the current subset by clicking on *Previous* and *Next* or by selecting a file from the drop-down list in the top right corner.
 
-You can rate the quality of the visualised data on the very right. You can choose between **Good**, **OK**, and **Bad**. These ratings are subjective and relative rather than absolute: The overall quality of your data should be used as point of reference. The colouring allows you to rate the quality of your data: Ideally, everything is green. Darker colours signify lower quality, i.e. artifacts etc. As a rule of thumb, horizontal artifacts are worse than vertical artifacts of the same size and colouring. After choosing a rating, you will automatically proceed to the next file.
+You can rate the quality of the visualised data on the very right. You can choose between **Good**, **OK**, and **Bad**. These ratings are subjective and relative rather than absolute: The overall quality of your data should be used as point of reference. The colouring allows you to rate the quality of your data: Ideally, everything is green. Darker colours signify lower quality, i.e. artifacts etc. As a rule of thumb, horizontal artifacts are worse than vertical artifacts of the same size and colouring. After choosing a rating, you will automatically proceed to the next file. Please note that depending on your data and its signal to noise ratio, the color map may need to be modified. On the very bottom right of the window you can select the range of color map [-X, X] where X can be a positive integer between 25 < X < 150. The default range is [-100, 100].
 
 Should you spot bad channels (represented by horizontal lines which are darker than their surroundings), please select **Interpolate**. This will activate selection mode. Manually navigate to bad channels and select them by clicking on them. Click on *Turn off* after selecting all bad channels. Click on Next to proceed to the next file. In the next step you will start interpolationg these bad channels and finally you can come back to re-rate these files after interpolating all selected channels. 
 
    * Important: 	Only pre-processed files will be shown for rating.
    * Important: 	Manual rating can be interrupted anytime by closing the rating GUI. No data will be lost and you can resume rating later.
+
+#### 2.5.1 Keyboard Shortcuts (NEW!)
+  Going through every file of a huge dataset and manually inspecting them can be a very cumbersum task. Keyboard shortcuts can be used to to accelerate this inspection in rating window. Using keyboard shortcuts you can rate and/or select the next or previous file:
+  * **Next** plot: **Rightwards arrow**
+  * **Previous** plot: **Leftwards arrow**
+  * **Good** rate: **G** key or **1** key
+  * **OK** rate: **O** key or **2** key
+  * **Bad** rate: **B** key or **3** key
+  * **Interpolate** rate: **I** key or **4** key
+  * **Not Rated** rate: **N** key or **5** key
 
 ### 2.6. The Interpolation Panel
 1. Click on *Interpolate All* to interpolate all channels you selected during manual rating.
