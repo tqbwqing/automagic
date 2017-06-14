@@ -51,7 +51,7 @@ In this section of the manual, only the basic functionality of **Automagic** wil
 5. Repeat steps 3 and 4 until all data is rated.
    * NOTE: You can not close the main gui window during the preprocessing. If you wish to stop the preprocessing at any time, you can use `CTRL-C`. In this case, or if by any other reason the preprocessing is stopped before being completely finished, all preprocessed files to that moment will be saved, and you can resume the preprocessing only for the files which are not preprocessed yet. After having used `CTRL-C`, please load your project from the main gui, by reselecting it from the list of existing projects. This will update the gui with the new preprocessed files.
 
-* Important:	Since synchronisation is rather basic, people should never work on the same project simultaneously.
+* Note:	Since synchronisation is rather basic, people should never work on the same project simultaneously.
 
 ### 2.3. The Project Panel
 
@@ -71,11 +71,11 @@ In this section of the manual, only the basic functionality of **Automagic** wil
    * ICA is supported for *Other...* only in case your channel labels are as it is required by processMARA. They must be of the form FPz, F3, Fz, F4, Cz, Oz, etc. Otherwise the ICA is simply skipped. If only some of your labels have the required format, only those channels are considered for ICA.
 6. You can select or deselect the EOG regression (It is recommended to select it). If you choose *Other...* for your EEG system then you need to specify the list of EOG channels as well. In the case of **EGI** automagic already knows the EOG channels and you don't need to specify anything. The list of EOG channels must be integers seperated by space or comma, e.g. `1 32 8 14 17 21 25 125 126 127 128`
 7. Set the downsampling rate on the manual rating panel. The downsampling only affects the visual representation of your data. A higher downsampling rate will shorten loading times. In general, a downsampling rate of 2 is a good choice. 
-   * Important:	You cannot alter paths, the filtering, or the downsampling rate after creating your project.
+   * Note:	You cannot alter paths, the filtering, or the downsampling rate after creating your project.
 8. Specify the path of your data folder. **Automagic** will scan all folders in your data folder for data files. Files and folders in the data folder will not be altered by **Automagic**.
-   * Important: 	The data folder must contain a folder for each subject (subject folders). Your data folder should not contain any other kinds of folders since this will lead to a wrong number of subjects. 
+   * Note: 	The data folder must contain a folder for each subject (subject folders). Your data folder should not contain any other kinds of folders since this will lead to a wrong number of subjects. 
 9. Specify the path of your project folder. If the specified folder does not yet exist, **Automagic** will create it for you. **Automagic** will save all processed data to your project folder. By default, **Automagic** opts for your data folder???s path and adds `_results` to your data folder???s name, e.g. `\PathDataFolder\MyDataFolder_results\`
-   * Important:	A subject folder must contain EEG files. Automagic can only load data saved in subject folders. Since subject folders are defined as folders in the data folder, no specific naming is required.
+   * Note:	A subject folder must contain EEG files. Automagic can only load data saved in subject folders. Since subject folders are defined as folders in the data folder, no specific naming is required.
  
  ![alt tag](https://github.com/amirrezaw/automagic/blob/master/automagic_resources/folder_structure.png)
  
@@ -124,7 +124,7 @@ To merge any number of existing projects without losing the individual projects,
 #### 2.3.6. Deleting a Project
 1. Click on *Delete Project* in the lower right corner of the project panel. A dialog box will appear.
 2. Take responsibility by clicking on Delete.
-   * Important: 	This will only delete the file named `project_state.mat` in the project folder and remove the project from the Automagic GUI. Please use Finder (Mac), Explorer (Windows) or your Linux equivalent to delete your project data and/or project folder.
+   * Note: 	This will only delete the file named `project_state.mat` in the project folder and remove the project from the Automagic GUI. Please use Finder (Mac), Explorer (Windows) or your Linux equivalent to delete your project data and/or project folder.
 
 #### 2.3.7. Customize Settings
 ![alt tag](https://github.com/amirrezaw/automagic/blob/master/automagic_resources/settings.png)
@@ -137,7 +137,7 @@ After clicking on *Configurations...* button a new window is opened where you ca
 4. *ICA* can be selected or deselected. Note that ICA and PCA can not be chosen together at the same time. The ICA uses the algorithm in MARA extension of MATLAB.
 5. *PCA* can be selected or deselected. The parameters correspond to paramters of `inexact_alm_rpca.m`. The default value *lambda* is ![alt tag](https://github.com/amirrezaw/automagic/blob/master/automagic_resources/sqrt.jpg) where m is the number of channels.
 6. The mode of interpolation can be determined. The default value is *spherical*.
-   * Important:	The preprocessing parameters can be set only during project creation.
+   * Note:	The preprocessing parameters can be set only during project creation.
 
 ### 2.4. The Pre-Processing Panel
 
@@ -159,11 +159,11 @@ You can rate the quality of the visualised data on the very right. You can choos
 
 Should you spot bad channels (represented by horizontal lines which are darker than their surroundings), please select **Interpolate**. This will activate selection mode. Manually navigate to bad channels and select them by clicking on them. Click on *Turn off* after selecting all bad channels. Click on Next to proceed to the next file. In the next step you will start interpolationg these bad channels and finally you can come back to re-rate these files after interpolating all selected channels. 
 
-   * Important: 	Only pre-processed files will be shown for rating.
-   * Important: 	Manual rating can be interrupted anytime by closing the rating GUI. No data will be lost and you can resume rating later.
+   * Note: 	Only pre-processed files will be shown for rating.
+   * Note: 	Manual rating can be interrupted anytime by closing the rating GUI. No data will be lost and you can resume rating later.
 
 #### 2.5.1 Keyboard Shortcuts (NEW!)
-  Going through every file of a huge dataset and manually inspecting them can be a very cumbersum task. Keyboard shortcuts can be used to to accelerate this inspection in rating window. Using keyboard shortcuts you can rate and/or select the next or previous file:
+  Going through every file of a huge dataset and manually inspecting them can be a very cumbersum task. Keyboard shortcuts can be used to accelerate this inspection in rating window. Using keyboard shortcuts you can rate and/or select the next or previous file:
   * **Next** plot: **Rightwards arrow**
   * **Previous** plot: **Leftwards arrow**
   * **Good** rate: **G** key or **1** key
@@ -193,7 +193,7 @@ The behaviour of the the second and third step is exactly as explained in previo
 
 Also please note that, when using **EEGLab**, there is no more the notion of having projects, or creating a new project,etc. In this case, you simply load your data from within **EEGLab**, preprocess, rate and interpolate them, and all the results are given back in `ALLEEG` structure of the **EEGLab**. From there you may want to save your result yourself.
 
-   * Important: In order to be able to start the preprocessing, you must first add the channel locations to your EEG data strucutre. For more information please see **EEGLab** documentation on this.
+   * Note: In order to be able to start the preprocessing, you must first add the channel locations to your EEG data strucutre. For more information please see **EEGLab** documentation on this.
 
 ## 4. Application Structure
 
@@ -226,7 +226,7 @@ For this code to be able to run, functions from [**EEGLab**](https://sccn.ucsd.e
 
 1. Download the [**EEGLab**](https://sccn.ucsd.edu/eeglab/downloadtoolbox.php) library and put it in the `automagic/matlab_scripts` folder.
 2. Download the  **inexact ALM** ( containing the function `[A, E] = inexact_alm_rpca(D, ??)`) from [**(ALM) Method**](http://perception.csl.illinois.edu/matrix-rank/sample_code.html) and put it in the `automagic/matlab_scripts/` as well.
-    * Important: If you feel too lazy to download this extension and put it in  `automagic/matlab_scripts/`, **don't**. While using **Automagic**, if you choose to use PCA in preprocessing, you will be asked if you agree to download the package, if you answer *Yes*, the package will be downloaded *Automagically* in the right folder. Note that this feature is not yet implemented for the previous step, **EEGLab**.  
+    * Good News!: If you feel too lazy to download this extension and put it in  `automagic/matlab_scripts/`, **don't**. While using **Automagic**, if you choose to use PCA in preprocessing, you will be asked if you agree to download the package, if you answer *Yes*, the package will be downloaded *Automagically* in the right folder. Note that this feature is not yet implemented for the previous step, **EEGLab**.  
 3. Now you are able to run the code by running the `automagic/gui/main_gui.m`
 
 * NOTE: If your data is with `.fif` extension, you need to download [**fieldtrip**](http://www.fieldtriptoolbox.org/download) which is an **EEGLab** extension and put it in `matlab_scripts/eeglab13_6_5b/plugins/`.
