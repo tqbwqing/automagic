@@ -1,3 +1,6 @@
+# News!
+
+* **2017.06.07** - Now you can use keyboard shortcuts during the rating procedure. [Check it out](#251-keyboard-shortcuts) how it works! 
 # Automagic
 
 ![alt tag](https://github.com/amirrezaw/automagic/blob/master/automagic_resources/automagic.jpg)
@@ -162,7 +165,7 @@ Should you spot bad channels (represented by horizontal lines which are darker t
    * Note: 	Only pre-processed files will be shown for rating.
    * Note: 	Manual rating can be interrupted anytime by closing the rating GUI. No data will be lost and you can resume rating later.
 
-#### 2.5.1 Keyboard Shortcuts (NEW!)
+#### 2.5.1 Keyboard Shortcuts
   Going through every file of a huge dataset and manually inspecting them can be a very cumbersum task. Keyboard shortcuts can be used to accelerate this inspection in rating window. Using keyboard shortcuts you can rate and/or select the next or previous file:
   * **Next** plot: **Rightwards arrow**
   * **Previous** plot: **Leftwards arrow**
