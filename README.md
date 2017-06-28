@@ -1,3 +1,6 @@
+# News!
+
+* **2017.06.07** - Now you can use keyboard shortcuts during the rating procedure. [Check it out](#251-keyboard-shortcuts) how it works! 
 # Automagic
 
 ![alt tag](https://github.com/amirrezaw/automagic/blob/master/automagic_resources/automagic.jpg)
@@ -162,7 +165,7 @@ Should you spot bad channels (represented by horizontal lines which are darker t
    * Note: 	Only pre-processed files will be shown for rating.
    * Note: 	Manual rating can be interrupted anytime by closing the rating GUI. No data will be lost and you can resume rating later.
 
-#### 2.5.1 Keyboard Shortcuts (NEW!)
+#### 2.5.1 Keyboard Shortcuts
   Going through every file of a huge dataset and manually inspecting them can be a very cumbersum task. Keyboard shortcuts can be used to accelerate this inspection in rating window. Using keyboard shortcuts you can rate and/or select the next or previous file:
   * **Next** plot: **Rightwards arrow**
   * **Previous** plot: **Leftwards arrow**
@@ -203,8 +206,8 @@ There are four main folders (in total 6 folders):
  This folder contains all relevant files of preprocessing step (with no GUIs). The folder is standalone and can be used independent from the entire application. The main function to be called is `preprocess.m` which needs two arguments. The first argument is the EEG data structure loaded by `pop_fileio.m` function (or a similar function) of **EEGLab** and the second argument is preprocessing parameters (see documations, ie. `preprocess.m` to learn about the second argument). The first ouput of `preprocess.m` is an EEG data structure similar to the input EEG structure, where the `EEG.data` field has the preprocessed results. This EEG data streucture has some new fields like the parameters used for preprocessing and channels that have been interpolated by automatic detection. The second output is a figure showing the effects of preprocessing. For more information on how to run the code without installer please see  [How to run the app from the code](#5-how-to-run-the-application-from-the-code).
 2. **`automagic/gui/`**
  This folder contains files created by *MATLAB GUIDE*. All callback operations related to the gui are implemented here.
-   1. `main\_gui.m` is the main function of the project which must be started to run the application.
-   2. `rating\_gui.m` is the gui that is accessed from within the `main\_gui.m` and is used to rate subjects and files. You don't need to use this function directly.
+   1. `main_gui.m` is the main function of the project which must be started to run the application.
+   2. `rating_gui.m` is the gui that is accessed from within the `main_gui.m` and is used to rate subjects and files. You don't need to use this function directly.
    3. `settings.m` is the gui corresponsing to configuration button on the main gui. It allows to customize the preprocessing steps. Again you don't need to run this file directly.
    4. `Automagic.mlappinstall` which is the app installer mentionned in [Installation](#2-1-2-Installation) section.
 3. **`automagic/src/`**
