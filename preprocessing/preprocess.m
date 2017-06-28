@@ -205,7 +205,7 @@ if (~isempty(eeg_system.name) && strcmp(eeg_system.name, DEFS.eeg_system.Others_
         data.nbchan = data.nbchan + 1; 
     end
     
-    if(isempty(data.chanlocs))
+    if(isempty([data.chanlocs.X]))
         if(~ eeg_system.sys10_20)
             [~, data] = evalc(['pop_chanedit(data,' ...
                 '''load'',{ eeg_system.loc_file , ''filetype'', eeg_system.file_loc_type})']);
@@ -250,7 +250,7 @@ elseif(~isempty(eeg_system.name) && strcmp(eeg_system.name, DEFS.eeg_system.EGI_
             data.data(end+1,:) = 0;
             data.nbchan = data.nbchan + 1;
             
-            if(isempty(data.chanlocs))
+            if(isempty([data.chanlocs.X]))
                 if(~ eeg_system.sys10_20)
                     [~, data] = evalc(['pop_chanedit(data,' ...
                         '''load'',{ ''GSN-HydroCel-129.sfp'' , ''filetype'', ''sfp''})']);
@@ -262,7 +262,7 @@ elseif(~isempty(eeg_system.name) && strcmp(eeg_system.name, DEFS.eeg_system.EGI_
         case (128 + 1)
             eog_channels = sort([1 32 8 14 17 21 25 125 126 127 128]);
             channels = setdiff(chan128, eog_channels);
-            if(isempty(data.chanlocs))
+            if(isempty([data.chanlocs.X]))
                 if(~ eeg_system.sys10_20)
                     [~, data] = evalc(['pop_chanedit(data,' ...
                         '''load'',{ ''GSN-HydroCel-129.sfp'' , ''filetype'', ''sfp''})']);
@@ -277,7 +277,7 @@ elseif(~isempty(eeg_system.name) && strcmp(eeg_system.name, DEFS.eeg_system.EGI_
             channels = setdiff(chan256, eog_channels);
             data.data(end+1,:) = 0;
             data.nbchan = data.nbchan + 1;
-            if(isempty(data.chanlocs))
+            if(isempty([data.chanlocs.X]))
                 if(~ eeg_system.sys10_20)
                     [~, data] = evalc(['pop_chanedit(data,' ...
                         '''load'',{ ''GSN-HydroCel-257_be.sfp'' , ''filetype'', ''sfp''})']);
@@ -290,7 +290,7 @@ elseif(~isempty(eeg_system.name) && strcmp(eeg_system.name, DEFS.eeg_system.EGI_
             eog_channels = sort([31 32 37 46 54 252 248 244 241 25 18 10 1 226 ...
                 230 234 238]);
             channels = setdiff(chan256, eog_channels);
-            if(isempty(data.chanlocs))
+            if(isempty([data.chanlocs.X]))
                 if(~ eeg_system.sys10_20)
                     [~, data] = evalc(['pop_chanedit(data,' ...
                         '''load'',{ ''GSN-HydroCel-257_be.sfp'' , ''filetype'', ''sfp''})']);
@@ -370,7 +370,7 @@ elseif(~isempty(eeg_system.name) && strcmp(eeg_system.name, DEFS.eeg_system.EGI_
             ica_params.chanloc_map = containers.Map(keySet,valueSet);
     end
 else
-   if(isempty(data.chanlocs))
+   if(isempty([data.chanlocs.X]))
        disp('data.chanlocs is necessary for interpolation.');
        return;
    end
