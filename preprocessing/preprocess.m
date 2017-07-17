@@ -414,8 +414,8 @@ else % If PCA is not checked either, the EEG_cleared will remain unchanged
 end
 
 % interpolate zero and artifact channels:
-display('Interpolating...');
 if ~isempty(rejected_chans)
+    display('Interpolating...');
     [~, interpolated] = evalc('eeg_interp(EEG_cleared ,rejected_chans , interpolation_params.method)');
 else
     interpolated = EEG_cleared;

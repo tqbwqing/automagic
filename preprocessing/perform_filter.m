@@ -59,8 +59,9 @@ high_order = p.Results.high_order;
 low_freq = p.Results.low_freq;
 low_order = p.Results.low_order;
 
-
-display(defaults.run_message);
+if( high_freq ~= -1 || low_freq ~= -1 || notch_freq ~= -1)
+    display(defaults.run_message);
+end
 
 if( high_freq ~= -1 )
     [~, data] = evalc('pop_eegfiltnew(data, high_freq, 0, high_order)');
