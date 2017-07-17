@@ -57,7 +57,34 @@ if( ~ isempty(chanloc_map))
     end
 end
 
+% Check if the channel system is according to what Mara is expecting.
+intersect_labels = intersect(cellstr(defaults.req_chan_labels), {data.chanlocs.labels});
+if(length(intersect_labels) < 3)
+    msg = ['The channel location system you are using is very probably ', ...
+    'wrong and ICA can not be used correctly.' sprintf('\n') 'ICA for this ', ... 
+    'subject will be skipped, and next steps of preprocessing will resume.'];
+    if(exist('warndlg2', 'file'))
+        warndlg2(msg);
+    else
+        warndlg(msg);
+    end
+    
+    % Change back the labels to the original one
+    if( ~ isempty(chanloc_map))
+        for i = idx
+           data.chanlocs(1,i).labels = inverse_chanloc_map(data.chanlocs(1,i).labels);
+        end
+    end
+    return;
+end
+
 display(defaults.run_message);
+if(~ isempty(intersect_labels))
+    display(['Following channels detected for Mara ICA: ' sprintf('%s ', intersect_labels{:})]);
+else
+    display('No channels for Mara ICA is detected');
+end
+
 options = [0 1 0 0 1];
 [~, ~, EEG_Mara, ~] = evalc('processMARA_with_no_popup(data, data, 1, options)');
     
