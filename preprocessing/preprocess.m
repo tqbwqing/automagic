@@ -76,7 +76,8 @@ addParameter(p,'eeg_system', struct('name', DEFS.eeg_system.name),@isstruct);
 addParameter(p,'filter_params', struct, @isstruct);
 addParameter(p,'channel_rejection_params', struct, @isstruct);
 addParameter(p,'pca_params', struct, @isstruct);
-addParameter(p,'ica_params', struct('bool', DEFS.ica_params.bool), @isstruct);
+addParameter(p,'ica_params', struct('bool', DEFS.ica_params.bool, ...
+    'chanloc_map', containers.Map), @isstruct);
 addParameter(p,'interpolation_params', ...
     struct('method', DEFS.interpolation_params.method), @isstruct);
 addParameter(p,'perform_eog_regression', ...
@@ -191,8 +192,6 @@ end
 % Case of others where the location file must have been provided
 if (~isempty(eeg_system.name) && strcmp(eeg_system.name, DEFS.eeg_system.Others_name))
     assert(~ perform_reduce_channels);
-    ica_params.chanloc_map = DEFS.ica_params.chanloc_map; % Map is empty. 
-    
     
     all_chans = 1:data.nbchan;
     tobe_excluded_chans = eeg_system.tobe_excluded_chans;
@@ -355,7 +354,7 @@ elseif(~isempty(eeg_system.name) && strcmp(eeg_system.name, DEFS.eeg_system.EGI_
             % Make the map for ICA
             keySet = {'E17', 'E22', 'E9', 'E11', 'E24', 'E124', 'E33', 'E122', ...
                 'E129', 'E36', 'E104', 'E45', 'E108', 'E52', 'E92', 'E57', 'E100', ...
-                'E58', 'EE96', 'E70', 'E75', 'E83', 'E62'};
+                'E58', 'E96', 'E70', 'E75', 'E83', 'E62'};
             valueSet =   {'NAS', 'Fp1', 'Fp2', 'Fz', 'F3', 'F4', 'F7', 'F8', 'Cz', ...
                 'C3', 'C4', 'T7', 'T8', 'P3', 'P4', 'LM', 'RM', 'P7', 'P8', 'O1', ...
                 'Oz', 'O2', 'Pz'};
