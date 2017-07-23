@@ -54,13 +54,29 @@ interpolation_params = p.Results.interpolation_params;
 
 display(defaults.run_message);
 
-chans = 1:data.nbchan;
-flatchans_idx = std(data.data, 0, 2) < 0.01;
-flatchans = chans(flatchans_idx);
+% Detect the reference channel to exclude it from interpolation
+refs = find(sum(data.data==0,2)==size(data.data, 2));
+if( length(refs) == 1 && refs == size(data.data, 1))
+    reference_idx = refs;
+elseif(length(refs) == 1)
+    reference_idx = refs;
+    warning(['Reference channel is not properly found. The only channel (='...
+        num2str(reference_idx) ') having all values equal to zero is chosen to'...
+        ' be the reference channel.']);
+else
+    error(['Reference channel is not found. Please put a reference channel'... 
+        ' in the last channel of your dataset.']);
+    return;
+end
 
+flatchans = find(std(data.data, 0, 2) < 0.01);
+flatchans = setdiff(flatchans, reference_idx);
 if ~isempty(flatchans)
     [~, data] = evalc('eeg_interp(data ,flatchans , interpolation_params.method)');
 end
+
+chans = 1:data.nbchan;
+chans = setdiff(chans, reference_idx);
 
 indelec_kurt = [];
 if( kurt_thresh ~= -1 )
