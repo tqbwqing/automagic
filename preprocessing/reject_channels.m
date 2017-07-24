@@ -44,6 +44,7 @@ addParameter(p,'kurt_thresh', defaults.kurt_thresh, @isnumeric);
 addParameter(p,'prob_thresh', defaults.prob_thresh, @isnumeric);
 addParameter(p,'spec_thresh', defaults.spec_thresh, @isnumeric);
 addParameter(p,'exclude_chans', defaults.exclude_chans, @isnumeric);
+addParameter(p,'run_message', defaults.run_message, @ischar);
 addParameter(p,'interpolation_params', ...
                     struct('method', ...
                     DefaultParameters.interpolation_params.method), ...
@@ -55,9 +56,10 @@ kurt_thresh = p.Results.kurt_thresh;
 prob_thresh = p.Results.prob_thresh;
 spec_thresh = p.Results.spec_thresh;
 exclude_chans = p.Results.exclude_chans;
+run_message = p.Results.run_message;
 interpolation_params = p.Results.interpolation_params;
 
-display(defaults.run_message);
+display(sprintf(run_message));
 
 flatchans = find(std(data.data, 0, 2) < 0.01);
 flatchans = setdiff(flatchans, exclude_chans);

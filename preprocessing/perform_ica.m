@@ -79,7 +79,6 @@ if(length(intersect_labels) < 3)
 end
 
 display(defaults.run_message);
-display(['Following channels detected for Mara ICA: ' sprintf('%s ', data.chanlocs.labels)]);
 
 
 options = [0 1 0 0 1];
