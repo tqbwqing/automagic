@@ -79,11 +79,8 @@ if(length(intersect_labels) < 3)
 end
 
 display(defaults.run_message);
-if(~ isempty(intersect_labels))
-    display(['Following channels detected for Mara ICA: ' sprintf('%s ', intersect_labels{:})]);
-else
-    display('No channels for Mara ICA is detected');
-end
+display(['Following channels detected for Mara ICA: ' sprintf('%s ', data.chanlocs.labels)]);
+
 
 options = [0 1 0 0 1];
 [~, ~, EEG_Mara, ~] = evalc('processMARA_with_no_popup(data, data, 1, options)');
