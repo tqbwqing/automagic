@@ -1,5 +1,5 @@
 <deployment-project plugin="plugin.apptool" plugin-version="1.0">
-  <configuration build-checksum="1010237358" file="/Users/amirreza/workspace/ppp/pipline/gui/Automagic.prj" location="/Users/amirreza/workspace/ppp/pipline/gui" name="Automagic" target="target.mlapps" target-name="Package App">
+  <configuration build-checksum="2711648565" file="/Users/amirreza/workspace/ppp/pipline/gui/Automagic.prj" location="/Users/amirreza/workspace/ppp/pipline/gui" name="Automagic" target="target.mlapps" target-name="Package App">
     <param.appname>Automagic</param.appname>
     <param.authnamewatermark>amirreza</param.authnamewatermark>
     <param.email>amirreza.bahreini@uzh.ch</param.email>
@@ -13,7 +13,7 @@
     <param.summary>Automatic artifact removal of EEG data</param.summary>
     <param.description>Automagic is a MATLAB based toolbox for preprocessing of EEG-datasets. First, the toolbox automagically removes artefacts (e.g. eye movements, noisy electrodes, etc.) from your raw EEG-data. In a second step, Automagic lets you check visually the entire dataset for remaining artefacts. You will be able to select and remove these manually in an efficient way. Furthermore, you can rate the quality of individual EEG-files.</param.description>
     <param.screenshot>${PROJECT_ROOT}/Automagic_resources/icon_48.png</param.screenshot>
-    <param.version>1.4.2</param.version>
+    <param.version>1.4.3</param.version>
     <param.products.name />
     <param.products.id />
     <param.products.version />

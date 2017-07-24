@@ -14,6 +14,8 @@ function [result, fig] = preprocess(data, varargin)
 %   To learn more about 'filter_params', 'channel_rejection_params', 
 %   ica_params and 'pca_params' please see their corresponding functions 
 %   perform_filter.m, reject_channels.m, perform_ica.m and perform_pca.m.
+%   Please note that channel_rejection_params.exclude_chans is determined 
+%   in this file based on 'eeg_system'.
 %   
 %   'interpolation_params' is an optional structure with an optional field
 %   'method' which can be on of the following chars: 'spherical',
@@ -34,19 +36,26 @@ function [result, fig] = preprocess(data, varargin)
 %   from.
 %   
 %   eeg_system must be a structure with fields name, sys10_20, eog_chan, 
-%   tobe_excluded_chans, loc_file and file_loc_type. eeg_system.name can 
-%   be either 'EGI' or 'Others'. eeg_system.sys10_20 is a boolean indicating 
-%   whether to use 10-20 system to find channel locations or not. All other 
-%   following fields are optional if eeg_system.name='EGI' and can be left 
-%   empty. But in the case of eeg_system.name='Others':
+%   tobe_excluded_chans, ref_chan, loc_file and file_loc_type. 
+%   eeg_system.name can be either 'EGI' or 'Others'. eeg_system.sys10_20 
+%   is a boolean indicating whether to use 10-20 system to find channel 
+%   locations or not. All other following fields are optional if 
+%   eeg_system.name='EGI' and can be left empty. But in the case of 
+%   eeg_system.name='Others':
 %   eeg_system.eog_chans must be an array of numbers indicating indices of 
 %   the EOG channels in the data, eeg_system.tobe_excluded_chans must be an
 %   array of numbers indicating indices of the channels to be excluded from 
-%   the analysis, eeg_system.loc_file must be the name of the file located 
-%   in 'matlab_scripts' folder that can be used by pop_chanedit to find 
-%   channel locations and finally eeg_system.file_loc_type must be the type 
-%   of that file. Please see pop_chanedit for more information. Obviously 
-%   only types supported by pop_chanedit are supported.
+%   the analysis, eeg_system.ref_chan is the index of the reference channel
+%   in dataset. If it's left empty, a new reference channel will be added 
+%   as the last channel of the dataset where all values are zeros and this 
+%   new channel will be considered as the reference channel. If 
+%   eeg_system.ref_chan == -1 no reference channel is added and no channel 
+%   is considered as reference channel at all. eeg_system.loc_file must be 
+%   the name of the file located in 'matlab_scripts' folder that can be 
+%   used by pop_chanedit to find channel locations and finally 
+%   eeg_system.file_loc_type must be the type of that file. Please see 
+%   pop_chanedit for more information. Obviously only types supported by 
+%   pop_chanedit are supported.
 %   
 %   If varargin is ommited, default values are used. If any of the fields
 %   of varargin are ommited, corresponsing default values are used. Please
@@ -74,7 +83,7 @@ DEFS = DefaultParameters;
 p = inputParser;
 addParameter(p,'eeg_system', struct('name', DEFS.eeg_system.name),@isstruct);
 addParameter(p,'filter_params', struct, @isstruct);
-addParameter(p,'channel_rejection_params', struct, @isstruct);
+addParameter(p,'channel_rejection_params', DEFS.channel_rejection_params, @isstruct);
 addParameter(p,'pca_params', struct, @isstruct);
 addParameter(p,'ica_params', struct('bool', DEFS.ica_params.bool, ...
     'chanloc_map', containers.Map), @isstruct);
@@ -191,20 +200,20 @@ end
 %% Determine the eeg system
 % Case of others where the location file must have been provided
 if (~isempty(eeg_system.name) && strcmp(eeg_system.name, DEFS.eeg_system.Others_name))
-    assert(~ perform_reduce_channels);
     
     all_chans = 1:data.nbchan;
     tobe_excluded_chans = eeg_system.tobe_excluded_chans;
     eog_channels = eeg_system.eog_chans;
     channels = setdiff(all_chans, union(eog_channels, tobe_excluded_chans));
     
-    % Dangesrous assumption
-    if( mod(data.nbchan, 2) == 0)
+    if(isempty(eeg_system.ref_chan))
         data.data(end+1,:) = 0;
-        data.nbchan = data.nbchan + 1; 
+        data.nbchan = data.nbchan + 1;
+        eeg_system.ref_chan = data.nbchan;
     end
     
-    if(isempty(data.chanlocs) || isempty([data.chanlocs.X]))
+    if(isempty(data.chanlocs) || isempty([data.chanlocs.X]) || ...
+        length(data.chanlocs) ~= data.nbchan)
         if(~ eeg_system.sys10_20)
             [~, data] = evalc(['pop_chanedit(data,' ...
                 '''load'',{ eeg_system.loc_file , ''filetype'', eeg_system.file_loc_type})']);
@@ -248,8 +257,10 @@ elseif(~isempty(eeg_system.name) && strcmp(eeg_system.name, DEFS.eeg_system.EGI_
             channels = setdiff(chan128, eog_channels);
             data.data(end+1,:) = 0;
             data.nbchan = data.nbchan + 1;
+            eeg_system.ref_chan = data.nbchan;
             
-            if(isempty(data.chanlocs) || isempty([data.chanlocs.X]))
+            if(isempty(data.chanlocs) || isempty([data.chanlocs.X]) || ...
+                    length(data.chanlocs) ~= data.nbchan)
                 if(~ eeg_system.sys10_20)
                     [~, data] = evalc(['pop_chanedit(data,' ...
                         '''load'',{ ''GSN-HydroCel-129.sfp'' , ''filetype'', ''sfp''})']);
@@ -261,7 +272,9 @@ elseif(~isempty(eeg_system.name) && strcmp(eeg_system.name, DEFS.eeg_system.EGI_
         case (128 + 1)
             eog_channels = sort([1 32 8 14 17 21 25 125 126 127 128]);
             channels = setdiff(chan128, eog_channels);
-            if(isempty(data.chanlocs) || isempty([data.chanlocs.X]))
+            eeg_system.ref_chan = data.nbchan;
+            if(isempty(data.chanlocs) || isempty([data.chanlocs.X]) || ...
+                    length(data.chanlocs) ~= data.nbchan)
                 if(~ eeg_system.sys10_20)
                     [~, data] = evalc(['pop_chanedit(data,' ...
                         '''load'',{ ''GSN-HydroCel-129.sfp'' , ''filetype'', ''sfp''})']);
@@ -276,7 +289,9 @@ elseif(~isempty(eeg_system.name) && strcmp(eeg_system.name, DEFS.eeg_system.EGI_
             channels = setdiff(chan256, eog_channels);
             data.data(end+1,:) = 0;
             data.nbchan = data.nbchan + 1;
-            if(isempty(data.chanlocs) || isempty([data.chanlocs.X]))
+            eeg_system.ref_chan = data.nbchan;
+            if(isempty(data.chanlocs) || isempty([data.chanlocs.X]) || ...
+                    length(data.chanlocs) ~= data.nbchan)
                 if(~ eeg_system.sys10_20)
                     [~, data] = evalc(['pop_chanedit(data,' ...
                         '''load'',{ ''GSN-HydroCel-257_be.sfp'' , ''filetype'', ''sfp''})']);
@@ -289,7 +304,9 @@ elseif(~isempty(eeg_system.name) && strcmp(eeg_system.name, DEFS.eeg_system.EGI_
             eog_channels = sort([31 32 37 46 54 252 248 244 241 25 18 10 1 226 ...
                 230 234 238]);
             channels = setdiff(chan256, eog_channels);
-            if(isempty(data.chanlocs) || isempty([data.chanlocs.X]))
+            eeg_system.ref_chan = data.nbchan;
+            if(isempty(data.chanlocs) || isempty([data.chanlocs.X]) || ...
+                    length(data.chanlocs) ~= data.nbchan)
                 if(~ eeg_system.sys10_20)
                     [~, data] = evalc(['pop_chanedit(data,' ...
                         '''load'',{ ''GSN-HydroCel-257_be.sfp'' , ''filetype'', ''sfp''})']);
@@ -343,6 +360,7 @@ elseif(~isempty(eeg_system.name) && strcmp(eeg_system.name, DEFS.eeg_system.EGI_
             channel2 = find((cellfun(@(x) x == 1, eog2)));
             eog_channels = [channel1 channel2];
             channels = setdiff(channels, eog_channels); 
+            eeg_system.ref_chan = data.nbchan;
         otherwise
             error('This number of channel is not supported.')
 
@@ -369,7 +387,8 @@ elseif(~isempty(eeg_system.name) && strcmp(eeg_system.name, DEFS.eeg_system.EGI_
             ica_params.chanloc_map = containers.Map(keySet,valueSet);
     end
 else
-   if(isempty(data.chanlocs) || isempty([data.chanlocs.X]))
+   if(isempty(data.chanlocs) || isempty([data.chanlocs.X]) || ...
+                    length(data.chanlocs) ~= data.nbchan)
        disp('data.chanlocs is necessary for interpolation.');
        return;
    end
@@ -390,6 +409,10 @@ filtered_data = perform_filter(data, filter_params);
 [~, EEG] = evalc('pop_select( filtered_data , ''channel'', channels)');
 
 % Detect artifact channels
+if(eeg_system.ref_chan ~= -1)
+    channel_rejection_params.exclude_chans = ...
+        unique([channel_rejection_params.exclude_chans, eeg_system.ref_chan]); 
+end
 rejected_chans = reject_channels(EEG, channel_rejection_params);
 eeg_size = size(EEG.data);
 if( length(rejected_chans) > eeg_size(1) / 2)

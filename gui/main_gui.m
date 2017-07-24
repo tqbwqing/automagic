@@ -41,7 +41,7 @@ function varargout = main_gui(varargin)
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-% Last Modified by GUIDE v2.5 15-May-2017 11:09:17
+% Last Modified by GUIDE v2.5 24-Jul-2017 11:07:09
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -263,7 +263,7 @@ if(strcmp(name, handles.CGV.new_project.LIST_NAME))
     set(handles.extedit, 'String', '')
     set(handles.srateedit, 'String', '')
     set(handles.checkbox1020, 'Value', 0)
-    handles = setEEGSystem(handles.CGV.default_params.eeg_system.EGI_name, handles);
+    handles = setEEGSystem(handles.CGV.default_params.eeg_system, handles);
     
     handles = setNotchFilter(handles.CGV.default_params.filter_params.notch_eu, handles);
     
@@ -408,7 +408,7 @@ set(handles.extedit, 'String', project.file_extension);
 set(handles.srateedit, 'String', num2str(project.srate))
 
 % Set EEG system
-handles = setEEGSystem(project.params.eeg_system.name , handles);
+handles = setEEGSystem(project.params.eeg_system , handles);
 
 % Set 10-20 checkbox
 set(handles.checkbox1020, 'Value', project.params.eeg_system.sys10_20);
@@ -489,6 +489,9 @@ if( strcmp(mode, 'off'))
     set(handles.excludeedit, 'enable', mode);
     set(handles.loctypeedit, 'enable', mode);
     set(handles.choosechannelloc, 'enable', mode);
+    set(handles.newreferenceradio, 'enable', mode)
+    set(handles.hasreferenceradio, 'enable', mode)
+    set(handles.hasreferenceedit, 'enable', mode)
 elseif(strcmp(mode, 'on'))
     if( ~ get(handles.egiradio, 'Value'))
         set(handles.chanlocedit, 'enable', mode);
@@ -496,6 +499,9 @@ elseif(strcmp(mode, 'on'))
         set(handles.excludeedit, 'enable', mode);
         set(handles.loctypeedit, 'enable', mode);
         set(handles.choosechannelloc, 'enable', mode);
+        set(handles.newreferenceradio, 'enable', mode)
+        set(handles.hasreferenceradio, 'enable', mode)
+        set(handles.hasreferenceedit, 'enable', mode)
     end
 end
 
@@ -730,7 +736,8 @@ if ~ get(handles.egiradio, 'Value')
    eeg_system.eog_chans = str2num(get(handles.eogchansedit, 'String'));
    eeg_system.tobe_excluded_chans = str2num(get(handles.excludeedit, 'String'));
    eeg_system.file_loc_type = get(handles.loctypeedit, 'String');
-   
+   eeg_system.ref_chan = str2num(get(handles.hasreferenceedit, 'String'));
+            
    if( get(handles.eogregressioncheckbox, 'Value') && isempty(eeg_system.eog_chans))
         waitfor(msgbox(['A list of channel indices seperated by space or',...
             ' comma must be given to determine EOG channels'],...
@@ -741,6 +748,12 @@ if ~ get(handles.egiradio, 'Value')
     if( get(handles.excludecheckbox, 'Value') && isempty(eeg_system.tobe_excluded_chans))
         waitfor(msgbox(['A list of channel indices seperated by space or',...
             ' comma must be given to determine channels to be excluded'],...
+            'Error','error'));
+        return;
+    end
+    
+    if( get(handles.hasreferenceradio, 'Value') && isempty(eeg_system.ref_chan))
+        waitfor(msgbox(['Please choose the index of the reference channel'],...
             'Error','error'));
         return;
     end
@@ -1130,11 +1143,11 @@ end
 % the case of EGI the edit boxes for location file, file type and EOG
 % channels must be deactivated whereas for the case of 'Others' they must be
 % activated so that the user gives them as input.
-function handles = setEEGSystem(system, handles)
+function handles = setEEGSystem(eeg_system, handles)
 % system    char that can be either 'EGI' or 'Others'
 % handles   main handles of the gui
 
-switch system
+switch eeg_system.name
     case 'EGI'
         set(handles.egiradio, 'Value', 1);
         set(handles.othersysradio, 'Value', 0);
@@ -1146,19 +1159,49 @@ switch system
         set(handles.loctypeedit, 'enable', 'off');
         set(handles.choosechannelloc, 'enable', 'off');
         set(handles.excludeedit, 'enable', 'off');
+        set(handles.excludeedit, 'String', '');
+        set(handles.newreferenceradio, 'Value', 1)
+        set(handles.hasreferenceradio, 'value', 0)
+        set(handles.hasreferenceedit, 'String', ...
+            num2str(handles.CGV.default_params.eeg_system.ref_chan))
+        set(handles.newreferenceradio, 'enable', 'off')
+        set(handles.hasreferenceradio, 'enable', 'off')
+        set(handles.hasreferenceedit, 'enable', 'off')
         handles.params.perform_reduce_channels = 1;
     case 'Others'
         set(handles.othersysradio, 'Value', 1);
         set(handles.egiradio, 'Value', 0);
         set(handles.chanlocedit, 'enable', 'on');
+        set(handles.chanlocedit, 'String', eeg_system.loc_file);
         if(get(handles.eogregressioncheckbox, 'Value'))
             set(handles.eogchansedit, 'enable', 'on');
+            set(handles.eogchansedit, 'String', num2str(eeg_system.eog_chans));
         end
         if(get(handles.excludecheckbox, 'Value'))
            set(handles.excludeedit, 'enable', 'on'); 
+           set(handles.excludeedit, 'String', num2str(eeg_system.tobe_excluded_chans));
         end
         set(handles.loctypeedit, 'enable', 'on');
+        set(handles.loctypeedit, 'String', eeg_system.file_loc_type);
+        set(handles.excludeedit, 'String', num2str(eeg_system.tobe_excluded_chans));
+        set(handles.eogchansedit, 'String', num2str(eeg_system.eog_chans));
         set(handles.choosechannelloc, 'enable', 'on');
+        
+        if(isempty(eeg_system.ref_chan))
+            set(handles.newreferenceradio, 'Value', 1)
+            set(handles.hasreferenceradio, 'value', 0)
+        else
+            set(handles.newreferenceradio, 'Value', 0)
+            set(handles.hasreferenceradio, 'value', 1)
+        end
+        set(handles.hasreferenceedit, 'String', ...
+            num2str(eeg_system.ref_chan))
+        
+        set(handles.newreferenceradio, 'enable', 'on')
+        set(handles.hasreferenceradio, 'enable', 'on')
+        if(get(handles.hasreferenceradio, 'Value'))
+            set(handles.hasreferenceedit, 'enable', 'on')
+        end
         handles.params.perform_reduce_channels = 0;
 end
 
@@ -1178,8 +1221,7 @@ function egiradio_Callback(hObject, eventdata, handles)
 % hObject    handle to egiradio (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
-handles = setEEGSystem('EGI', handles);
+handles = setEEGSystem(handles.CGV.default_params.eeg_system, handles);
 % Update handles structure
 guidata(hObject, handles);
 % Hint: get(hObject,'Value') returns toggle state of egiradio
@@ -1190,8 +1232,11 @@ function othersysradio_Callback(hObject, eventdata, handles)
 % hObject    handle to othersysradio (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
-handles = setEEGSystem('Others', handles);
+new_pars = handles.CGV.default_params.eeg_system;
+new_pars.name = 'Others';
+new_pars.eog_chans = [];
+new_pars.tobe_excluded_chans = [];
+handles = setEEGSystem(new_pars, handles);
 % Update handles structure
 guidata(hObject, handles);
 % Hint: get(hObject,'Value') returns toggle state of othersysradio
@@ -1386,6 +1431,7 @@ params.perform_reduce_channels = default_params.channel_reduction_params.perform
 params.channel_rejection_params.kurt_thresh = default_params.channel_rejection_params.kurt_thresh;
 params.channel_rejection_params.prob_thresh = default_params.channel_rejection_params.prob_thresh;
 params.channel_rejection_params.spec_thresh = default_params.channel_rejection_params.spec_thresh;
+params.channel_rejection_params.exclude_chans = default_params.channel_rejection_params.exclude_chans;
 params.perform_eog_regression = default_params.eog_regression_params.perform_eog_regression;
 params.pca_params.lambda = default_params.pca_params.lambda;
 params.pca_params.tol = default_params.pca_params.tol;
@@ -1398,6 +1444,7 @@ params.eeg_system.file_loc_type = default_params.eeg_system.file_loc_type;
 params.eeg_system.loc_file = default_params.eeg_system.loc_file;
 params.eeg_system.eog_chans = default_params.eog_regression_params.eog_chans;
 params.eeg_system.tobe_excluded_chans = default_params.channel_reduction_params.tobe_excluded_chans;
+params.eeg_system.ref_chan = default_params.eeg_system.ref_chan;
 
 
 % --- Executes during object creation, after setting all properties.
@@ -1443,3 +1490,45 @@ function checkbox1020_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of checkbox1020
+
+
+
+function hasreferenceedit_Callback(hObject, eventdata, handles)
+% hObject    handle to hasreferenceedit (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of hasreferenceedit as text
+%        str2double(get(hObject,'String')) returns contents of hasreferenceedit as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function hasreferenceedit_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to hasreferenceedit (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in newreferenceradio.
+function newreferenceradio_Callback(hObject, eventdata, handles)
+% hObject    handle to newreferenceradio (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of newreferenceradio
+set(handles.hasreferenceedit, 'enable', 'off')
+
+% --- Executes on button press in hasreferenceradio.
+function hasreferenceradio_Callback(hObject, eventdata, handles)
+% hObject    handle to hasreferenceradio (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of hasreferenceradio
+set(handles.hasreferenceedit, 'enable', 'on')
