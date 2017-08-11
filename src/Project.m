@@ -260,7 +260,7 @@ classdef Project < handle
                     continue;
                 else
                     % Load and preprocess
-                    if( any(strcmp(block.file_extension, {self.CGV.extensions.mat})))
+                    if( any(strcmp(block.file_extension(end-3:end), {self.CGV.extensions.mat})))
                         data = load(block.source_address);
                         data = data.EEG;
                     elseif(any(strcmp(block.file_extension, {self.CGV.extensions.text})))
