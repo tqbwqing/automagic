@@ -408,6 +408,12 @@ filtered_data = perform_filter(data, filter_params);
 [~, EOG] = evalc('pop_select( filtered_data , ''channel'', eog_channels)');
 [~, EEG] = evalc('pop_select( filtered_data , ''channel'', channels)');
 
+% Map original channel lists to new ones
+[~, idx] = ismember(channel_rejection_params.exclude_chans,channels);
+channel_rejection_params.exclude_chans = idx(idx ~= 0);
+[~, idx] = ismember(eeg_system.ref_chan,channels);
+eeg_system.ref_chan = idx(idx ~= 0);
+
 % Detect artifact channels
 if(eeg_system.ref_chan ~= -1)
     channel_rejection_params.exclude_chans = ...
