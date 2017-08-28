@@ -7,12 +7,13 @@ function rejected = reject_channels(data, varargin)
 %   'interpolation_params'. First three are to specify thresholds for three
 %   different measures to compute probability, kurtosis and spectrum for 
 %   each channel. 'exclude_chans' is the list of channels to be excluded 
-%   from analysis. This usually contain the reference channel which is zeros
-%   everywhere. 'interpolation_params' is the parameter to determine the 
+%   from analysis. 'ref_chan' is the index of reference channel with zeros
+%   everywhere. This channel is excluded from being a flatchannel.
+%   'interpolation_params' is the parameter to determine the 
 %   mode of the interpolation for flatchannels. Note that an interpolation
 %   of the flatchannels is already performed here so that next steps of 
 %   pop_rejchans perform with no error, but the interpolated result is not 
-%   returned. These flaatchannels are returned alongside other bad channels 
+%   returned. These flatchannels are returned alongside other bad channels 
 %   to be interpolated at the end of the preprocessing all together. 
 %   When params is ommited default values are used. When a field of params 
 %   is ommited, default value for that field is used. If any of the fields 
@@ -21,6 +22,7 @@ function rejected = reject_channels(data, varargin)
 %                   params.prob_thresh = 4
 %                   params.spec_thresh = 4
 %                   params.exclude_chans = []
+%                   params.ref_chan = []
 %                   params.interpolation_params.method = 'spherical'
 %
 % Copyright (C) 2017  Amirreza Bahreini, amirreza.bahreini@uzh.ch
@@ -44,6 +46,7 @@ addParameter(p,'kurt_thresh', defaults.kurt_thresh, @isnumeric);
 addParameter(p,'prob_thresh', defaults.prob_thresh, @isnumeric);
 addParameter(p,'spec_thresh', defaults.spec_thresh, @isnumeric);
 addParameter(p,'exclude_chans', defaults.exclude_chans, @isnumeric);
+addParameter(p,'ref_chan', DefaultParameters.eeg_system.ref_chan, @isnumeric);
 addParameter(p,'run_message', defaults.run_message, @ischar);
 addParameter(p,'interpolation_params', ...
                     struct('method', ...
@@ -56,17 +59,23 @@ kurt_thresh = p.Results.kurt_thresh;
 prob_thresh = p.Results.prob_thresh;
 spec_thresh = p.Results.spec_thresh;
 exclude_chans = p.Results.exclude_chans;
+ref_chan = p.Results.ref_chan;
 run_message = p.Results.run_message;
 interpolation_params = p.Results.interpolation_params;
 
 display(sprintf(run_message));
 
 flatchans = find(std(data.data, 0, 2) < 0.01);
-flatchans = setdiff(flatchans, exclude_chans);
+flatchans = setdiff(flatchans, ref_chan);
 if ~isempty(flatchans)
     [~, data] = evalc('eeg_interp(data ,flatchans , interpolation_params.method)');
 end
 
+% Average refrence data
+data_size = size(data.data);
+data.data = data.data - repmat(mean(data.data, 1), data_size(1), 1);
+
+% Don't reject channels mentionned in exclude_chans
 chans = 1:data.nbchan;
 chans = setdiff(chans, exclude_chans);
 

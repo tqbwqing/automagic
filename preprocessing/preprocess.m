@@ -409,16 +409,16 @@ filtered_data = perform_filter(data, filter_params);
 [~, EEG] = evalc('pop_select( filtered_data , ''channel'', channels)');
 
 % Map original channel lists to new ones
-[~, idx] = ismember(channel_rejection_params.exclude_chans,channels);
+[~, idx] = ismember(channel_rejection_params.exclude_chans, channels);
 channel_rejection_params.exclude_chans = idx(idx ~= 0);
-[~, idx] = ismember(eeg_system.ref_chan,channels);
+[~, idx] = ismember(eeg_system.ref_chan, channels);
 eeg_system.ref_chan = idx(idx ~= 0);
 
-% Detect artifact channels
+% Reference channel for channel rejection
 if(eeg_system.ref_chan ~= -1)
-    channel_rejection_params.exclude_chans = ...
-        unique([channel_rejection_params.exclude_chans, eeg_system.ref_chan]); 
+    channel_rejection_params.ref_chan = eeg_system.ref_chan; 
 end
+
 rejected_chans = reject_channels(EEG, channel_rejection_params);
 eeg_size = size(EEG.data);
 if( length(rejected_chans) > eeg_size(1) / 2)
@@ -444,7 +444,7 @@ end
 % interpolate zero and artifact channels:
 if ~isempty(rejected_chans)
     display('Interpolating...');
-    [~, interpolated] = evalc('eeg_interp(EEG_cleared ,rejected_chans , interpolation_params.method)');
+    [~, interpolated] = evalc('eeg_interp(EEG_cleared , setdiff(rejected_chans, eeg_system.ref_chan) , interpolation_params.method)');
 else
     interpolated = EEG_cleared;
 end

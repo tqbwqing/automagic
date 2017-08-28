@@ -208,6 +208,10 @@ end
 axe = handles.axes;
 cla(axe);
 
+% Averange reference data before plotting
+data_size = size(data);
+data = data - repmat(mean(data, 1), data_size(1), 1);
+
 im = imagesc(data, 'tag', 'im');
 set(im, 'ButtonDownFcn', {@on_selection,handles})
 set(gcf, 'Color', [1,1,1])
