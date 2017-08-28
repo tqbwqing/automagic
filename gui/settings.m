@@ -35,7 +35,7 @@ function varargout = settings(varargin)
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-% Last Modified by GUIDE v2.5 27-Jan-2017 17:11:15
+% Last Modified by GUIDE v2.5 28-Aug-2017 12:08:07
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -87,6 +87,7 @@ assert(isa(params, 'struct'));
 assert(isa(CGV, 'ConstantGlobalValues'));
 handles.params = params;
 handles.CGV = CGV;
+
 % Either pca or ica, not both together.
 assert( ( ~ isempty(handles.params.pca_params.lambda) && ...
     handles.params.pca_params.lambda == -1) || handles.params.ica_params.bool == 0);
@@ -126,6 +127,12 @@ if( params.channel_rejection_params.prob_thresh ~= -1)
 else
     set(handles.probcheckbox, 'Value', 0);
     set(handles.probthreshedit, 'String', CGV.default_params.channel_rejection_params.prob_thresh);
+end
+
+if( params.channel_rejection_params.rar)
+    set(handles.rarcheckbox, 'Value', 1);
+else
+    set(handles.rarcheckbox, 'Value', 0);
 end
 
 if( isempty(params.pca_params.lambda) || params.pca_params.lambda ~= -1)
@@ -289,6 +296,7 @@ if( isempty(prob_val) || isnan(prob_val))
    prob_val = CGV.default_params.channel_rejection_params.prob_thresh; 
 end
 
+rar_check = get(handles.rarcheckbox, 'Value');
 
 if( get(handles.pcacheckbox, 'Value') )
     lambda = str2double(get(handles.lambdaedit, 'String'));
@@ -321,6 +329,7 @@ handles.params.filter_params.low_order = low_order;
 handles.params.channel_rejection_params.kurt_thresh = kurt_val;
 handles.params.channel_rejection_params.spec_thresh = spec_val;
 handles.params.channel_rejection_params.prob_thresh = prob_val;
+handles.params.channel_rejection_params.rar = rar_check;
 handles.params.pca_params.lambda = lambda;
 handles.params.pca_params.tol = tol;
 handles.params.pca_params.maxIter = maxIter;
@@ -367,6 +376,8 @@ else
     set(handles.probcheckbox, 'Value', 0);
     set(handles.probthreshedit, 'String', '');
 end
+
+set(handles.rarcheckbox, 'Value',CGV.default_params.channel_rejection_params.rar);
 
 if( isempty(CGV.default_params.pca_params.lambda) || CGV.default_params.pca_params.lambda ~= -1)
     set(handles.pcacheckbox, 'Value', 1);
@@ -742,3 +753,12 @@ function specthreshedit_CreateFcn(hObject, eventdata, handles)
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
+
+
+% --- Executes on button press in rarcheckbox.
+function rarcheckbox_Callback(hObject, eventdata, handles)
+% hObject    handle to rarcheckbox (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of rarcheckbox

@@ -9,6 +9,8 @@ function rejected = reject_channels(data, varargin)
 %   each channel. 'exclude_chans' is the list of channels to be excluded 
 %   from analysis. 'ref_chan' is the index of reference channel with zeros
 %   everywhere. This channel is excluded from being a flatchannel.
+%   rar is a boolean indicating whether to use Robust Average Referencing
+%   of the package PrepPipeline or not.
 %   'interpolation_params' is the parameter to determine the 
 %   mode of the interpolation for flatchannels. Note that an interpolation
 %   of the flatchannels is already performed here so that next steps of 
@@ -23,6 +25,7 @@ function rejected = reject_channels(data, varargin)
 %                   params.spec_thresh = 4
 %                   params.exclude_chans = []
 %                   params.ref_chan = []
+%                   params.rar = 0
 %                   params.interpolation_params.method = 'spherical'
 %
 % Copyright (C) 2017  Amirreza Bahreini, amirreza.bahreini@uzh.ch
@@ -47,6 +50,7 @@ addParameter(p,'prob_thresh', defaults.prob_thresh, @isnumeric);
 addParameter(p,'spec_thresh', defaults.spec_thresh, @isnumeric);
 addParameter(p,'exclude_chans', defaults.exclude_chans, @isnumeric);
 addParameter(p,'ref_chan', DefaultParameters.eeg_system.ref_chan, @isnumeric);
+addParameter(p,'rar', defaults.rar, @isnumeric);
 addParameter(p,'run_message', defaults.run_message, @ischar);
 addParameter(p,'interpolation_params', ...
                     struct('method', ...
@@ -60,24 +64,40 @@ prob_thresh = p.Results.prob_thresh;
 spec_thresh = p.Results.spec_thresh;
 exclude_chans = p.Results.exclude_chans;
 ref_chan = p.Results.ref_chan;
+rar = p.Results.rar;
 run_message = p.Results.run_message;
 interpolation_params = p.Results.interpolation_params;
 
-display(sprintf(run_message));
+% Don't reject channels mentionned in exclude_chans
+chans = 1:data.nbchan;
+chans = setdiff(chans, exclude_chans);
 
+% Robust Average Referecing
+rar_bads = [];
+if ( rar )
+    display(sprintf('Running Robust Average Referencing...'));
+    rar_chans = setdiff(chans, ref_chan);
+    referenceIN.referenceChannels =  rar_chans;
+    referenceIN.evaluationChannels =  rar_chans;
+    referenceIN.rereference =  rar_chans;
+    referenceIN.referenceType =  'robust';
+    [~, data, referenceOut] = evalc('performReference(data, referenceIN)');
+
+    rar_bads = referenceOut.badChannels;
+end
+
+display(sprintf(run_message));
 flatchans = find(std(data.data, 0, 2) < 0.01);
 flatchans = setdiff(flatchans, ref_chan);
 if ~isempty(flatchans)
     [~, data] = evalc('eeg_interp(data ,flatchans , interpolation_params.method)');
 end
 
-% Average refrence data
-data_size = size(data.data);
-data.data = data.data - repmat(mean(data.data, 1), data_size(1), 1);
-
-% Don't reject channels mentionned in exclude_chans
-chans = 1:data.nbchan;
-chans = setdiff(chans, exclude_chans);
+% Average refrence data if rar is not used
+if( ~ rar)
+    data_size = size(data.data);
+    data.data = data.data - repmat(mean(data.data, 1), data_size(1), 1);
+end
 
 indelec_kurt = [];
 if( kurt_thresh ~= -1 )
@@ -97,5 +117,5 @@ if( spec_thresh ~= -1 )
         evalc('pop_rejchan(data, ''elec'', chans, ''threshold'', spec_thresh, ''measure'' , ''spec'', ''norm'' , ''on'')');
 end
 
-rejected = unique([indelec_kurt indelec_prob indelec_spec flatchans']); 
+rejected = unique([indelec_kurt indelec_prob indelec_spec flatchans' rar_bads]); 
 end

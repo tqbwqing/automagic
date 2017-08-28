@@ -1432,6 +1432,7 @@ params.channel_rejection_params.kurt_thresh = default_params.channel_rejection_p
 params.channel_rejection_params.prob_thresh = default_params.channel_rejection_params.prob_thresh;
 params.channel_rejection_params.spec_thresh = default_params.channel_rejection_params.spec_thresh;
 params.channel_rejection_params.exclude_chans = default_params.channel_rejection_params.exclude_chans;
+params.channel_rejection_params.rar = default_params.channel_rejection_params.rar;
 params.perform_eog_regression = default_params.eog_regression_params.perform_eog_regression;
 params.pca_params.lambda = default_params.pca_params.lambda;
 params.pca_params.tol = default_params.pca_params.tol;

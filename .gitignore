@@ -1,6 +1,7 @@
 ./~/
 matlab_scripts/eeglab*
 matlab_scripts/inexact*
+matlab_scripts/VisLab-EEG-Clean-Tools*
 state.mat
 *_state.mat
 *.m~
