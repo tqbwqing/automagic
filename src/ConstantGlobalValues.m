@@ -17,7 +17,8 @@ classdef ConstantGlobalValues
     % You should have received a copy of the GNU General Public License
     % along with this program.  If not, see <http://www.gnu.org/licenses/>.
     properties(Constant)
-        version = '1.4.3';
+
+        version = '1.4.4';
             
         DEFAULT_keyword = 'Default';
                 
@@ -27,11 +28,6 @@ classdef ConstantGlobalValues
             'NAME', 'Type the name of your new project...', ...
             'DATA_FOLDER', 'Choose where your raw data is...', ...
             'FOLDER', 'Choose where you want the results to be saved...');
-        
-        state_file = struct('NAME', 'state.mat', ...
-            'PROJECT_NAME', 'project_state.mat', ...
-            'FOLDER', '~/methlab_pipeline/', ...
-            'ADDRESS', '~/methlab_pipeline/state.mat');
         
         load_selected_project = struct('LIST_NAME', 'Load an existing project...');
         
@@ -64,6 +60,23 @@ classdef ConstantGlobalValues
             if( ~ exist('DefaultParameters.m', 'file')) 
                 addpath('../preprocessing/');
             end
+        end
+    end
+    
+    methods(Static)
+        function state_file = state_file()
+            if ispc
+                home = [getenv('HOMEDRIVE') getenv('HOMEPATH')];
+                slash = '\';
+            else
+                home = getenv('HOME');
+                slash = '/';
+            end
+            
+            state_file = struct('NAME', 'state.mat', ...
+                            'PROJECT_NAME', 'project_state.mat', ...
+                            'FOLDER', [home slash 'methlab_pipeline' slash], ...
+                            'ADDRESS', [home slash 'methlab_pipeline' slash 'state.mat']);
         end
     end
 end
