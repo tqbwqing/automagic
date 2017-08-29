@@ -136,13 +136,12 @@ To merge any number of existing projects without losing the individual projects,
 
 After clicking on *Configurations...* button a new window is opened where you can customize preprocessing steps:
 
-1. If *Reduce number of channels* is checked, then before preprocessing number of channgels is reduced. [Click here](https://github.com/amirrezaw/automagic/blob/master/automagic_resources/reduced_channels.txt) to see list of channels selected. In case you choose *Other* as your EEG System in the `main_gui` then this element is deactivated: No channel reduction is supported for other EEG Systems. 
-2. In the *Filtering* section you can choose the order of the filtering. The default value corresponds to the default value computed by `pop_eegfiltnew.m`.
-3. In the *Channel rejection criterias* you can select or deselect the three different criterias *Kurtosis*, *Probability* and *Spectrum* to reject channels (see `pop_rejchan.m`). The corresponding thresholds can also be customized.
+1. In the *Filtering* section you can choose the order of the filtering. The default value corresponds to the default value computed by `pop_eegfiltnew.m`.
+2. In the *Channel rejection criterias* you can select or deselect the three different criterias *Kurtosis*, *Probability* and *Spectrum* to reject channels (see `pop_rejchan.m`). The corresponding thresholds can also be customized.
    * You can additionally choose to have a channel rejection based on the **Robust Average Referencing** suggested in [PREP](https://github.com/VisLab/EEG-Clean-Tools) pipeline. Note that this is a very time consuming operation.
-4. *ICA* can be selected or deselected. Note that ICA and PCA can not be chosen together at the same time. The ICA uses the algorithm in MARA extension of MATLAB.
-5. *PCA* can be selected or deselected. The parameters correspond to paramters of `inexact_alm_rpca.m`. The default value *lambda* is ![alt tag](https://github.com/amirrezaw/automagic/blob/master/automagic_resources/sqrt.jpg) where m is the number of channels.
-6. The mode of interpolation can be determined. The default value is *spherical*.
+3. *ICA* can be selected or deselected. Note that ICA and PCA can not be chosen together at the same time. The ICA uses the algorithm in MARA extension of MATLAB.
+4. *PCA* can be selected or deselected. The parameters correspond to paramters of `inexact_alm_rpca.m`. The default value *lambda* is ![alt tag](https://github.com/amirrezaw/automagic/blob/master/automagic_resources/sqrt.jpg) where m is the number of channels.
+5. The mode of interpolation can be determined. The default value is *spherical*.
    * Note:	The preprocessing parameters can be set only during project creation.
 
 ### 2.4. The Pre-Processing Panel
