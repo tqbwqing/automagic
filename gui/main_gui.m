@@ -41,7 +41,7 @@ function varargout = main_gui(varargin)
 % You should have received a copy of the GNU General Public License
 % along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-% Last Modified by GUIDE v2.5 24-Jul-2017 11:07:09
+% Last Modified by GUIDE v2.5 29-Aug-2017 09:11:46
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -76,15 +76,15 @@ handles.output = hObject;
 
 % Position of the gui
 set(handles.main_gui, 'units', 'normalized', 'position', [0.05 0.5 0.9 0.82])
-children = handles.main_gui.Children;
-for child_idx = 1:length(children)
-    child = children(child_idx);
-    set(child, 'units', 'normalized')
-    for grandchild_idx = 1:length(child.Children)
-       grandchild = child.Children(grandchild_idx);
-       set(grandchild, 'units', 'normalized')
-    end
-end
+% children = handles.main_gui.Children;
+% for child_idx = 1:length(children)
+%     child = children(child_idx);
+%     set(child, 'units', 'normalized')
+%     for grandchild_idx = 1:length(child.Children)
+%        grandchild = child.Children(grandchild_idx);
+%        set(grandchild, 'units', 'normalized')
+%     end
+% end
 
 % Add project paths
 % Checks 'project.m' as an example of a file in /src. Could be any other file
