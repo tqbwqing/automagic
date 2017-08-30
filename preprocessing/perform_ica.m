@@ -55,6 +55,13 @@ if( ~ isempty(chanloc_map))
     for i = idx
        data.chanlocs(1,i).labels = chanloc_map(data.chanlocs(1,i).labels);
     end
+    
+    % Temporarily change the name of all other labels
+    for i = 1:length(data.chanlocs)
+       if(~ any(i == idx))
+          data.chanlocs(1,i).labels = strcat(data.chanlocs(1,i).labels, '_automagiced');
+       end
+    end
 end
 
 % Check if the channel system is according to what Mara is expecting.
@@ -74,6 +81,12 @@ if(length(intersect_labels) < 3)
         for i = idx
            data.chanlocs(1,i).labels = inverse_chanloc_map(data.chanlocs(1,i).labels);
         end
+        
+        for i = 1:length(data.chanlocs)
+            if(~ any(i == idx))
+                data.chanlocs(1,i).labels = strtok(data.chanlocs(1,i).labels, '_automagiced');
+            end
+        end
     end
     return;
 end
@@ -90,6 +103,12 @@ data = EEG_Mara;
 if( ~ isempty(chanloc_map))
     for i = idx
        data.chanlocs(1,i).labels = inverse_chanloc_map(data.chanlocs(1,i).labels);
+    end
+    
+    for i = 1:length(data.chanlocs)
+        if(~ any(i == idx))
+            data.chanlocs(1,i).labels = strtok(data.chanlocs(1,i).labels, '_automagiced');
+        end
     end
 end
 
