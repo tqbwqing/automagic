@@ -136,6 +136,10 @@ classdef Project < handle
         % .RAW, .dat , .fif , .txt or even .mat if it's saved as a matlab file
         file_extension
         
+        % All files with this mask at the end are loaded. It must include 
+        % the file_extension in itself 
+        mask
+        
         % Parameters of the preprocessing. To learn more please see
         % preprocessing/preprocess.m
         params
@@ -172,7 +176,10 @@ classdef Project < handle
             self = self.setResult_folder(p_folder);
             self.CGV = ConstantGlobalValues;
             self.state_address = self.make_state_address(self.result_folder);
-            self.file_extension = ext;
+            
+            ext_split = strsplit(ext, '.');
+            self.file_extension = strcat('.', ext_split{end});
+            self.mask = ext;
             
             if(any(strcmp(self.file_extension, {self.CGV.extensions.text})))
                 self.srate = varargin{1};
@@ -490,7 +497,7 @@ classdef Project < handle
                 subject = Subject([self.data_folder subject_name], ...
                                     [self.result_folder subject_name]);
                 
-                raw_files = dir([self.data_folder subject_name slash '*' ext]);
+                raw_files = dir([self.data_folder subject_name slash '*' self.mask]);
                 temp = 0;
                 for j = 1:length(raw_files)
                     files_count = files_count + 1;
@@ -662,7 +669,7 @@ classdef Project < handle
             % result_folder since the last update. If it's true,
             % update_data_structures must be called.
             data_changed = self.folder_is_changed(self.data_folder, ...
-                self.subject_count, self.file_count, self.file_extension);
+                self.subject_count, self.file_count, self.mask);
             result_changed = self.folder_is_changed(self.result_folder, []...
                 , self.processed_files, self.CGV.extensions(1).mat);
             modified = data_changed || result_changed;
@@ -756,7 +763,7 @@ classdef Project < handle
                 subject = Subject([self.data_folder subject_name], ...
                                     [self.result_folder subject_name]);
 
-                raw_files = dir([self.data_folder subject_name slash '*' ext]);
+                raw_files = dir([self.data_folder subject_name slash '*' self.mask]);
                 temp = 0; 
                 for j = 1:length(raw_files)
                     files_count = files_count + 1;

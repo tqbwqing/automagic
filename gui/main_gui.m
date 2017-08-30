@@ -402,7 +402,7 @@ end
 handles = setNotchFilter(project.params.filter_params.notch_freq, handles);
 
 % Set the file extension
-set(handles.extedit, 'String', project.file_extension);
+set(handles.extedit, 'String', project.mask);
 
 % Set the sampling rate. It won't be empty only for .txt extension
 set(handles.srateedit, 'String', num2str(project.srate))
